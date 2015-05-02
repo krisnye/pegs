@@ -1,0 +1,168 @@
+const {Grammar,Filter,Sequence,Reference,Terminal,Option,Repeat,Add,Choice,Not,Any,And} = import './classes'
+
+const
+    _ = new Terminal(/\s*/, 'whitespace')
+    NewExpression = (type, args) -> {type:'NewExpression', callee:{type:'Identifier', name:type}, arguments:args ? []}
+
+const grammar = new Grammar(
+    rules: new Repeat(
+        new Sequence(
+            new Reference('rule')
+            new Reference('crlf')
+        )
+            extract: 0
+    )
+    rule: new Reference('choice')
+    choice: new Filter(
+        new Sequence(
+            new Reference('sequence')
+            new Repeat(
+                new Sequence(
+                    _
+                    new Terminal('/')
+                    _
+                    new Reference('sequence')
+                )
+                    extract: 3
+            )
+        )
+        ([first,rest]) ->
+            if rest.length > 0
+                return NewExpression('Sequence', [first].concat(rest))
+            else
+                return first
+    )
+    sequence: new Filter(
+        new Sequence(
+            new Reference('repeat')
+            new Repeat(
+                new Sequence(
+                    _
+                    new Reference('repeat')
+                )
+                    extract: 1
+            )
+        )
+        ([first,rest]) ->
+            if rest.length > 0
+                return NewExpression('Sequence', [first].concat(rest))
+            else
+                return first
+    )
+    repeat: new Filter(
+        new Sequence(
+            new Reference('atomicRule')
+            _
+            new Option(new Reference('quantifier'))
+        )
+            labels:
+                rule: 0
+                quantifier: 2
+        ({rule,quantifier}) ->
+            if not quantifier?
+                return rule
+            let args = [rule]
+            if quantifier is '?'
+                return NewExpression('Option', args)
+            if quantifier is '*'
+                args.push(0)
+            else if quantifier is '+'
+                args.push(1)
+            else
+                args = args.concat(quantifier)
+            return NewExpression('Repeat', args)
+    )
+    quantifier: new Choice(
+        new Terminal('?')
+        new Terminal('*')
+        new Terminal('+')
+        new Filter(
+            new Sequence(
+                new Terminal('[')
+                _
+                new Reference('integerOrString')
+                _
+                new Option(
+                    new Choice(
+                        new Terminal('+')
+                        new Sequence(
+                            new Terminal('-')
+                            _
+                            new Reference('integerOrString')
+                        )
+                            extract: 2
+                    )
+                )
+                _
+                new Terminal(']')
+            )
+                labels:
+                    min: 2
+                    max: 4
+            ({min,max}) ->
+                if max is '+'
+                    return [min]
+                else
+                    return [min, max ? min]
+        )
+    )
+    atomicRule: new Choice(
+        new Reference('terminal')
+        new Reference('group')
+        new Reference('any')
+        new Reference('reference')
+        new Reference('andPredicate')
+        new Reference('notPredicate')
+    )
+    reference: new Filter(
+        new Terminal(/[a-zA-Z][a-zA-Z0-9_]*/)
+        (value) -> NewExpression('Reference', [{type:'Literal', value}])
+    )
+    group: new Sequence(
+        new Terminal("(")
+        _
+        new Reference('rule')
+        _
+        new Terminal(")")
+    )
+        extract: 2
+    andPredicate: new Filter(
+        new Sequence(
+            new Terminal("&")
+            _
+            new Reference('atomicRule')
+        )
+            extract: 2
+        (value) -> NewExpression('And', [value])
+    )
+    notPredicate: new Filter(
+        new Sequence(
+            new Terminal("!")
+            _
+            new Reference('atomicRule')
+        )
+            extract: 2
+        (value) -> NewExpression('Not', [value])
+    )
+    terminal: new Filter(
+        new Choice(new Reference('string'), new Reference('regex'))
+        (value) -> NewExpression('Terminal', [value])
+    )
+    integerOrString: new Choice(new Reference('integer'), new Reference('string'))
+    integer: new Filter(new Terminal(/[0-9]+/), (value) -> {type:'Literal',value:parseInt(value)})
+    string: new Filter(new Terminal(/"([^"\\]*|\\["\/\\bfnrt]|\\u[0-9a-f]{4})*"/), (value) -> {type:'Literal',value:JSON.parse(value)})
+    regex: new Filter(new Terminal(/\/(\\.|[^\/])+\//), (value) -> {type:'Literal',value:eval(value)})
+    any: new Filter(new Terminal('.'), (value) -> NewExpression('Any'))
+
+    crlf: new Choice(
+        new Terminal(/\r?\n/, 'crlf')
+        new Reference('eof')
+    )
+    eof: new Not(new Any())
+)
+export grammar
+    test: ->
+        let test = ""
+            a[0-12]
+        let result = grammar.parse(test)
+        console.log(JSON.stringify(result, null, '    '))

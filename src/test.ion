@@ -1,0 +1,93 @@
+const {Grammar,Context,Filter,Sequence,Reference,Terminal,Option,Repeat,Add,Choice,Not,And,Predicate,Any} = import './classes'
+
+const testRule = (rule, string, expectedResult, expectedIndex, expectedState = {}) ->
+    let context = new Context(null, string)
+    let result = rule.parse(context)
+    if JSON.stringify(result) isnt JSON.stringify(expectedResult)
+        throw new Error("Parsing {{string}} with Rule {{rule.toString()}}, expected {{JSON.stringify(expectedResult)}}, actual: {{JSON.stringify(result)}} ")
+    if expectedIndex isnt context.index
+        throw new Error("Parsing {{string}} with Rule {{rule.toString()}}, expected index {{expectedIndex}}, actual index: {{context.index}} ")
+    if JSON.stringify(expectedState) isnt JSON.stringify(context.state)
+        throw new Error("Parsing {{string}} with Rule {{rule.toString()}}, expected state {{JSON.stringify(expectedState)}}, actual index: {{JSON.stringify(context.state)}} ")
+    return context
+
+export const
+    test =
+        terminal: ->
+            testRule(new Terminal("foo"), "foobar", "foo", 3)
+            testRule(new Terminal(/f+/), "foobar", "f", 1)
+            testRule(new Terminal(/f+/), "ffffffoobar", "ffffff", 6)
+            testRule(new Terminal(/f+/), " foobar", undefined, 0)
+        sequence: ->
+            testRule(new Sequence(new Terminal("foo"), new Terminal("bar")), "foobar", ["foo","bar"], 6)
+            testRule(new Sequence(new Terminal("foo"), new Terminal("bar")), "foobat", undefined, 0)
+        choice: ->
+            testRule(new Choice(new Terminal("foo"), new Terminal("bar")), "barfoo", "bar", 3)
+            testRule(new Choice(new Terminal("foo"), new Terminal("bars")), "barfoo", undefined, 0)
+        repeat: ->
+            testRule(new Repeat(new Terminal("foo")), "foofoofoo", ["foo","foo","foo"], 9)
+            testRule(new Repeat(new Terminal("foo")), "bar", [], 0)
+            testRule(new Repeat(new Terminal("foo"), 1), "foofoofoo", ["foo","foo","foo"], 9)
+            testRule(new Repeat(new Terminal("foo"), 1), "bar", undefined, 0)
+        option: ->
+            testRule(new Option(new Terminal("foo")), "foo", "foo", 3)
+            testRule(new Option(new Terminal("foo")), "bar", null, 0)
+        andPredicate: ->
+            testRule(new And(new Sequence(new Terminal("foo"), new Terminal("bar"))), "foobar", null, 0)
+            testRule(new And(new Sequence(new Terminal("foo"), new Terminal("bar"))), "foobat", undefined, 0)
+        notPredicate: ->
+            testRule(new Not(new Sequence(new Terminal("foo"), new Terminal("bar"))), "foobar", undefined, 0)
+            testRule(new Not(new Sequence(new Terminal("foo"), new Terminal("bar"))), "foobat", null, 0)
+        customPredicate: ->
+            testRule(new Sequence(new Terminal("foo"), new Predicate((-> @state?)), new Terminal("bar")), "foobar", ["foo", null, "bar"], 6)
+            testRule(new Sequence(new Terminal("foo"), new Predicate((-> not @state?)), new Terminal("bar")), "foobar", undefined, 0)
+        customAction: ->
+            testRule(new Filter(new Sequence(new Terminal("foo"), new Terminal("bar")), (value) -> value.join('+')), "foobar", "foo+bar", 6)
+        errorDetails: ->
+            let context = testRule(new Sequence(new Terminal("baz"), new Choice(new Terminal(/fo+/), new Terminal("boo"), new Terminal("bars", "BARS"))), "bazbarfoo", undefined, 0)
+            assert context.getErrorDetails("foo.ion").message is "(foo.ion):1:4: Expected: /fo+/ | \"boo\" | BARS\nbazbarfoo\n   ^"
+            context = testRule(new Sequence(new Terminal("baz"), new Choice(new Terminal(/fo+/), new Terminal("boo"), new Terminal("bars", "BARS"))), "bazfoo extra", ["baz","foo"], 6)
+            assert context.getErrorDetails().message is "(anonymous):1:7: Unexpected:\nbazfoo extra\n      ^"
+        indentParser: ->
+            let source = ""
+                1
+                    2
+                        3
+                        4
+                    5
+            let grammar = new Grammar(
+                number: new Filter(
+                    new Sequence(
+                        new Reference('dent')
+                        new Terminal(/[0-9]/)
+                        new Reference('crlf')
+                        new Option(
+                            new Sequence(
+                                new Reference('indent')
+                                new Repeat(new Reference('number'), 1)
+                                new Reference('outdent')
+                            )
+                                extract: 1
+                        )
+                    )
+                        labels:
+                            number: 1
+                            children: 3
+                    ({number,children}) ->
+                        if children?
+                            return {[number]:children}
+                        else
+                            return number
+                )
+                dent: new Repeat(new Terminal("    "), 'indent', 'indent')
+                indent: new Add('indent', 1)
+                outdent: new Add('indent', -1)
+                crlf: new Choice(
+                    new Terminal(/\r?\n/)
+                    new Reference('end')
+                )
+                end: new Not(new Any())
+            )
+            let result = grammar.parse(source)
+            assert JSON.stringify(result) is '{"1":[{"2":["3","4"]},"5"]}'
+
