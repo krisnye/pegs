@@ -45,16 +45,20 @@ export const
             getErrorDetails: (sourceName) ->
                 if @index is @source.length
                     return null
-                if @index is 0
-                    return getSourceErrorDetails("Expected: {{Object.keys(@failExpecteds).join(' | ')}}", @source, @failIndex, sourceName)
-                if @index > 0
-                    return getSourceErrorDetails("Unexpected:", @source, @index, sourceName)
+                let fails = Object.keys(@failExpecteds)
+                if fails.length > 0
+                    return getSourceErrorDetails("Expected: {{fails.join(' | ')}}", @source, @failIndex, sourceName)
+                return getSourceErrorDetails("Unexpected:", @source, @index, sourceName)
 
     Rule = class Rule
         properties:
             parse: (context) ->
                 # if fail => return undefined and DO NOT modify context
                 # if succeed => return result and MAY modify context
+            set: (properties) ->
+                for key, value of properties
+                    @[key] = value
+                return @
 
     Grammar = class Grammar extends Rule
         constructor: (rules) ->
@@ -129,7 +133,7 @@ export const
                 writable: true
             extract:
                 # index of a single value to extract
-                type: 'integer'
+                type: ['integer','array']
                 value: null
                 writable: true
             parse: (context) ->
@@ -145,7 +149,10 @@ export const
                 context.setFrom(clone)
                 if results?
                     if @extract?
-                        return results[@extract]
+                        if Array.isArray(@extract)
+                            return [results[index] for index in @extract]
+                        else
+                            return results[@extract]
                     if @labels?
                         for name, index of @labels
                             results[name] = results[index]
@@ -253,7 +260,7 @@ export const
                     return undefined
             toString: -> "!{{@rule}}"
 
-    Predicate = class Predicate extends Rule
+    CustomPredicate = class CustomPredicate extends Rule
         constructor: (predicate) ->
             @predicate = predicate
         properties:
@@ -281,14 +288,24 @@ export const
                 return result
             toString: -> "{{@rule}} {{@filter.toString()}}"
 
-    CustomRule = class CustomRule extends Rule
-        constructor: (parseFunction) ->
-            @parseFunction = parseFunction
+    StringResult = class StringResult extends Rule
+        constructor: (rule) ->
+            @rule = rule
         properties:
-            parse: (context) -> @parseFunction.call(context, context)
-            toString: -> "{{@parseFunction.toString()}}"
+            parse: (context) ->
+                let start = context.index
+                let result = @rule.parse(context)
+                if result isnt undefined
+                    let end = context.index
+                    result = context.source.substring(start, end)
+                return result
+            toString: -> "${{@rule}}"
 
-exports
-    property grammar:
-        get: -> import './grammar'
+    # CustomRule = class CustomRule extends Rule
+    #     constructor: (parseFunction) ->
+    #         @parseFunction = parseFunction
+    #     properties:
+    #         parse: (context) -> @parseFunction.call(context, context)
+    #         toString: -> "{{@parseFunction.toString()}}"
+
 

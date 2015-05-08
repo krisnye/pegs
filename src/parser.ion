@@ -1,58 +1,210 @@
-const {Grammar,Filter,Sequence,Reference,Terminal,Option,Repeat,Add,Choice,Not,Any,And} = import './classes'
+const {Grammar,Filter,Sequence,Reference,Terminal,Option,Repeat,Add,Choice,Not,Any,And,StringResult} = import './classes'
+const escodegen = import './escodegen'
 
 const
-    _ = new Terminal(/\s*/, 'whitespace')
+    whitespace = new Terminal(/ *([\r\n]+ +)*/, 'whitespace')
     NewExpression = (type, args) -> {type:'NewExpression', callee:{type:'Identifier', name:type}, arguments:args ? []}
 
 const grammar = new Grammar(
-    rules: new Repeat(
+    start: new Reference('grammar')
+    grammar: new Filter(
         new Sequence(
-            new Reference('rule')
-            new Reference('crlf')
+            new Reference('rules')
         )
-            extract: 0
+            labels:
+                rules: 0
+        ({rules}) ->
+            let rulesArg =
+                type: 'ObjectExpression'
+                properties: []
+                    for [id,expression] in rules
+                        {}
+                            type: 'Property'
+                            key:
+                                type: 'Identifier'
+                                name: id
+                            value: expression
+                            kind: 'init'
+            let grammar = NewExpression('Grammar', [rulesArg])
+            let result =
+                type: 'AssignmentExpression'
+                operator: '='
+                left:
+                    type: 'MemberExpression'
+                    object:
+                        type: 'Identifier'
+                        name: 'module'
+                    property:
+                        type: 'Identifier'
+                        name: 'exports'
+                right: grammar
+            # return grammar
+            return escodegen.generate(result, {verbatim:'x-verbatim'})
     )
-    rule: new Reference('choice')
+    rules: new Repeat(
+        new Reference('rule')
+        1
+    )
+    rule: new Filter(
+        new Sequence(
+            new Terminal(/\s*/)
+            new Reference('id')
+            new Terminal(/\s*/)
+            new Terminal('=')
+            new Terminal(/\s*/)
+            new Reference('expression')
+        )
+            labels:
+                id: 1
+                expression: 5
+        ({id,expression}) -> [id,expression]
+    )
+    expression: new Reference('choice')
     choice: new Filter(
         new Sequence(
-            new Reference('sequence')
+            new Reference('filter')
             new Repeat(
                 new Sequence(
-                    _
-                    new Terminal('/')
-                    _
-                    new Reference('sequence')
+                    whitespace
+                    new Terminal('|')
+                    whitespace
+                    new Reference('filter')
                 )
                     extract: 3
             )
         )
         ([first,rest]) ->
             if rest.length > 0
-                return NewExpression('Sequence', [first].concat(rest))
+                return NewExpression('Choice', [first].concat(rest))
             else
                 return first
     )
+    filter: new Filter(
+        new Sequence(
+            new Reference('sequence')
+            whitespace
+            new Option(new Reference('code'))
+        )
+            labels:
+                e: 0
+                code: 2
+        ({e,code}) ->
+            if code?
+                let init = ""
+                if e.sequenceLabels?
+                    console.log('sequenceLabels', e.sequenceLabels)
+                    init = []
+                        for label in e.sequenceLabels
+                            "var {{label.key.value}} = value.{{label.key.value}}; "
+                    .join('')
+
+                return NewExpression('Filter', [e,{"x-verbatim":"function(value){ {{init}}{{code}} }"}])
+            else
+                return e
+    )
     sequence: new Filter(
         new Sequence(
-            new Reference('repeat')
+            new Reference('labeledRepeat')
             new Repeat(
                 new Sequence(
-                    _
-                    new Reference('repeat')
+                    whitespace
+                    new Reference('labeledRepeat')
                 )
                     extract: 1
             )
         )
         ([first,rest]) ->
-            if rest.length > 0
-                return NewExpression('Sequence', [first].concat(rest))
+            if rest.length > 0 or Array.isArray(first)
+                let items = [first].concat(rest)
+                let labels = null
+                let extract = null
+                for item, index in items
+                    if Array.isArray(item)
+                        if item[0] is true
+                            if extract?
+                                if not Array.isArray(extract)
+                                    extract = [extract]
+                                extract.push(index)
+                            else
+                                extract = index
+                        else
+                            labels ?= []
+                            labels.push({type:'Property',key:item[0],value:{type:'Literal',value:index,kind:'init'}})
+                        items[index] = item[1]
+
+                let result = NewExpression('Sequence', items)
+                if labels?.length > 0 or extract?
+                    result =
+                        sequenceLabels: labels
+                        type: 'CallExpression'
+                        callee:
+                            type: 'MemberExpression'
+                            object: result
+                            property:
+                                type: 'Identifier'
+                                name: 'set'
+                        arguments: []
+                            {}
+                                type: 'ObjectExpression'
+                                properties: []
+                                    if extract?
+                                        {}
+                                            type: 'Property'
+                                            key:
+                                                type: 'Literal'
+                                                value: 'extract'
+                                            if Array.isArray(extract)
+                                                value:
+                                                    type: 'ArrayExpression'
+                                                    elements: []
+                                                        for index in extract
+                                                            {type:'Literal',value:index}
+                                            else
+                                                value:
+                                                    type: 'Literal'
+                                                    value: extract
+                                    if labels?.length > 0
+                                        {}
+                                            type: 'Property'
+                                            key:
+                                                type: 'Literal'
+                                                value: 'labels'
+                                            value:
+                                                type: 'ObjectExpression'
+                                                properties: labels
+                return result
             else
                 return first
+    )
+    labeledRepeat: new Choice(
+        new Filter(
+            new Sequence(
+                new Terminal('@')
+                whitespace
+                new Reference('repeat')
+            )
+                extract: 2
+            (rule) -> [true, rule]
+        )
+        new Filter(
+            new Sequence(
+                new Reference('idLiteral')
+                whitespace
+                new Terminal(':')
+                whitespace
+                new Reference('repeat')
+            )
+                labels:
+                    id: 0
+                    rule: 4
+            ({id,rule}) -> [id, rule]
+        )
+        new Reference('repeat')
     )
     repeat: new Filter(
         new Sequence(
             new Reference('atomicRule')
-            _
+            whitespace
             new Option(new Reference('quantifier'))
         )
             labels:
@@ -79,21 +231,21 @@ const grammar = new Grammar(
         new Filter(
             new Sequence(
                 new Terminal('[')
-                _
+                whitespace
                 new Reference('integerOrString')
-                _
+                whitespace
                 new Option(
                     new Choice(
                         new Terminal('+')
                         new Sequence(
                             new Terminal('-')
-                            _
+                            whitespace
                             new Reference('integerOrString')
                         )
                             extract: 2
                     )
                 )
-                _
+                whitespace
                 new Terminal(']')
             )
                 labels:
@@ -111,25 +263,36 @@ const grammar = new Grammar(
         new Reference('group')
         new Reference('any')
         new Reference('reference')
+        new Reference('customPredicate')
         new Reference('andPredicate')
         new Reference('notPredicate')
+        new Reference('stringResult')
     )
     reference: new Filter(
-        new Terminal(/[a-zA-Z][a-zA-Z0-9_]*/)
+        new Reference('id')
         (value) -> NewExpression('Reference', [{type:'Literal', value}])
     )
     group: new Sequence(
         new Terminal("(")
-        _
-        new Reference('rule')
-        _
+        whitespace
+        new Reference('expression')
+        whitespace
         new Terminal(")")
     )
         extract: 2
+    customPredicate: new Filter(
+        new Sequence(
+            new Terminal("&")
+            whitespace
+            new Reference('code')
+        )
+            extract: 2
+        (value) -> NewExpression('CustomPredicate', [{"x-verbatim":"function(){ {{value}} }"}])
+    )
     andPredicate: new Filter(
         new Sequence(
             new Terminal("&")
-            _
+            whitespace
             new Reference('atomicRule')
         )
             extract: 2
@@ -138,21 +301,53 @@ const grammar = new Grammar(
     notPredicate: new Filter(
         new Sequence(
             new Terminal("!")
-            _
+            whitespace
             new Reference('atomicRule')
         )
             extract: 2
         (value) -> NewExpression('Not', [value])
     )
+    stringResult: new Filter(
+        new Sequence(
+            new Terminal("$")
+            whitespace
+            new Reference('atomicRule')
+        )
+            extract: 2
+        (value) -> NewExpression('StringResult', [value])
+    )
     terminal: new Filter(
         new Choice(new Reference('string'), new Reference('regex'))
         (value) -> NewExpression('Terminal', [value])
     )
+    idLiteral: new Filter(new Reference('id'), (value) -> {type:'Literal', value})
+    id: new Terminal(/[a-zA-Z][a-zA-Z0-9_]*/, 'id')
     integerOrString: new Choice(new Reference('integer'), new Reference('string'))
     integer: new Filter(new Terminal(/[0-9]+/), (value) -> {type:'Literal',value:parseInt(value)})
-    string: new Filter(new Terminal(/"([^"\\]*|\\["\/\\bfnrt]|\\u[0-9a-f]{4})*"/), (value) -> {type:'Literal',value:JSON.parse(value)})
-    regex: new Filter(new Terminal(/\/(\\.|[^\/])+\//), (value) -> {type:'Literal',value:eval(value)})
+    string: new Filter(
+        new Choice(
+            new Terminal(/("([^"\\]*|\\["\/\\bfnrt]|\\u[0-9a-f]{4})*")/, 'string')
+            new Terminal(/('([^'\\]*|\\['\/\\bfnrt]|\\u[0-9a-f]{4})*')/, 'string')
+        )
+        (value) -> {type:'Literal',value:eval(value)}
+    )
+    regex: new Filter(new Terminal(/\/(\\.|[^\/])+\//, 'regex'), (value) -> {type:'Literal',value:eval(value)})
     any: new Filter(new Terminal('.'), (value) -> NewExpression('Any'))
+    code: new Filter(
+        new StringResult(
+            new Sequence(
+                new Terminal('{')
+                new Repeat(
+                    new Choice(
+                        new Terminal(/[^{}]+/)
+                        new Reference('code')
+                    )
+                )
+                new Terminal('}')
+            )
+        )
+        (value) -> value.trim().slice(1, -1)
+    )
 
     crlf: new Choice(
         new Terminal(/\r?\n/, 'crlf')
@@ -163,6 +358,14 @@ const grammar = new Grammar(
 export grammar
     test: ->
         let test = ""
-            a[0-12]
+            start = x:"x" y:"y" { return x + "-" + y }
+            foo = a @b
+            bar = a @b c @d e @f
+            baz = $(a b)
         let result = grammar.parse(test)
-        console.log(JSON.stringify(result, null, '    '))
+        let escodegen = import './escodegen'
+        console.log('-----------------------------------------------------')
+        console.log(result)
+        console.log('-----------------------------------------------------')
+        # console.log(escodegen.generate(result, {verbatim:'x-verbatim'}))
+        # console.log('-----------------------------------------------------')

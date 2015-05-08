@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+
+let fs = import 'fs'
+let path = import 'path'
+let parser = import './parser'
+
+let args = process.argv.slice(2)
+if args.length < 2
+    console.log(
+        ""
+            Usage: ion input.pegs output.js [-w]
+
+              -w   watches the grammar and rebuilds it when changed
+    )
+    return
+
+let watch = args[2] is '-w'
+let inputName = args[0]
+let outputName = args[1]
+
+let source = fs.readFileSync(inputName, {encoding:'utf8'})
+let result = parser.parse(source, inputName)
+fs.writeFileSync(outputName, result, {encoding:'utf8'})
+console.log("Writing {{outputName}}")
+console.log(result)

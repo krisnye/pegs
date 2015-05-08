@@ -2,6 +2,9 @@
     "name": "pegs",
     "version": "0.0.0",
     "main": "lib/index.js",
+    "bin": {
+        "pegs": "lib/_command.js"
+    },
     "scripts": {
         "dev": "npm link ion && npm run build && cd lib && npm link && cd ..",
         "build": "ion -c",
@@ -18,7 +21,7 @@
         "node": "0.10.x"
     },
     "dependencies": {
-        "ion": "0.9.14+"
+        "ion": "0.9.12+"
     },
     "devDependencies": {
     },

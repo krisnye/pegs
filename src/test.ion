@@ -1,4 +1,4 @@
-const {Grammar,Context,Filter,Sequence,Reference,Terminal,Option,Repeat,Add,Choice,Not,And,Predicate,Any} = import './classes'
+const {Grammar,Context,Filter,Sequence,Reference,Terminal,Option,Repeat,Add,Choice,Not,And,CustomPredicate,Any,StringResult} = import './classes'
 
 const testRule = (rule, string, expectedResult, expectedIndex, expectedState = {}) ->
     let context = new Context(null, string)
@@ -21,6 +21,7 @@ export const
         sequence: ->
             testRule(new Sequence(new Terminal("foo"), new Terminal("bar")), "foobar", ["foo","bar"], 6)
             testRule(new Sequence(new Terminal("foo"), new Terminal("bar")), "foobat", undefined, 0)
+            testRule(new Sequence(new Terminal("foo"), new Terminal(","), new Terminal("bar")).set({extract:[0,2]}), "foo,bar", ["foo","bar"], 7)
         choice: ->
             testRule(new Choice(new Terminal("foo"), new Terminal("bar")), "barfoo", "bar", 3)
             testRule(new Choice(new Terminal("foo"), new Terminal("bars")), "barfoo", undefined, 0)
@@ -39,8 +40,8 @@ export const
             testRule(new Not(new Sequence(new Terminal("foo"), new Terminal("bar"))), "foobar", undefined, 0)
             testRule(new Not(new Sequence(new Terminal("foo"), new Terminal("bar"))), "foobat", null, 0)
         customPredicate: ->
-            testRule(new Sequence(new Terminal("foo"), new Predicate((-> @state?)), new Terminal("bar")), "foobar", ["foo", null, "bar"], 6)
-            testRule(new Sequence(new Terminal("foo"), new Predicate((-> not @state?)), new Terminal("bar")), "foobar", undefined, 0)
+            testRule(new Sequence(new Terminal("foo"), new CustomPredicate((-> @state?)), new Terminal("bar")), "foobar", ["foo", null, "bar"], 6)
+            testRule(new Sequence(new Terminal("foo"), new CustomPredicate((-> not @state?)), new Terminal("bar")), "foobar", undefined, 0)
         customAction: ->
             testRule(new Filter(new Sequence(new Terminal("foo"), new Terminal("bar")), (value) -> value.join('+')), "foobar", "foo+bar", 6)
         errorDetails: ->
@@ -48,6 +49,8 @@ export const
             assert context.getErrorDetails("foo.ion").message is "(foo.ion):1:4: Expected: /fo+/ | \"boo\" | BARS\nbazbarfoo\n   ^"
             context = testRule(new Sequence(new Terminal("baz"), new Choice(new Terminal(/fo+/), new Terminal("boo"), new Terminal("bars", "BARS"))), "bazfoo extra", ["baz","foo"], 6)
             assert context.getErrorDetails().message is "(anonymous):1:7: Unexpected:\nbazfoo extra\n      ^"
+        stringResult: ->
+            testRule(new StringResult(new Repeat(new Terminal("foo"))), "foofoofoo", "foofoofoo", 9)
         indentParser: ->
             let source = ""
                 1
