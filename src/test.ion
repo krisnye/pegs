@@ -45,9 +45,9 @@ export const
         customAction: ->
             testRule(new Filter(new Sequence(new Terminal("foo"), new Terminal("bar")), (value) -> value.join('+')), "foobar", "foo+bar", 6)
         errorDetails: ->
-            let context = testRule(new Sequence(new Terminal("baz"), new Choice(new Terminal(/fo+/), new Terminal("boo"), new Terminal("bars", "BARS"))), "bazbarfoo", undefined, 0)
+            let context = testRule(new Sequence(new Terminal("baz"), new Choice(new Terminal(/fo+/), new Terminal("boo"), new Terminal("bars").set({name:"BARS"}))), "bazbarfoo", undefined, 0)
             assert context.getErrorDetails("foo.ion").message is "(foo.ion):1:4: Expected: /fo+/ | \"boo\" | BARS\nbazbarfoo\n   ^"
-            context = testRule(new Sequence(new Terminal("baz"), new Choice(new Terminal(/fo+/), new Terminal("boo"), new Terminal("bars", "BARS"))), "bazfoo extra", ["baz","foo"], 6)
+            context = testRule(new Sequence(new Terminal("baz"), new Choice(new Terminal(/fo+/), new Terminal("boo"), new Terminal("bars"))), "bazfoo extra", ["baz","foo"], 6)
             assert context.getErrorDetails().message is "(anonymous):1:7: Unexpected:\nbazfoo extra\n      ^"
         stringResult: ->
             testRule(new StringResult(new Repeat(new Terminal("foo"))), "foofoofoo", "foofoofoo", 9)

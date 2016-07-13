@@ -1,7 +1,7 @@
 const {Grammar,Filter,Sequence,Reference,Terminal,Option,Repeat,Add,Choice,Not,Any,And,StringResult} = import './classes'
-const escodegen = import './escodegen'
 
 const
+    escodegen = import './escodegen'
     whitespace = new Terminal(/ *([\r\n]+ +)*/, 'whitespace')
     NewExpression = (type, args) -> {type:'NewExpression', callee:{type:'Identifier', name:type}, arguments:args ? []}
 
@@ -9,11 +9,14 @@ const grammar = new Grammar(
     start: new Reference('grammar')
     grammar: new Filter(
         new Sequence(
+            new Option(new Reference('code'))
             new Reference('rules')
+            new Terminal(/[\s\r\n]*/)
         )
             labels:
-                rules: 0
-        ({rules}) ->
+                code: 0
+                rules: 1
+        ({code,rules}) ->
             let rulesArg =
                 type: 'ObjectExpression'
                 properties: []
@@ -27,18 +30,51 @@ const grammar = new Grammar(
                             kind: 'init'
             let grammar = NewExpression('Grammar', [rulesArg])
             let result =
-                type: 'AssignmentExpression'
-                operator: '='
-                left:
-                    type: 'MemberExpression'
-                    object:
-                        type: 'Identifier'
-                        name: 'module'
-                    property:
-                        type: 'Identifier'
-                        name: 'exports'
-                right: grammar
+                type: 'Program'
+                body: []
+                    if code?
+                        {type:'ExpressionStatement', expression:{type:'Literal', "x-verbatim":code}}
+                    # insert pegs import bullshit here.
+                    {}
+                        type: 'VariableDeclaration'
+                        kind: 'var'
+                        declarations: []
+                            {}
+                                type: 'VariableDeclarator'
+                                id: { type: 'Identifier', name: '_classes_' }
+                                init:
+                                    type: 'MemberExpression'
+                                    object:
+                                        type: 'CallExpression'
+                                        callee: { type: 'Identifier', name: 'require' }
+                                        # bootstrap can only be used for compiling ourselves
+                                        # since this reference to the pegs library uses './'
+                                        arguments: [ {type: 'Literal', value: './' } ]
+                                    property: { type: 'Literal', name: 'classes' }
+                            for id of import './classes'
+                                {}
+                                    type: 'VariableDeclarator'
+                                    id: { type: 'Identifier', name: id }
+                                    init:
+                                        type: 'MemberExpression'
+                                        object: { type: 'Identifier', name: '_classes_' }
+                                        property: { type: 'Identifier', name: id }
+                    {}
+                        type: 'ExpressionStatement'
+                        expression:
+                            type: 'AssignmentExpression'
+                            operator: '='
+                            left:
+                                type: 'MemberExpression'
+                                object:
+                                    type: 'Identifier'
+                                    name: 'module'
+                                property:
+                                    type: 'Identifier'
+                                    name: 'exports'
+                            right: grammar
             # return grammar
+            # console.log(JSON.stringify(grammar, null, '  '))
             return escodegen.generate(result, {verbatim:'x-verbatim'})
     )
     rules: new Repeat(
@@ -50,14 +86,42 @@ const grammar = new Grammar(
             new Terminal(/\s*/)
             new Reference('id')
             new Terminal(/\s*/)
+            new Option(
+                new Sequence(
+                    new Reference('string')
+                    new Terminal(/\s*/)
+                )
+                    extract: 0
+            )
             new Terminal('=')
             new Terminal(/\s*/)
             new Reference('expression')
         )
             labels:
                 id: 1
-                expression: 5
-        ({id,expression}) -> [id,expression]
+                name: 3
+                expression: 6
+        ({id,expression,name}) ->
+            if name?
+                expression =
+                    type: 'CallExpression'
+                    callee:
+                        type: 'MemberExpression'
+                        object: expression
+                        property:
+                            type: 'Identifier'
+                            name: 'set'
+                    arguments: []
+                        {}
+                            type: 'ObjectExpression'
+                            properties: []
+                                {}
+                                    type: 'Property'
+                                    key:
+                                        type: 'Literal'
+                                        value: 'name'
+                                    value: name
+            return [id,expression]
     )
     expression: new Reference('choice')
     choice: new Filter(
@@ -92,7 +156,7 @@ const grammar = new Grammar(
             if code?
                 let init = ""
                 if e.sequenceLabels?
-                    console.log('sequenceLabels', e.sequenceLabels)
+                    # console.log('sequenceLabels', e.sequenceLabels)
                     init = []
                         for label in e.sequenceLabels
                             "var {{label.key.value}} = value.{{label.key.value}}; "
@@ -217,9 +281,9 @@ const grammar = new Grammar(
             if quantifier is '?'
                 return NewExpression('Option', args)
             if quantifier is '*'
-                args.push(0)
+                args.push({type:'Literal',value:0})
             else if quantifier is '+'
-                args.push(1)
+                args.push({type:'Literal',value:1})
             else
                 args = args.concat(quantifier)
             return NewExpression('Repeat', args)
@@ -269,8 +333,8 @@ const grammar = new Grammar(
         new Reference('stringResult')
     )
     reference: new Filter(
-        new Reference('id')
-        (value) -> NewExpression('Reference', [{type:'Literal', value}])
+        new Reference('idLiteral')
+        (value) -> NewExpression('Reference', [value])
     )
     group: new Sequence(
         new Terminal("(")
@@ -321,7 +385,7 @@ const grammar = new Grammar(
         (value) -> NewExpression('Terminal', [value])
     )
     idLiteral: new Filter(new Reference('id'), (value) -> {type:'Literal', value})
-    id: new Terminal(/[a-zA-Z][a-zA-Z0-9_]*/, 'id')
+    id: new Terminal(/[_a-zA-Z][_a-zA-Z0-9]*/)
     integerOrString: new Choice(new Reference('integer'), new Reference('string'))
     integer: new Filter(new Terminal(/[0-9]+/), (value) -> {type:'Literal',value:parseInt(value)})
     string: new Filter(
@@ -333,9 +397,20 @@ const grammar = new Grammar(
     )
     regex: new Filter(new Terminal(/\/(\\.|[^\/])+\//, 'regex'), (value) -> {type:'Literal',value:eval(value)})
     any: new Filter(new Terminal('.'), (value) -> NewExpression('Any'))
-    code: new Filter(
+    code: new Choice(new Reference('ioncode'), new Reference('jscode'))
+    ioncode: new Filter(
+        new Sequence(
+            new Terminal('{')
+            new Reference('jscode')
+            new Terminal('}')
+        )
+            extract: 1
+        (value) -> require('ion').compiler.compile(value)
+    )
+    jscode: new Filter(
         new StringResult(
             new Sequence(
+                whitespace
                 new Terminal('{')
                 new Repeat(
                     new Choice(
@@ -348,7 +423,6 @@ const grammar = new Grammar(
         )
         (value) -> value.trim().slice(1, -1)
     )
-
     crlf: new Choice(
         new Terminal(/\r?\n/, 'crlf')
         new Reference('eof')
@@ -357,15 +431,18 @@ const grammar = new Grammar(
 )
 export grammar
     test: ->
-        let test = ""
-            start = x:"x" y:"y" { return x + "-" + y }
-            foo = a @b
-            bar = a @b c @d e @f
-            baz = $(a b)
-        let result = grammar.parse(test)
-        let escodegen = import './escodegen'
-        console.log('-----------------------------------------------------')
-        console.log(result)
-        console.log('-----------------------------------------------------')
-        # console.log(escodegen.generate(result, {verbatim:'x-verbatim'}))
+        # let fs = require('fs')
+        # console.log(fs.readFileSync('lib/parser.js', 'utf8'))
+
+        # let test = ""
+        #     start = x:"x" y:"y" { return x + "-" + y }
+        #     foo = a @b
+        #     bar = a @b c @d e @f
+        #     baz = $(a b)
+        # let result = grammar.parse(test)
+        # let escodegen = import './escodegen'
         # console.log('-----------------------------------------------------')
+        # console.log(result)
+        # console.log('-----------------------------------------------------')
+        # # console.log(escodegen.generate(result, {verbatim:'x-verbatim'}))
+        # # console.log('-----------------------------------------------------')

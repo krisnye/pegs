@@ -1,14 +1,14 @@
 {
     "name": "pegs",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "main": "lib/index.js",
     "bin": {
         "pegs": "lib/_command.js"
     },
     "scripts": {
         "dev": "npm link ion && npm run build && cd lib && npm link && cd ..",
-        "build": "ion -c",
-        "watch": "ion -w"
+        "build": "ion -c && pegs src/parser.pegs lib/parser.js -b",
+        "watch": "ion -w & pegs src/parser.pegs lib/parser.js -b -w"
     },
     "directories": {
         "lib": "lib",
@@ -21,9 +21,9 @@
         "node": "0.10.x"
     },
     "dependencies": {
-        "ion": "0.9.12+"
     },
     "devDependencies": {
+        "ion": "0.9.12+"
     },
     "author": "Kris Nye",
     "license": "BSD-2-Clause",

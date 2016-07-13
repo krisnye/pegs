@@ -23,6 +23,7 @@ export const
             @index = index ? 0
             @string = @source.substring(@index)
             @state = state ? {}
+            @text = null # the text of the rule just matched
             Object.defineProperty(@, "root", {value:root ? @})
             if not root?
                 @failIndex = -1
@@ -87,12 +88,11 @@ export const
             toString: -> @name
 
     Terminal = class Terminal extends Rule
-        constructor: (text, name) ->
+        constructor: (text) ->
             @stringValue = text.source? ? "/{{text.source}}/" : JSON.stringify(text)
             if text.source?
                 text = new RegExp('^' + text.source)
             @text = text
-            @name = name
         properties:
             parse: (context) ->
                 let text = @text
@@ -183,7 +183,7 @@ export const
                     minimum = context.state[minimum] ? 0
                 let maximum = @maximum
                 if typeof maximum is 'string'
-                    maximum = context.state[maximum] ? Number.MAX_VALUE
+                    maximum = context.state[maximum] ? 0
 
                 let clone = context.clone()
                 let results = null
@@ -280,8 +280,11 @@ export const
             @filter = filter
         properties:
             parse: (context) ->
+                let startIndex = context.index
                 let result = @rule.parse(context)
                 if result isnt undefined
+                    let endIndex = context.index
+                    context.text = context.source.substring(startIndex, endIndex)
                     let customResult = @filter.call(context, result)
                     if customResult isnt undefined
                         result = customResult

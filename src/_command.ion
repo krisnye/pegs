@@ -2,7 +2,6 @@
 
 let fs = import 'fs'
 let path = import 'path'
-let parser = import './parser'
 
 let args = process.argv.slice(2)
 if args.length < 2
@@ -14,12 +13,31 @@ if args.length < 2
     )
     return
 
-let watch = args[2] is '-w'
+let watch = args.indexOf('-w') >= 0
+let boot = args.indexOf('-b') >= 0 # undocumented feature.
 let inputName = args[0]
 let outputName = args[1]
+let parser = import(boot ? './bootstrap' : './parser')
 
-let source = fs.readFileSync(inputName, {encoding:'utf8'})
-let result = parser.parse(source, inputName)
-fs.writeFileSync(outputName, result, {encoding:'utf8'})
-console.log("Writing {{outputName}}")
-console.log(result)
+let build = ->
+    let source = fs.readFileSync(inputName, {encoding:'utf8'})
+    console.log("Generating {{inputName}}")
+    let result = parser.parse(source, inputName)
+    if not fs.existsSync(outputName) or fs.readFileSync(outputName, 'utf8') isnt result
+        fs.writeFileSync(outputName, result, {encoding:'utf8'})
+        console.log("Writing {{outputName}}")
+    # console.log(result)
+
+if watch
+    let trybuild = (event, filename) ->
+        console.log('event', event, new Date().getTime())
+        try
+            build()
+        catch e
+            console.error(e.message)
+    .throttle(2000)
+
+    trybuild()
+    require('fs').watch(inputName, trybuild)
+else
+    build()

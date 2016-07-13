@@ -1,0 +1,225 @@
+{{
+    const
+        escodegen = import './escodegen'
+        # returns a new expression in Mozilla AST format
+        NewExpression = (type, args) -> {type:'NewExpression', callee:{type:'Identifier', name:type}, arguments:args ? []}
+}}
+
+start = grammar
+grammar = code:code? rules:rule+ /[\s\r\n]*/
+    {{
+        let rulesArg =
+            type: 'ObjectExpression'
+            properties: []
+                for [id,expression] in rules
+                    {}
+                        type: 'Property'
+                        key:
+                            type: 'Identifier'
+                            name: id
+                        value: expression
+                        kind: 'init'
+        let grammar = NewExpression('Grammar', [rulesArg])
+        let result =
+            type: 'Program'
+            body: []
+                if code?
+                    {type:'ExpressionStatement', expression:{type:'Literal', "x-verbatim":code}}
+                # insert pegs import bullshit here.
+                {}
+                    type: 'VariableDeclaration'
+                    kind: 'var'
+                    declarations: []
+                        {}
+                            type: 'VariableDeclarator'
+                            id: { type: 'Identifier', name: '_classes_' }
+                            init:
+                                type: 'MemberExpression'
+                                object:
+                                    type: 'CallExpression'
+                                    callee: { type: 'Identifier', name: 'require' }
+                                    arguments: [ {type: 'Literal', value: 'pegs' } ]
+                                property: { type: 'Literal', name: 'classes' }
+                        for id of import './classes'
+                            {}
+                                type: 'VariableDeclarator'
+                                id: { type: 'Identifier', name: id }
+                                init:
+                                    type: 'MemberExpression'
+                                    object: { type: 'Identifier', name: '_classes_' }
+                                    property: { type: 'Identifier', name: id }
+                {}
+                    type: 'ExpressionStatement'
+                    expression:
+                        type: 'AssignmentExpression'
+                        operator: '='
+                        left:
+                            type: 'MemberExpression'
+                            object:
+                                type: 'Identifier'
+                                name: 'module'
+                            property:
+                                type: 'Identifier'
+                                name: 'exports'
+                        right: grammar
+        # return grammar
+        # console.log(JSON.stringify(grammar, null, '  '))
+        return escodegen.generate(result, {verbatim:'x-verbatim'})
+    }}
+
+rule = /\s*/ id:id /\s*/ name:(@string /\s*/)? '=' /\s*/ e:expression
+    {{
+        let expression = e
+        if name?
+            expression =
+                type: 'CallExpression'
+                callee:
+                    type: 'MemberExpression'
+                    object: expression
+                    property:
+                        type: 'Identifier'
+                        name: 'set'
+                arguments: []
+                    {}
+                        type: 'ObjectExpression'
+                        properties: []
+                            {}
+                                type: 'Property'
+                                key:
+                                    type: 'Literal'
+                                    value: 'name'
+                                value: name
+        return [id,expression]        
+    }}
+expression = choice
+choice = first:filter rest:(_ '|' _ @filter)
+    {{
+        if rest.length > 0
+            return NewExpression('Choice', [first].concat(rest))
+        else
+            return first
+    }}
+filter = e:sequence _ code:code?
+    {{
+        if code?
+            let init = ""
+            if e.sequenceLabels?
+                # console.log('sequenceLabels', e.sequenceLabels)
+                init = []
+                    for label in e.sequenceLabels
+                        "var {{label.key.value}} = value.{{label.key.value}}; "
+                .join('')
+
+            return NewExpression('Filter', [e,{"x-verbatim":"function(value){ {{init}}{{code}} }"}])
+        else
+            return e
+    }}
+sequence = first:labeledRepeat rest:(_ @labeledRepeat)*
+    {{
+        if rest.length > 0 or Array.isArray(first)
+            let items = [first].concat(rest)
+            let labels = null
+            let extract = null
+            for item, index in items
+                if Array.isArray(item)
+                    if item[0] is true
+                        if extract?
+                            if not Array.isArray(extract)
+                                extract = [extract]
+                            extract.push(index)
+                        else
+                            extract = index
+                    else
+                        labels ?= []
+                        labels.push({type:'Property',key:item[0],value:{type:'Literal',value:index,kind:'init'}})
+                    items[index] = item[1]
+
+            let result = NewExpression('Sequence', items)
+            if labels?.length > 0 or extract?
+                result =
+                    sequenceLabels: labels
+                    type: 'CallExpression'
+                    callee:
+                        type: 'MemberExpression'
+                        object: result
+                        property:
+                            type: 'Identifier'
+                            name: 'set'
+                    arguments: []
+                        {}
+                            type: 'ObjectExpression'
+                            properties: []
+                                if extract?
+                                    {}
+                                        type: 'Property'
+                                        key:
+                                            type: 'Literal'
+                                            value: 'extract'
+                                        if Array.isArray(extract)
+                                            value:
+                                                type: 'ArrayExpression'
+                                                elements: []
+                                                    for index in extract
+                                                        {type:'Literal',value:index}
+                                        else
+                                            value:
+                                                type: 'Literal'
+                                                value: extract
+                                if labels?.length > 0
+                                    {}
+                                        type: 'Property'
+                                        key:
+                                            type: 'Literal'
+                                            value: 'labels'
+                                        value:
+                                            type: 'ObjectExpression'
+                                            properties: labels
+            return result
+        else
+            return first
+    }}
+labeledRepeat
+    = "@" _ @repeat { return [true, rule] }
+    | id:idLiteral _ ":" _ rule:repeat {{ return [id, rule] }}
+repeat =
+    rule:atomicRule _ quantifier:quantifier?
+    {{
+        if not quantifier?
+            return rule
+        let args = [rule]
+        if quantifier is '?'
+            return NewExpression('Option', args)
+        if quantifier is '*'
+            args.push({type:'Literal',value:0})
+        else if quantifier is '+'
+            args.push({type:'Literal',value:1})
+        else
+            args = args.concat(quantifier)
+        return NewExpression('Repeat', args)
+    }}
+quantifier
+    = "?" | "*" | "+"
+    | ("[" _ min:(integer | string) _ max:("+" | ("-" _ @(integer | string)))? _ "]" { return max == '+' ? [min] : [min, max ? max : min]} )
+atomicRule = terminal | group | any | reference | customPredicate | andPredicate | notPredicate | stringResult
+reference = idLiteral { return NewExpression('Reference', [value])}
+group = "(" _ @expression _ ")"
+customPredicate = "&" _ @code { return NewExpression('CustomPredicate', [{"x-verbatim":"function(){ " + value + "}"}]) }
+andPredicate = "&" _ @atomicRule { return NewExpression('And', [value]) }
+notPredicate = "!" _ @atomicRule { return NewExpression('Not', [value]) }
+stringResult = "$" _ @atomicRule { return NewExpression('StringResult', [value]) }
+terminal = string | regex { return NewExpression('Terminal', [value]) }
+idLiteral = id { return {type:'Literal', value:value}}
+id = /[_a-zA-Z][_a-zA-Z0-9]*/
+integer = /[0-9]+/ { return {type:'Literal',value:parseInt(value)} }
+string
+    = /("([^"\\]*|\\["\/\\bfnrt]|\\u[0-9a-f]{4})*")/
+    | /('([^'\\]*|\\['\/\\bfnrt]|\\u[0-9a-f]{4})*')/
+    { return {type:'Literal', value:eval(value)} }
+regex = /\/(\\.|[^\/])+\// { return {type:'Literal',value:eval(value)} }
+any = '.' { return NewExpression('Any') }
+code = $('{' (/[^{}]+/ | code)* '}')
+
+_ "whitespace" = / *([\r\n]+ +)*/
+eol = /\r?\n/ | eof
+eof = !.
+
