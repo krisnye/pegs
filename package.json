@@ -5,10 +5,11 @@
     "bin": {
         "pegs": "lib/_command.js"
     },
+    "repository": "https://github.com/krisnye/pegs.git",
     "scripts": {
-        "dev": "npm link ion && npm run build && cd lib && npm link && cd ..",
-        "build": "ion -c && pegs src/parser.pegs lib/parser.js -b",
-        "watch": "ion -w & pegs src/parser.pegs lib/parser.js -b -w"
+        "dev": "npm link ion && npm run build && npm link",
+        "build": "ion -c && node lib/_command.js src/parser.pegs lib/parser.js -b",
+        "watch": "ion -w & node lib/_command.js src/parser.pegs lib/parser.js -b -w"
     },
     "directories": {
         "lib": "lib",
@@ -23,7 +24,7 @@
     "dependencies": {
     },
     "devDependencies": {
-        "ion": "0.9.12+"
+        "ion": "*"
     },
     "author": "Kris Nye",
     "license": "BSD-2-Clause",
