@@ -13,17 +13,25 @@ if args.length < 2
     )
     return
 
+
 let watch = args.indexOf('-w') >= 0
 let boot = args.indexOf('-b') >= 0 # undocumented feature.
 let inputName = args[0]
 let outputName = args[1]
 let parser = import(boot ? './bootstrap' : './parser')
 
+let makeParentDir = (outputName) ->
+    let parent = path.dirname(outputName)
+    if not fs.existsSync(parent)
+        makeParentDir(parent)
+        fs.mkdirSync(parent)
+
 let build = ->
     let source = fs.readFileSync(inputName, {encoding:'utf8'})
     console.log("Generating {{inputName}}")
     let result = parser.parse(source, inputName)
     if not fs.existsSync(outputName) or fs.readFileSync(outputName, 'utf8') isnt result
+        makeParentDir(outputName)
         fs.writeFileSync(outputName, result, {encoding:'utf8'})
         console.log("Writing {{outputName}}")
     # console.log(result)

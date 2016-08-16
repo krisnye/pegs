@@ -88,11 +88,13 @@ rule = /\s*/ id:id /\s*/ name:(@string /\s*/)? '=' /\s*/ e:expression
                                 key:
                                     type: 'Literal'
                                     value: 'name'
-                                value: name
+                                value:
+                                    type: 'Literal'
+                                    value: name
         return [id,expression]        
     }}
 expression = choice
-choice = first:filter rest:(_ '|' _ @filter)
+choice = first:filter rest:(_ '|' _ @filter)*
     {{
         if rest.length > 0
             return NewExpression('Choice', [first].concat(rest))
@@ -181,6 +183,7 @@ sequence = first:labeledRepeat rest:(_ @labeledRepeat)*
 labeledRepeat
     = "@" _ @repeat { return [true, rule] }
     | id:idLiteral _ ":" _ rule:repeat {{ return [id, rule] }}
+    | repeat
 repeat =
     rule:atomicRule _ quantifier:quantifier?
     {{
