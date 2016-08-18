@@ -88,9 +88,8 @@ rule = /\s*/ id:id /\s*/ name:(@string /\s*/)? '=' /\s*/ e:expression
                                 key:
                                     type: 'Literal'
                                     value: 'name'
-                                value:
-                                    type: 'Literal'
-                                    value: name
+                                value: name
+            console.log('WHAT THE FUCK PEOPLE? ', name)
         return [id,expression]        
     }}
 expression = choice
@@ -210,13 +209,12 @@ customPredicate = "&" _ @code { return NewExpression('CustomPredicate', [{"x-ver
 andPredicate = "&" _ @atomicRule { return NewExpression('And', [value]) }
 notPredicate = "!" _ @atomicRule { return NewExpression('Not', [value]) }
 stringResult = "$" _ @atomicRule { return NewExpression('StringResult', [value]) }
-terminal = string | regex { return NewExpression('Terminal', [value]) }
+terminal = (string | regex) { return NewExpression('Terminal', [value]) }
 idLiteral = id { return {type:'Literal', value:value}}
 id = /[_a-zA-Z][_a-zA-Z0-9]*/
 integer = /[0-9]+/ { return {type:'Literal',value:parseInt(value)} }
 string
-    = /("([^"\\]*|\\["\/\\bfnrt]|\\u[0-9a-f]{4})*")/
-    | /('([^'\\]*|\\['\/\\bfnrt]|\\u[0-9a-f]{4})*')/
+    = (/("([^"\\]*|\\["\/\\bfnrt]|\\u[0-9a-f]{4})*")/ | /('([^'\\]*|\\['\/\\bfnrt]|\\u[0-9a-f]{4})*')/)
     { return {type:'Literal', value:eval(value)} }
 regex = /\/(\\.|[^\/])+\// { return {type:'Literal',value:eval(value)} }
 any = '.' { return NewExpression('Any') }
