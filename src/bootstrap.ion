@@ -1,3 +1,5 @@
+# this is a grammar parser built using the parser classes directly.
+# it is used to parse the main parser.pegs grammar
 const {Grammar,Filter,Sequence,Reference,Terminal,Option,Repeat,Add,Choice,Not,Any,And,StringResult} = import './classes'
 
 const

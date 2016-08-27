@@ -28,7 +28,7 @@ let makeParentDir = (outputName) ->
 
 let build = ->
     let source = fs.readFileSync(inputName, {encoding:'utf8'})
-    console.log("Generating {{inputName}}")
+    console.log("Generating {{inputName}} -------------------------")
     let result = parser.parse(source, inputName)
     if not fs.existsSync(outputName) or fs.readFileSync(outputName, 'utf8') isnt result
         makeParentDir(outputName)

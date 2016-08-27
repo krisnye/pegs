@@ -195,7 +195,9 @@ export const
                     results ?= []
                     results.push(result)
                     if clone.index is index
-                        throw new Error("Repeating rule did not consume input")
+                        console.warn("Repeating rule did not consume input:" + @rule.toString())
+                        break
+                        # throw new Error("Repeating rule did not consume input:" + @rule.toString())
                 if (results?.length ? 0) >= minimum
                     context.setFrom(clone)
                     return results ? []
@@ -286,7 +288,7 @@ export const
                     let endIndex = context.index
                     context.text = context.source.substring(startIndex, endIndex)
                     let customResult = @filter.call(context, result)
-                    if customResult isnt undefined
+                    if customResult
                         result = customResult
                 return result
             toString: -> "{{@rule}} {{@filter.toString()}}"

@@ -6,7 +6,7 @@
 }}
 
 start = grammar
-grammar = code:code? rules:rule+ /[\s\r\n]*/
+grammar = eol? code:code? eol? rules:rule+ /[\s\r\n]*/
     {{
         let rulesArg =
             type: 'ObjectExpression'
@@ -23,9 +23,6 @@ grammar = code:code? rules:rule+ /[\s\r\n]*/
         let result =
             type: 'Program'
             body: []
-                if code?
-                    {type:'ExpressionStatement', expression:{type:'Literal', "x-verbatim":code}}
-                # insert pegs import bullshit here.
                 {}
                     type: 'VariableDeclaration'
                     kind: 'var'
@@ -62,12 +59,10 @@ grammar = code:code? rules:rule+ /[\s\r\n]*/
                                 type: 'Identifier'
                                 name: 'exports'
                         right: grammar
-        # return grammar
-        # console.log(JSON.stringify(grammar, null, '  '))
-        return escodegen.generate(result, {verbatim:'x-verbatim'})
+        return (code ? "") + escodegen.generate(result, {verbatim:'x-verbatim'})
     }}
 
-rule = /\s*/ id:id /\s*/ name:(@string /\s*/)? '=' /\s*/ e:expression
+rule = /\s*/ id:id /\s*/ name:(@string /\s*/)? '=' /\s*/ e:expression eol
     {{
         let expression = e
         if name?
@@ -89,7 +84,6 @@ rule = /\s*/ id:id /\s*/ name:(@string /\s*/)? '=' /\s*/ e:expression
                                     type: 'Literal'
                                     value: 'name'
                                 value: name
-            console.log('WHAT THE FUCK PEOPLE? ', name)
         return [id,expression]        
     }}
 expression = choice
@@ -180,7 +174,7 @@ sequence = first:labeledRepeat rest:(_ @labeledRepeat)*
             return first
     }}
 labeledRepeat
-    = "@" _ @repeat { return [true, rule] }
+    = "@" _ rule:repeat { return [true, rule] }
     | id:idLiteral _ ":" _ rule:repeat {{ return [id, rule] }}
     | repeat
 repeat =
@@ -220,7 +214,8 @@ regex = /\/(\\.|[^\/])+\// { return {type:'Literal',value:eval(value)} }
 any = '.' { return NewExpression('Any') }
 code = $('{' (/[^{}]+/ | code)* '}')
 
+comment = / *#[^\r\n]*/
 _ "whitespace" = / *([\r\n]+ +)*/
-eol = /\r?\n/ | eof
+eol = eof | (_ comment? (/\r?\n/))+
 eof = !.
 
