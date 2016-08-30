@@ -148,6 +148,8 @@ export const
                         results.push(result)
                 context.setFrom(clone)
                 if results?
+                    if @extract? and @labels?
+                        throw new Error("Rule cannot contain both @ and labels: " + this)
                     if @extract?
                         if Array.isArray(@extract)
                             return [results[index] for index in @extract]
