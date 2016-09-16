@@ -290,7 +290,7 @@ export const
                     let endIndex = context.index
                     context.text = context.source.substring(startIndex, endIndex)
                     let customResult = @filter.call(context, result)
-                    if customResult
+                    if customResult isnt undefined
                         result = customResult
                 return result
             toString: -> "{{@rule}} {{@filter.toString()}}"

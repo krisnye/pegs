@@ -102,10 +102,10 @@ filter = e:sequence _ code:code?
                 # console.log('sequenceLabels', e.sequenceLabels)
                 init = []
                     for label in e.sequenceLabels
-                        "var {{label.key.value}} = value.{{label.key.value}}; "
+                        "var {{label.key.value}} = __value__.{{label.key.value}}; "
                 .join('')
 
-            return NewExpression('Filter', [e,{"x-verbatim":"function(value){ {{init}}{{code}} }"}])
+            return NewExpression('Filter', [e,{"x-verbatim":"function(__value__){ {{init}}{{code}} }"}])
         else
             return e
     }}
