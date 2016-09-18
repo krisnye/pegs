@@ -105,7 +105,7 @@ filter = e:sequence _ code:code?
                         "var {{label.key.value}} = __value__.{{label.key.value}}; "
                 .join('')
 
-            return NewExpression('Filter', [e,{"x-verbatim":"function(__value__){ {{init}}{{code}} }"}])
+            return NewExpression('Filter', [e, {"x-verbatim":"function(__value__){ {{init}}{{code}} }"}])
         else
             return e
     }}
@@ -199,7 +199,7 @@ quantifier
 atomicRule = terminal | group | any | reference | customPredicate | andPredicate | notPredicate | stringResult
 reference = idLiteral { return NewExpression('Reference', [value])}
 group = "(" _ @expression _ ")"
-customPredicate = "&" _ @code { return NewExpression('CustomPredicate', [{"x-verbatim":"function(){ " + value + "}"}]) }
+customPredicate = "&" _ @code { return NewExpression('CustomPredicate', [{"x-verbatim":"function(value){ " + value + "}"}]) }
 andPredicate = "&" _ @atomicRule { return NewExpression('And', [value]) }
 notPredicate = "!" _ @atomicRule { return NewExpression('Not', [value]) }
 stringResult = "$" _ @atomicRule { return NewExpression('StringResult', [value]) }

@@ -140,7 +140,7 @@ export const
                 let clone = context.clone()
                 let results = undefined
                 for rule in @rules
-                    let result = rule.parse(clone)
+                    let result = rule.parse(clone, results ? [])
                     if result is undefined
                         return undefined
                     else
@@ -268,10 +268,10 @@ export const
         constructor: (predicate) ->
             @predicate = predicate
         properties:
-            parse: (context) ->
+            parse: (context, results) ->
                 # must clone since custom code may alter the state and we might need to roll back
                 let clone = context.clone()
-                if @predicate.call(clone) isnt false
+                if @predicate.call(clone, results) isnt false
                     context.setFrom(clone)
                     return null
                 else
