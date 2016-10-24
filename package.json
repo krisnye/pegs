@@ -1,6 +1,6 @@
 {
     "name": "pegs",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "main": "lib/index.js",
     "bin": {
         "pegs": "lib/_command.js"
@@ -27,7 +27,7 @@
         "ion": "*"
     },
     "author": "Kris Nye",
-    "license": "BSD-2-Clause",
+    "license": "MIT",
     "bugs": {
         "url": "https://github.com/krisnye/pegs/issues"
     },
