@@ -1,4 +1,30 @@
 
+const LineColumnCalculator = (input) ->
+    # simple, naive implementation, uses a lot of memory.
+    let lineEnd = "\n".charCodeAt(0)
+    let lineToIndex = [0]
+    let indexToLine = []
+    let lineCount = 0
+    for let i = 0; i < input.length; i++
+        indexToLine[i] = lineCount
+        if input.charCodeAt(i) is lineEnd
+            lineCount++
+            indexToLine.push(i + 1)
+
+    return {}
+        getLine: (index) ->
+            let line = indexToLine[index]
+            if not line?
+                throw new Error("index has no line: " + index)
+            return line
+        getColumn: (index) ->
+            let line = indexToLine[index]
+            let lineStart = lineToIndex[line]
+            if not lineStart?
+                throw new Error("no linestart for line: " + line)
+            let column = index - lineStart
+            return column
+
 export const
     getSourceErrorDetails = (message, source, index, sourceName = 'anonymous') ->
         let errorLines = source.substring(0, index).split(/\r?\n/)
@@ -25,10 +51,17 @@ export const
             @state = state ? {}
             @text = null # the text of the rule just matched
             Object.defineProperty(@, "root", {value:root ? @})
-            if not root?
+            let isRoot = not root?
+            if isRoot
                 @failIndex = -1
                 @failExpecteds = {}
+
         properties:
+            getLineColumnCalculator: -> this.root.lineColumnCalculator ?= LineColumnCalculator(source)
+            line:
+                get: -> @getLineColumnCalculator().getLine(@index)
+            column:
+                get: -> @getLineColumnCalculator().getColumn(@index)
             consume: (count) ->
                 @index += count
                 @string = @source.substring(@index)
@@ -62,12 +95,14 @@ export const
                 return @
 
     Grammar = class Grammar extends Rule
-        constructor: (rules) ->
+        constructor: (rules, globalFilter) ->
             @rules = rules
+            @globalFilter = globalFilter
             for name, rule of rules
                 @start = rule
                 break
         properties:
+            globalFilter: null # filter to apply to result of all filter predicates
             parse: (source, sourceName) ->
                 let context = new Context(@, source)
                 let result = @start.parse(context)
@@ -288,10 +323,14 @@ export const
                 let result = @rule.parse(context)
                 if result isnt undefined
                     let endIndex = context.index
+                    context.start = startIndex
+                    context.end = endIndex
                     context.text = context.source.substring(startIndex, endIndex)
                     let customResult = @filter.call(context, result)
                     if customResult isnt undefined
                         result = customResult
+                        if context.grammar?.globalFilter?
+                            result = context.grammar.globalFilter.call(context, result) ? result
                 return result
             toString: -> "{{@rule}} {{@filter.toString()}}"
 

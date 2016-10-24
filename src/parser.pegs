@@ -6,7 +6,7 @@
 }}
 
 start = grammar
-grammar = eol? code:code? eol? rules:rule+ /[\s\r\n]*/
+grammar = eol? code:code? eol? globalFilter:('*' @code)? eol? rules:rule+ /[\s\r\n]*/
     {{
         let rulesArg =
             type: 'ObjectExpression'
@@ -19,7 +19,7 @@ grammar = eol? code:code? eol? rules:rule+ /[\s\r\n]*/
                             name: id
                         value: expression
                         kind: 'init'
-        let grammar = NewExpression('Grammar', [rulesArg])
+        let grammar = NewExpression('Grammar', globalFilter ? [rulesArg, {"x-verbatim":globalFilter}] : [rulesArg])
         let result =
             type: 'Program'
             body: []
@@ -212,7 +212,8 @@ string
     { return {type:'Literal', value:eval(value)} }
 regex = /\/(\\.|[^\/])+\// { return {type:'Literal',value:eval(value)} }
 any = '.' { return NewExpression('Any') }
-code = $('{' (/[^{}]+/ | code)* '}')
+codeRecursive = $('{' (/[^{}]+/ | codeRecursive)* '}')
+code = value:$(codeRecursive) { return value.substring(1, value.length - 1) }
 
 comment = / *#[^\r\n]*/
 _ "whitespace" = / *([\r\n]+ +)*/
