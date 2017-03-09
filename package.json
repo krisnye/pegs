@@ -1,32 +1,35 @@
 {
     "name": "pegs",
-    "version": "0.0.2",
+    "version": "0.1.0",
     "main": "lib/index.js",
     "bin": {
         "pegs": "lib/_command.js"
     },
     "repository": "https://github.com/krisnye/pegs.git",
     "scripts": {
-        "dev": "npm link ion && npm run build && npm link",
-        "build": "ion -c && node lib/_command.js src/parser.pegs lib/parser.js -b",
-        "watch": "ion -w & node lib/_command.js src/parser.pegs lib/parser.js -b -w"
+        "build": "tsc -p .",
+        "watch": "tsc -p . --watch"
     },
     "directories": {
         "lib": "lib",
         "src": "src"
     },
-    "build": {
-        "package": true
-    },
     "engines": {
         "node": "0.10.x"
     },
-    "dependencies": {
-    },
+    "dependencies": {},
     "devDependencies": {
-        "ion": "*"
+        "typescript": "^2.2.1"
     },
-    "author": "Kris Nye",
+    "author": {
+        "name": "Kris Nye",
+        "email": "krisnye@gmail.com"
+    },
+    "contributors": [
+        {
+            "name": "Kody King"
+        }
+    ],
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/krisnye/pegs/issues"
