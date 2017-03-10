@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "module": "CommonJS",
+        "module": "commonjs",
         "outDir": "lib",
         "noImplicitAny": true,
         "removeComments": true,

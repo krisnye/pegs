@@ -1,7 +1,13 @@
-import SourceLocation from "./SourceLocation"
 
 export default class ParseError {
-    readonly source: string
-    readonly message: string
-    readonly location: SourceLocation
+    expected: string
+    offset: number
+    length: number
+
+    constructor(expected: string, offset: number, length: number = 1) {
+        this.expected = expected
+        this.offset = offset
+        this.length = length
+    }
+
 }
