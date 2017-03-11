@@ -18,16 +18,18 @@ function memoize<O>(fn: (input:string) => O) {
 export class Terminal implements Rule
 {
     success: ParseSuccess
+    error: ParseError
     match: string
     constructor(match: string) {
         this.match = match
         //  we can just cache success since they all look alike
         this.success = new ParseSuccess(this.match.length, this.match)
+        this.error = new ParseError(this.match)
     }
     parse(context: Context) {
         for (let i = 0; i < this.match.length; i++) {
             if (context.source[context.offset + i] !== this.match[i])
-                return new ParseError(this.match, context.offset, context.offset + i)
+                return this.error
         }
         return this.success
     }
