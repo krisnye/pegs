@@ -5,11 +5,39 @@ import Grammar from "./Grammar"
 import Rule from "./Rule"
 import {Terminal, CharRange, Reference, Any, Sequence, Choice, Repeat, Optional, Not} from "./Rules";
 
+function prettyJSON(obj: any) {
+    var result = "";
+    var count = 0;
+    if (Array.isArray(obj)) {
+        result += '[';
+        for (var elem of obj) {
+            if(count > 0)
+                result += ', '
+            result += prettyJSON(elem);
+            count++;
+        }
+        result += ']';
+    } else if (typeof obj === 'object') {
+        result += '{';
+        for (var key in obj) {
+            if(count > 0)
+                result += ', '
+            result += key + ' : ';
+            result += prettyJSON(obj[key]);
+            count++;
+        }
+        result += '}';
+    } else {
+        result += JSON.stringify(obj);
+    }
+    return result;
+}
+
 function testRule(rule: Rule, source: string, pass: boolean = true, grammar: Grammar = new Grammar({})) {
     var ctx = new Context(source, 0, {}, grammar);
     var match = rule.parse(ctx);
-    console.log(source);
-    console.log(JSON.stringify(match));
+    console.log(source)
+    console.log(prettyJSON(match))
     if (pass != (match instanceof ParseSuccess))
         throw new Error("Rule should have " + (pass ? "passed " : "failed ") + "but didn't!");
     console.log("PASSED!\n")

@@ -210,7 +210,7 @@ export class Not implements Rule
     parse(context: Context){
         var match = this.rule.parse(context)
         if (match instanceof ParseSuccess)
-            return new ParseError("Not " + this.rule)
+            return new ParseError("Not " + this.rule, context.offset)
              //todo: Not sure how to get proper expectation here. Perhaps a new Rule.toString() method?
         return new ParseSuccess(0, null)
     }
