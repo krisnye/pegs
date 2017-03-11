@@ -1,13 +1,16 @@
 
 export default class ParseError {
+    //  a description of what we expected to find
     expected: string
-    offset: number
-    length: number
+    //  where we expected to find it at
+    expectedOffset?: number
+    //  how far we did successfully match, this could be farther than the expected offset
+    matchedOffset?: number
 
-    constructor(expected: string, offset: number, length: number = 1) {
+    constructor(expected: string, expectedOffset?: number, matchedOffset?: number) {
         this.expected = expected
-        this.offset = offset
-        this.length = length
+        this.expectedOffset = expectedOffset
+        this.matchedOffset = matchedOffset
     }
 
 }
