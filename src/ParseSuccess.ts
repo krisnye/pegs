@@ -1,5 +1,6 @@
 
 export default class ParseSuccess {
+
     consumed: number
     result: any
     state: object | null

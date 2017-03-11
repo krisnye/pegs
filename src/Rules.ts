@@ -15,12 +15,13 @@ function memoize<O>(fn: (input:string) => O) {
 }
 
 //  tries to match an exact string and return it
-export class Terminal implements Rule
+export class Terminal extends Rule
 {
+    match: string
     success: ParseSuccess
     error: ParseError
-    match: string
     constructor(match: string) {
+        super()
         this.match = match
         //  we can just cache success since they all look alike
         this.success = new ParseSuccess(this.match.length, this.match)
@@ -35,10 +36,11 @@ export class Terminal implements Rule
     }
 }
 
-export class Reference implements Rule
+export class Reference extends Rule
 {
     name: string
     constructor(name: string) {
+        super()
         this.name = name
     }
     parse(context: Context) {
@@ -54,14 +56,14 @@ var anyMemoized = memoize(function(char: string) {
     else
         return new ParseSuccess(1, char)
 })
-export class Any implements Rule
+export class Any extends Rule
 {
     parse(context: Context) {
         return anyMemoized(context.source[context.offset])
     }
 }
 
-export class Sequence implements Rule
+export class Sequence extends Rule
 {
     rules: Rule[] = []
     labels: {[key: number]: string} = {}
@@ -69,6 +71,7 @@ export class Sequence implements Rule
     single: boolean //The output is a single value.
 
     constructor(...params: (string | Rule)[]) {
+        super()
         var ruleIndex = 0;
         this.rules = [];
         for(var part of params) {
@@ -119,11 +122,12 @@ export class Sequence implements Rule
     }
 }
 
-export class Choice implements Rule 
+export class Choice extends Rule 
 {
     rules: Rule[]
 
     constructor(...rules: Rule[]) {
+        super()
         this.rules = rules;
     }
 
@@ -141,11 +145,12 @@ export class Choice implements Rule
     }
 }
 
-export class Optional implements Rule
+export class Optional extends Rule
 {
     rule: Rule
 
     constructor(rule: Rule) {
+        super()
         this.rule = rule;
     }
 
@@ -157,7 +162,7 @@ export class Optional implements Rule
     }
 }
 
-// export class Repeat implements Rule
+// export class Repeat extends Rule
 // {
 //     rule: Rule
 //     min: number
