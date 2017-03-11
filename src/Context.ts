@@ -14,4 +14,8 @@ export default class Context
         this.grammar = grammar
     }
 
+    clone() {
+        return new Context(this.source, this.offset, JSON.parse(JSON.stringify(this.state)), this.grammar);
+    }
+
 }

@@ -5,7 +5,7 @@ export default class ParseError {
     //  offset relative to context.offset
     offset: number
 
-    constructor(expected: string, offset: number = 0) {
+    constructor(expected: string | string[], offset: number = 0) {
         this.expected = expected
         this.offset = offset
     }

@@ -15,32 +15,28 @@ function memoize<O>(fn: (input:string) => O) {
 }
 
 //  tries to match an exact string and return it
-export class Terminal extends Rule
+export class Terminal implements Rule
 {
-    match: string
     success: ParseSuccess
-    error: ParseError
+    match: string
     constructor(match: string) {
-        super()
         this.match = match
         //  we can just cache success since they all look alike
         this.success = new ParseSuccess(this.match.length, this.match)
-        this.error = new ParseError(this.match)
     }
     parse(context: Context) {
         for (let i = 0; i < this.match.length; i++) {
             if (context.source[context.offset + i] !== this.match[i])
-                return this.error
+                return new ParseError(this.match, context.offset + i);
         }
         return this.success
     }
 }
 
-export class Reference extends Rule
+export class Reference implements Rule
 {
     name: string
     constructor(name: string) {
-        super()
         this.name = name
     }
     parse(context: Context) {
@@ -56,113 +52,100 @@ var anyMemoized = memoize(function(char: string) {
     else
         return new ParseSuccess(1, char)
 })
-export class Any extends Rule
+export class Any implements Rule
 {
     parse(context: Context) {
         return anyMemoized(context.source[context.offset])
     }
 }
 
-export class Sequence extends Rule
+export class Sequence implements Rule
 {
     rules: Rule[] = []
-    labels: {[key: number]: string} = {}
-    mapped: boolean //The output is a labeled map of certain parts of the sequence.
-    single: boolean //The output is a single value.
 
-    constructor(...params: (string | Rule)[]) {
-        super()
-        var ruleIndex = 0;
-        this.rules = [];
-        for(var part of params) {
-            if(typeof part === 'string') {
-                this.mapped = true;
-                this.single = part === '@';
-                this.labels[ruleIndex] = part;
-            } else {
-                ruleIndex++;
-                this.rules.push(part);
-            }
-        }
+    constructor(...rules: Rule[]) {
+        this.rules = rules;
     }
 
     parse(context: Context) {
         var consumed = 0;
-        var result;
-        result = this.mapped ? {} : [];
+        var result = [];
 
-        var ruleIndex = 0;
-        for(var rule of this.rules) {
+        context = context.clone();
+        for (var rule of this.rules) {
             var parseResult = rule.parse(context);
 
-            if(parseResult instanceof ParseError)
+            if (parseResult instanceof ParseError)
                 return parseResult;
 
             context.offset += parseResult.consumed;
             consumed += parseResult.consumed;
 
-            if(this.mapped) {
-                var label = this.labels[ruleIndex];
-                if(label !== undefined){
-                    if(this.single)
-                        result = parseResult.result;
-                    else
-                        result[label] = parseResult.result;
-                }
-            } else {
-                result.push(parseResult.result);
-            }
+            result.push(parseResult.result);
 
-            if(parseResult.state != null)
+            if (parseResult.state != null)
                 context.state = parseResult.state;
-
-            ruleIndex++;
         }
+
         return new ParseSuccess(consumed, result, context.state);
     }
 }
 
-export class Choice extends Rule 
+export class Choice implements Rule 
 {
     rules: Rule[]
 
     constructor(...rules: Rule[]) {
-        super()
         this.rules = rules;
     }
 
     parse(context: Context) {
-        var expectations: string[] = [];
+        var errors: ParseError[] = [];
         for(var rule of this.rules) {
             var parseResult = rule.parse(context);
-            if(parseResult instanceof ParseSuccess)
+            if (parseResult instanceof ParseSuccess)
                return parseResult;
             
-            expectations.push(parseResult.expected);
+            errors.push(parseResult);
         }
 
-        return new ParseError(expectations.join(','), context.offset);
+        var maxOffset = 0;
+        for (var error of errors) {
+            if (error.offset > maxOffset)
+                maxOffset = error.offset;
+        }
+
+        var expectations: string[] = [];
+        for (var error of errors) {
+            if (error.offset == maxOffset) {
+                if (typeof error.expected == 'string')
+                    expectations.push(error.expected);
+                else
+                    Array.prototype.push.apply(expectations, error.expected);
+            }
+        }        
+
+        return new ParseError(expectations, maxOffset);
     }
 }
 
-export class Optional extends Rule
+export class Optional implements Rule
 {
     rule: Rule
 
     constructor(rule: Rule) {
-        super()
         this.rule = rule;
     }
 
     parse(context: Context){
         var parseResult = this.rule.parse(context);
-        if(parseResult instanceof ParseSuccess)
+        if (parseResult instanceof ParseSuccess)
             return parseResult;
-        return new ParseSuccess(0, null, context.state);
+        return new ParseSuccess(0, null);
     }
 }
 
-// export class Repeat extends Rule
+// export class Repeat implements Rule
 // {
 //     rule: Rule
 //     min: number
@@ -183,4 +166,4 @@ export class Optional extends Rule
 //             }
 //         }
 //     }
-//}
+// }
