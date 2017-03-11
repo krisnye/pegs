@@ -61,33 +61,33 @@ export class Any implements Rule
 
 export class Sequence implements Rule
 {
-    rules: Rule[] = []
+    rules: Rule[]
 
     constructor(...rules: Rule[]) {
         this.rules = rules;
     }
 
     parse(context: Context) {
+        var contextClone = context.clone();
         var consumed = 0;
         var result = [];
-
-        context = context.clone();
+        
         for (var rule of this.rules) {
-            var parseResult = rule.parse(context);
+            var parseResult = rule.parse(contextClone);
 
             if (parseResult instanceof ParseError)
                 return parseResult;
 
-            context.offset += parseResult.consumed;
+            contextClone.offset += parseResult.consumed;
             consumed += parseResult.consumed;
 
             result.push(parseResult.result);
 
             if (parseResult.state != null)
-                context.state = parseResult.state;
+                contextClone.state = parseResult.state;
         }
 
-        return new ParseSuccess(consumed, result, context.state);
+        return new ParseSuccess(consumed, result, contextClone.state);
     }
 }
 

@@ -4,7 +4,7 @@ import Context from "./Context"
 import Grammar from "./Grammar"
 import {Terminal, Sequence, Choice, Optional} from "./Rules";
 
-var ctx = new Context("bbb", 0, {}, new Grammar({}));
+var ctx = new Context("bbbc", 0, {}, new Grammar({}));
 
 var a = new Terminal("a");
 var b = new Terminal("b");
