@@ -27,9 +27,34 @@ export class Terminal implements Rule
     parse(context: Context) {
         for (let i = 0; i < this.match.length; i++) {
             if (context.source[context.offset + i] !== this.match[i])
-                return new ParseError(this.match, context.offset + i);
+                return new ParseError(this.match, context.offset + i)
         }
         return this.success
+    }
+}
+
+
+//todo: memoize this.
+export class CharRange implements Rule
+{
+    lower: number
+    upper: number
+    expectation: string;
+
+    constructor(lower: string, upper: string) {
+        this.lower = lower.charCodeAt(0)
+        this.upper = upper.charCodeAt(0)
+        if (this.lower > this.upper)
+            throw new Error("Lower and upper characters are in wrong order!")
+        this.expectation = '[' + lower + '-' + upper + ']'
+    }
+
+    parse(context: Context) {
+        var code = context.source.charCodeAt(context.offset);
+        if (this.lower <= code && this.upper >= code)
+            return new ParseSuccess(1, context.source.charAt(context.offset));
+        else
+            return new ParseError(this.expectation, context.offset);
     }
 }
 
@@ -68,26 +93,21 @@ export class Sequence implements Rule
     }
 
     parse(context: Context) {
-        var contextClone = context.clone();
-        var consumed = 0;
-        var result = [];
+        var contextClone = context.clone()
+        var consumed = 0
+        var result = []
         
         for (var rule of this.rules) {
-            var parseResult = rule.parse(contextClone);
+            var match = rule.parse(contextClone)
 
-            if (parseResult instanceof ParseError)
-                return parseResult;
+            if (match instanceof ParseError)
+                return match
 
-            contextClone.offset += parseResult.consumed;
-            consumed += parseResult.consumed;
-
-            result.push(parseResult.result);
-
-            if (parseResult.state != null)
-                contextClone.state = parseResult.state;
+            contextClone.update(match)
+            result.push(match.result)
         }
 
-        return new ParseSuccess(consumed, result, contextClone.state);
+        return new ParseSuccess(contextClone.offset - context.offset, result, contextClone.state)
     }
 }
 
@@ -96,36 +116,70 @@ export class Choice implements Rule
     rules: Rule[]
 
     constructor(...rules: Rule[]) {
-        this.rules = rules;
+        this.rules = rules
     }
 
     parse(context: Context) {
-        var errors: ParseError[] = [];
+        var errors: ParseError[] = []
         for(var rule of this.rules) {
-            var parseResult = rule.parse(context);
-            if (parseResult instanceof ParseSuccess)
-               return parseResult;
+            var match = rule.parse(context)
+            if (match instanceof ParseSuccess)
+               return match
             
-            errors.push(parseResult);
+            errors.push(match)
         }
 
-        var maxOffset = 0;
+        var maxOffset = 0
         for (var error of errors) {
             if (error.offset > maxOffset)
-                maxOffset = error.offset;
+                maxOffset = error.offset
         }
 
-        var expectations: string[] = [];
+        var expectations: string[] = []
         for (var error of errors) {
             if (error.offset == maxOffset) {
                 if (typeof error.expected == 'string')
-                    expectations.push(error.expected);
+                    expectations.push(error.expected)
                 else
-                    Array.prototype.push.apply(expectations, error.expected);
+                    Array.prototype.push.apply(expectations, error.expected)
             }
         }        
 
-        return new ParseError(expectations, maxOffset);
+        return new ParseError(expectations, maxOffset)
+    }
+}
+
+export class Repeat implements Rule
+{
+    rule: Rule
+    min: number
+    max: number
+
+    constructor(rule: Rule, min: number = 0, max: number = Number.MAX_VALUE) {
+        this.rule = rule
+        this.max = max
+        this.min = min
+    }
+
+    parse(context: Context) {
+        var contextClone = context.clone()
+        var matches = 0
+        var result: any[] = []
+
+        while (matches < this.max) {
+            var match = this.rule.parse(contextClone)
+            if (match instanceof ParseSuccess) {
+                matches++
+                contextClone.update(match)
+                result.push(match.result)
+            } else if (matches < this.min) {
+                return match
+            } else {
+                break
+            }
+        }
+
+         return new ParseSuccess(contextClone.offset - context.offset, result, contextClone.state)
     }
 }
 
@@ -134,36 +188,30 @@ export class Optional implements Rule
     rule: Rule
 
     constructor(rule: Rule) {
-        this.rule = rule;
+        this.rule = rule
     }
 
     parse(context: Context){
-        var parseResult = this.rule.parse(context);
-        if (parseResult instanceof ParseSuccess)
-            return parseResult;
-        return new ParseSuccess(0, null);
+        var match = this.rule.parse(context)
+        if (match instanceof ParseSuccess)
+            return match
+        return new ParseSuccess(0, null)
     }
 }
 
-// export class Repeat implements Rule
-// {
-//     rule: Rule
-//     min: number
-//     max: number
+export class Not implements Rule
+{
+    rule: Rule
 
-//     constructor(rule: Rule, min: number = 0, max: number = Number.MAX_VALUE) {
-//         this.rule = rule;
-//         this.max = max;
-//         this.min = min;
-//     }
+    constructor(rule: Rule) {
+        this.rule = rule
+    }
 
-//     parse(context: Context) {
-//         var matches = 0;
-//         while(true) {
-//             var parseResult = this.rule.parse(context);
-//             if(parseResult instanceof ParseSuccess){
-
-//             }
-//         }
-//     }
-// }
+    parse(context: Context){
+        var match = this.rule.parse(context)
+        if (match instanceof ParseSuccess)
+            return new ParseError("Not " + this.rule)
+             //todo: Not sure how to get proper expectation here. Perhaps a new Rule.toString() method?
+        return new ParseSuccess(0, null)
+    }
+}
