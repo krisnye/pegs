@@ -15,14 +15,15 @@ function memoize<O>(fn: (input:string) => O) {
 }
 
 //  tries to match an exact string and return it
-export class Terminal implements Rule
+export class Terminal extends Rule
 {
     success: ParseSuccess
     match: string
     constructor(match: string) {
+        super()
         this.match = match
         //  we can just cache success since they all look alike
-        this.success = new ParseSuccess(this.match.length, this.match)
+        this.success = new ParseSuccess(this, this.match.length, this.match)
     }
     parse(context: Context) {
         for (let i = 0; i < this.match.length; i++) {
@@ -35,33 +36,38 @@ export class Terminal implements Rule
 
 
 //todo: memoize this.
-export class CharRange implements Rule
+export class CharRange extends Rule
 {
     lower: number
     upper: number
-    expectation: string;
 
     constructor(lower: string, upper: string) {
+        super()
         this.lower = lower.charCodeAt(0)
         this.upper = upper.charCodeAt(0)
         if (this.lower > this.upper)
             throw new Error("Lower and upper characters are in wrong order!")
-        this.expectation = '[' + lower + '-' + upper + ']'
     }
 
     parse(context: Context) {
         var code = context.source.charCodeAt(context.offset);
         if (this.lower <= code && this.upper >= code)
-            return new ParseSuccess(1, context.source.charAt(context.offset));
+            return new ParseSuccess(this, 1, context.source.charAt(context.offset));
         else
-            return new ParseError(this.expectation, context.offset);
+            return new ParseError(this, context.offset);
     }
+
+    toString(): string {
+        return this.label || '[' + this.lower + '-' + this.upper + ']'
+    }
+
 }
 
-export class Reference implements Rule
+export class Reference extends Rule
 {
     name: string
     constructor(name: string) {
+        super()
         this.name = name
     }
     parse(context: Context) {
@@ -71,24 +77,20 @@ export class Reference implements Rule
 
 }
 
-var anyMemoized = memoize(function(char: string) {
-    if (char == null)
-        return new ParseError("<any>")
-    else
-        return new ParseSuccess(1, char)
-})
-export class Any implements Rule
+var anyMemoized = memoize((char: string) => char == null ? new ParseError("any character", 0, "end of file") : new ParseSuccess("any character", 1, char))
+export class Any extends Rule
 {
     parse(context: Context) {
         return anyMemoized(context.source[context.offset])
     }
 }
 
-export class Sequence implements Rule
+export class Sequence extends Rule
 {
     rules: Rule[]
 
-    constructor(...rules: Rule[]) {
+    constructor(rules: Rule[]) {
+        super()
         this.rules = rules;
     }
 
@@ -107,15 +109,16 @@ export class Sequence implements Rule
             result.push(match.result)
         }
 
-        return new ParseSuccess(contextClone.offset - context.offset, result, contextClone.state)
+        return new ParseSuccess(this, contextClone.offset - context.offset, result, contextClone.state)
     }
 }
 
-export class Choice implements Rule 
+export class Choice extends Rule 
 {
     rules: Rule[]
 
-    constructor(...rules: Rule[]) {
+    constructor(rules: Rule[]) {
+        super()
         this.rules = rules
     }
 
@@ -149,13 +152,14 @@ export class Choice implements Rule
     }
 }
 
-export class Repeat implements Rule
+export class Repeat extends Rule
 {
     rule: Rule
     min: number
     max: number
 
     constructor(rule: Rule, min: number = 0, max: number = Number.MAX_VALUE) {
+        super()
         this.rule = rule
         this.max = max
         this.min = min
@@ -179,39 +183,45 @@ export class Repeat implements Rule
             }
         }
 
-         return new ParseSuccess(contextClone.offset - context.offset, result, contextClone.state)
+        return new ParseSuccess(this, contextClone.offset - context.offset, result, contextClone.state)
     }
 }
 
-export class Optional implements Rule
+export class Optional extends Rule
 {
     rule: Rule
 
     constructor(rule: Rule) {
+        super()
         this.rule = rule
     }
 
-    parse(context: Context){
+    parse(context: Context) {
         var match = this.rule.parse(context)
         if (match instanceof ParseSuccess)
             return match
-        return new ParseSuccess(0, null)
+        return new ParseSuccess(this, 0, null)
+    }
+
+    toString(): string {
+        return this.label || "(" + this.rule + ")?"
     }
 }
 
-export class Not implements Rule
+export class Not extends Rule
 {
     rule: Rule
 
     constructor(rule: Rule) {
+        super()
         this.rule = rule
     }
 
     parse(context: Context){
         var match = this.rule.parse(context)
         if (match instanceof ParseSuccess)
-            return new ParseError("Not " + this.rule, context.offset)
-             //todo: Not sure how to get proper expectation here. Perhaps a new Rule.toString() method?
-        return new ParseSuccess(0, null)
+            return new ParseError(null, context.offset, )
+             // todo: Not sure how to get proper expectation here. Perhaps a new Rule.toString() method?
+        return new ParseSuccess(this, 0, null)
     }
 }

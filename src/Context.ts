@@ -21,7 +21,7 @@ export default class Context
 
     update(match: ParseSuccess) {
         this.offset += match.consumed;
-        if(match.state != null)
+        if (match.state != null)
             this.state = match.state;
     }
 
