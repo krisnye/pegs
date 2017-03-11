@@ -89,7 +89,7 @@ export class Sequence extends Rule
 {
     rules: Rule[]
 
-    constructor(rules: Rule[]) {
+    constructor(...rules: Rule[]) {
         super()
         this.rules = rules;
     }
@@ -117,7 +117,7 @@ export class Choice extends Rule
 {
     rules: Rule[]
 
-    constructor(rules: Rule[]) {
+    constructor(...rules: Rule[]) {
         super()
         this.rules = rules
     }
