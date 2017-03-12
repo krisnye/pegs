@@ -232,9 +232,9 @@ export class Extract extends Rule {
     index: number
 
     constructor(sequence: Sequence, index:number) {
-        super()
         if (index < 0 || index >= sequence.rules.length)
             throw new Error("Invalid index: " + index)
+        super()
         this.sequence = sequence
         this.index = index
     }
