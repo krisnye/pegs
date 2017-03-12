@@ -23,7 +23,8 @@ export class Terminal extends Rule
         super()
         this.match = match
         //  we can just cache success since they all look alike
-        this.success = new ParseSuccess(this, this.match.length, this.match)
+        //  using Object.defineProperty so it's not enumerable
+        Object.defineProperty(this, 'success', {value: new ParseSuccess(this, this.match.length, this.match)})
     }
     parse(context: Context) {
         for (let i = 0; i < this.match.length; i++) {
@@ -217,11 +218,10 @@ export class Not extends Rule
         this.rule = rule
     }
 
-    parse(context: Context){
+    parse(context: Context) {
         var match = this.rule.parse(context)
         if (match instanceof ParseSuccess)
-            return new ParseError(null, context.offset, )
-             // todo: Not sure how to get proper expectation here. Perhaps a new Rule.toString() method?
+            return new ParseError(null, context.offset, this.rule)
         return new ParseSuccess(this, 0, null)
     }
 }

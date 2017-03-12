@@ -1,11 +1,11 @@
-import ParseError from "./ParseError"
-import ParseSuccess from "./ParseSuccess"
-import Context from "./Context"
-import Grammar from "./Grammar"
-import Rule from "./Rule"
-import {Terminal, CharRange, Reference, Any, Sequence, Choice, Repeat, Optional, Not} from "./Rules";
+const ParseError = require("../lib/ParseError").default
+const ParseSuccess = require("../lib/ParseSuccess").default
+const Context = require("../lib/Context").default
+const Grammar = require("../lib/Grammar").default
+const Rule = require("../lib/Rule").default
+const {Terminal, CharRange, Reference, Any, Sequence, Choice, Repeat, Optional, Not} = require("../lib/Rules")
 
-function prettyJSON(obj: any) {
+function prettyJSON(obj) {
     var result = "";
     var count = 0;
     if (Array.isArray(obj)) {
@@ -33,11 +33,11 @@ function prettyJSON(obj: any) {
     return result;
 }
 
-function testRule(rule: Rule, source: string, pass: boolean = true, grammar: Grammar = new Grammar({})) {
+function testRule(rule, source, pass = true, grammar = new Grammar({})) {
     var ctx = new Context(source, 0, {}, grammar);
     var match = rule.parse(ctx);
     console.log(source)
-    console.log(prettyJSON(match))
+    console.log(match.toString())
     if (pass != (match instanceof ParseSuccess))
         throw new Error("Rule should have " + (pass ? "passed " : "failed ") + "but didn't!");
     console.log("PASSED!\n")
@@ -54,7 +54,7 @@ var number = new Repeat(num, 1)
 var mws = new Repeat(ws, 1)
 var end = new Not(new Any())
 var comma = new Terminal(',')
-function makeListRule(rule: Rule) {
+function makeListRule(rule) {
     return new Sequence(
     rule,
      new Repeat(
@@ -67,6 +67,7 @@ function makeListRule(rule: Rule) {
 ctx.source = "abc 123"
 var test = new Sequence(word, mws, number, end)
 testRule(test, "abc 123");
+
 testRule(test, "abc 123!", false);
 
 test = new Sequence(makeListRule(number), end)
