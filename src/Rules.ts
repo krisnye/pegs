@@ -21,7 +21,27 @@ function advance(context: Context, success: ParseSuccess) {
             context.state = success.state;
 }
 
-//  tries to match an exact string and return it
+//  creates a function that will extract named rules out into local variables for use by the function body
+function createFunctionFromBody(rules:Rule[], body: string): (context:Context, values:[any]) => object {
+    let namesToIndexes: {[name:string]:number} = {}
+    for (let i = 0; i < rules.length; i++)
+    {
+        let name = rules[i].name
+        if (name != null)
+            namesToIndexes[name] = i
+    }
+    let localVariables = Object.keys(namesToIndexes).map(
+        (name) => {
+            let index = namesToIndexes[name]
+            return "let " + name + " = __values[" + index + "]"
+        }
+    ).join(";\n")
+
+    let functionText = "(function(__context, __values) {" + localVariables + ";\n" + body + "})"
+    return eval(functionText)
+}
+
+//  tries to match an exact string AndPredicate return it
 export class Terminal extends Rule
 {
     success: ParseSuccess
@@ -54,7 +74,7 @@ export class CharRange extends Rule
         this.lower = lower.charCodeAt(0)
         this.upper = upper.charCodeAt(0)
         if (this.lower > this.upper)
-            throw new Error("Lower and upper characters are in wrong order!")
+            throw new Error("Lower AndPredicate upper characters are in wrong order!")
     }
 
     parse(context: Context) {
@@ -103,10 +123,14 @@ export class Sequence extends Rule
     }
 
     parse(context: Context) {
-        let contextClone = context.clone()
         let consumed = 0
-        let result = []
+        let values: any[] = []
+        let contextClone = context.clone()
+        //  these additional context properties are present while parsing a sequence, used by CustomPredicate
+        contextClone.rules = this.rules
+        contextClone.values = values
         
+        let index = 0
         for (let rule of this.rules) {
             let p = rule.parse(contextClone)
 
@@ -114,10 +138,11 @@ export class Sequence extends Rule
                 return p
 
             advance(contextClone, p);
-            result.push(p.value)
+            values.push(p.value)
+            index++
         }
 
-        return new ParseSuccess(this, contextClone.offset - context.offset, result, contextClone.state)
+        return new ParseSuccess(this, contextClone.offset - context.offset, values, contextClone.state)
     }
 }
 
@@ -216,7 +241,7 @@ export class Optional extends Rule
     }
 }
 
-export class Not extends Rule
+export class NotPredicate extends Rule
 {
     rule: Rule
 
@@ -229,7 +254,59 @@ export class Not extends Rule
         let p = this.rule.parse(context)
         if (p instanceof ParseSuccess)
             return new ParseError(null, context.offset, this.rule)
+        //  NotPredicate rule does not consume any input or return any value
         return new ParseSuccess(this, 0, null)
+    }
+
+    toString() {
+        return "!" + this.rule
+    }
+}
+
+export class AndPredicate extends Rule
+{
+    rule: Rule
+
+    constructor(rule: Rule) {
+        super()
+        this.rule = rule
+    }
+
+    parse(context: Context) {
+        let p = this.rule.parse(context)
+        if (p instanceof ParseSuccess) {
+            //  AndPredicate rule does not consume any input or return any value
+            return new ParseSuccess(this.rule, 0, null)
+        }
+        return p
+    }
+
+    toString() {
+        return "&" + this.rule
+    }
+}
+
+//  Returns the raw string value of the matched rule
+export class StringValue extends Rule
+{
+    rule: Rule
+
+    constructor(rule: Rule) {
+        super()
+        this.rule = rule
+    }
+
+    parse(context: Context) {
+        let p = this.rule.parse(context)
+        if (p instanceof ParseSuccess) {
+            let stringValue = context.source.substring(context.offset, context.offset + p.consumed)
+            return new ParseSuccess(p.found, p.consumed, stringValue)
+        }
+        return p
+    }
+
+    toString() {
+        return "$" + this.rule
     }
 }
 
@@ -255,7 +332,6 @@ export class Extract extends Rule {
 
 }
 
-
 export class Action extends Rule {
 
     sequence: Sequence
@@ -265,27 +341,8 @@ export class Action extends Rule {
         super()
         this.sequence = sequence
         if (typeof handler == 'string')
-            handler = this.createFunctionFromBody(handler)
+            handler = createFunctionFromBody(sequence.rules, handler)
         this.handler = handler
-    }
-
-    createFunctionFromBody(body: string): (context:Context, values:[any]) => object {
-        let namesToIndexes: {[name:string]:number} = {}
-        for (let i = 0; i < this.sequence.rules.length; i++)
-        {
-            let name = this.sequence.rules[i].name
-            if (name != null)
-                namesToIndexes[name] = i
-        }
-        let localVariables = Object.keys(namesToIndexes).map(
-            (name) => {
-                let index = namesToIndexes[name]
-                return "let " + name + " = __values[" + index + "]"
-            }
-        ).join(";\n")
-
-        let functionText = "(function(__context, __values) {" + localVariables + ";\n" + body + "})"
-        return eval(functionText)
     }
 
     parse(context:Context) {
@@ -297,4 +354,33 @@ export class Action extends Rule {
         return p
     }
 
+}
+
+export class CustomPredicate extends Rule
+{
+
+    handlerBody: string
+    handlerFunction: (context:Context, values:any[]) => any
+
+    constructor(handlerBody: string) {
+        super()
+        this.handlerBody = handlerBody
+    }
+
+    parse(context: Context) {
+        if (context.rules == null || context.values == null)
+            throw new Error("CustomPredicate requires context.rules and context.values")
+
+        if (this.handlerFunction == null) {
+            let precedingRules = context.rules.slice(0, context.values.length)
+            this.handlerFunction = createFunctionFromBody(precedingRules, this.handlerBody)
+        }
+        if (this.handlerFunction(context, context.values))
+            return new ParseSuccess(this, 0, null)
+        return new ParseError(this, 0)
+    }
+
+    toString() {
+        return "&{" + this.handlerBody + "}"
+    }
 }

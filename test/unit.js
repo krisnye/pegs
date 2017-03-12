@@ -3,7 +3,7 @@ const ParseSuccess = require("../lib/ParseSuccess").default
 const Context = require("../lib/Context").default
 const Grammar = require("../lib/Grammar").default
 const Rule = require("../lib/Rule").default
-const {Terminal, CharRange, Reference, Any, Sequence, Choice, Repeat, Optional, Not, Extract, Action} = require("../lib/Rules")
+const {Terminal, CharRange, Reference, Any, Sequence, Choice, Repeat, Optional, NotPredicate, Extract, Action, StringValue, CustomPredicate} = require("../lib/Rules")
 
 function testRule(rule, source, pass = true, value, grammar = new Grammar({})) {
     var ctx = new Context(grammar, source, 0, {});
@@ -25,7 +25,7 @@ var ws = new Terminal(" ")
 var word = new Repeat(alpha, 1)
 var number = new Repeat(num, 1)
 var mws = new Repeat(ws, 1)
-var end = new Not(new Any())
+var end = new NotPredicate(new Any())
 var comma = new Terminal(',')
 function makeListRule(rule) {
     return new Sequence(
@@ -57,11 +57,37 @@ test = new Sequence(new Reference("list"), end);
 testRule(test, "[1,[2,3],[4,[5]]]", true, null, grammar)
 testRule(test, "[1,[2,3],[4,[5]]]]", false, null, grammar)
 
+//  Extract
 test = new Extract(new Sequence(new Terminal("a"), new Terminal("b"), new Terminal("c")), 1)
 testRule(test, "abc", true, "b")
 
+//  Action
 test = new Action(
     new Sequence(new Terminal("a").setName("alpha"), new Terminal("b"), new Terminal("c").setName("charlie")),
     "return alpha + charlie"
 )
 testRule(test, "abc", true, "ac")
+
+//  StringValue
+// now wrap that previous test in a string value
+test = new StringValue(test)
+testRule(test, "abc", true, "abc")
+
+//  CustomPredicate
+test = new Sequence(
+    new Terminal("a").setName("alpha"),
+    new Terminal("b").setName("bravo"),
+    //  we check that alpha and bravo are present and that charlie is not defined since it isn't a preceding rule
+    new CustomPredicate("return alpha == 'a' && bravo == 'b' && typeof charlie == 'undefined'"),
+    new Terminal("c").setName("charlie")
+)
+
+testRule(test, "abc", true, ["a","b", null, "c"])
+
+test = new Sequence(
+    new Terminal("a").setName("alpha"),
+    new Terminal("b").setName("bravo"),
+    new CustomPredicate("return alpha == bravo"),
+    new Terminal("c").setName("charlie")
+)
+testRule(test, "abc", false)
