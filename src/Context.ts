@@ -18,11 +18,4 @@ export default class Context
     clone() {
         return new Context(this.source, this.offset, JSON.parse(JSON.stringify(this.state)), this.grammar);
     }
-
-    update(match: ParseSuccess) {
-        this.offset += match.consumed;
-        if (match.state != null)
-            this.state = match.state;
-    }
-
 }
