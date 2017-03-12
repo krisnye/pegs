@@ -245,4 +245,5 @@ export class Extract extends Rule {
             p = new ParseSuccess(p.found, p.consumed, p.value[this.index], p.state)
         return p
     }
+
 }

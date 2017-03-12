@@ -3,15 +3,17 @@ const ParseSuccess = require("../lib/ParseSuccess").default
 const Context = require("../lib/Context").default
 const Grammar = require("../lib/Grammar").default
 const Rule = require("../lib/Rule").default
-const {Terminal, CharRange, Reference, Any, Sequence, Choice, Repeat, Optional, Not} = require("../lib/Rules")
+const {Terminal, CharRange, Reference, Any, Sequence, Choice, Repeat, Optional, Not, Extract} = require("../lib/Rules")
 
-function testRule(rule, source, pass = true, grammar = new Grammar({})) {
+function testRule(rule, source, pass = true, value, grammar = new Grammar({})) {
     var ctx = new Context(source, 0, {}, grammar);
     var match = rule.parse(ctx);
     console.log(source)
     console.log(match.toString())
     if (pass != (match instanceof ParseSuccess))
         throw new Error("Rule should have " + (pass ? "passed " : "failed ") + "but didn't!");
+    if (value != null && JSON.stringify(match.value) != JSON.stringify(value))
+        throw new Error("Rule value should have been " + JSON.stringify(value) + "but was " + JSON.stringify(match.value));
     console.log("PASSED!\n")
 }
 
@@ -27,12 +29,14 @@ var end = new Not(new Any())
 var comma = new Terminal(',')
 function makeListRule(rule) {
     return new Sequence(
-    rule,
-     new Repeat(
-         new Sequence(
-             comma,
-             rule
-         )))
+        rule,
+        new Repeat(
+            new Sequence(
+                comma,
+                rule
+            )
+        )
+    )
 }
 
 var test = new Sequence(word, mws, number, end)
@@ -50,5 +54,8 @@ var grammar = new Grammar({
     "value" : new Choice(number, new Reference("list"))
 });
 test = new Sequence(new Reference("list"), end);
-testRule(test, "[1,[2,3],[4,[5]]]", true, grammar)
-testRule(test, "[1,[2,3],[4,[5]]]]", false, grammar)
+testRule(test, "[1,[2,3],[4,[5]]]", true, null, grammar)
+testRule(test, "[1,[2,3],[4,[5]]]]", false, null, grammar)
+
+test = new Extract(new Sequence(new Terminal("a"), new Terminal("b"), new Terminal("c")), 1)
+testRule(test, "abc", true, "b")
