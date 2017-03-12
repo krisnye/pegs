@@ -247,3 +247,47 @@ export class Extract extends Rule {
     }
 
 }
+
+
+export class Action extends Rule {
+
+    sequence: Sequence
+    handler: (context:Context, values:[any]) => object
+
+    constructor(sequence: Sequence, handler: string | ((context:Context, values:[any]) => object)) {
+        super()
+        this.sequence = sequence
+        if (typeof handler == 'string')
+            handler = this.createFunctionFromBody(handler)
+        this.handler = handler
+    }
+
+    createFunctionFromBody(body: string): (context:Context, values:[any]) => object {
+        let namesToIndexes: {[name:string]:number} = {}
+        for (let i = 0; i < this.sequence.rules.length; i++)
+        {
+            let name = this.sequence.rules[i].name
+            if (name != null)
+                namesToIndexes[name] = i
+        }
+        let localVariables = Object.keys(namesToIndexes).map(
+            (name) => {
+                let index = namesToIndexes[name]
+                return "let " + name + " = __values[" + index + "]"
+            }
+        ).join(";\n")
+
+        let functionText = "(function(__context, __values) {" + localVariables + ";\n" + body + "})"
+        return eval(functionText)
+    }
+
+    parse(context:Context) {
+        let p = this.sequence.parse(context)
+        if (p instanceof ParseSuccess) {
+            let value = this.handler(context, p.value as [any])
+            p = new ParseSuccess(p.found, p.consumed, value, p.state)
+        }
+        return p
+    }
+
+}

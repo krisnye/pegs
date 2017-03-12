@@ -3,7 +3,7 @@ const ParseSuccess = require("../lib/ParseSuccess").default
 const Context = require("../lib/Context").default
 const Grammar = require("../lib/Grammar").default
 const Rule = require("../lib/Rule").default
-const {Terminal, CharRange, Reference, Any, Sequence, Choice, Repeat, Optional, Not, Extract} = require("../lib/Rules")
+const {Terminal, CharRange, Reference, Any, Sequence, Choice, Repeat, Optional, Not, Extract, Action} = require("../lib/Rules")
 
 function testRule(rule, source, pass = true, value, grammar = new Grammar({})) {
     var ctx = new Context(source, 0, {}, grammar);
@@ -15,6 +15,11 @@ function testRule(rule, source, pass = true, value, grammar = new Grammar({})) {
     if (value != null && JSON.stringify(match.value) != JSON.stringify(value))
         throw new Error("Rule value should have been " + JSON.stringify(value) + "but was " + JSON.stringify(match.value));
     console.log("PASSED!\n")
+}
+
+function name(rule, name) {
+    rule.name = name
+    return rule
 }
 
 var alphaLower = new CharRange('a', 'z')
@@ -59,3 +64,9 @@ testRule(test, "[1,[2,3],[4,[5]]]]", false, null, grammar)
 
 test = new Extract(new Sequence(new Terminal("a"), new Terminal("b"), new Terminal("c")), 1)
 testRule(test, "abc", true, "b")
+
+test = new Action(
+    new Sequence(name(new Terminal("a"), "alpha"), new Terminal("b"), name(new Terminal("c"), "charlie")),
+    "return alpha + charlie"
+)
+testRule(test, "abc", true, "ac")
