@@ -51,7 +51,7 @@ export class CharRange extends Rule
     }
 
     parse(context: Context) {
-        var code = context.source.charCodeAt(context.offset);
+        let code = context.source.charCodeAt(context.offset);
         if (this.lower <= code && this.upper >= code)
             return new ParseSuccess(this, 1, context.source.charAt(context.offset));
         else
@@ -78,7 +78,7 @@ export class Reference extends Rule
 
 }
 
-var anyMemoized = memoize((char: string) => char == null ? new ParseError("any character", 0, "end of file") : new ParseSuccess("any character", 1, char))
+let anyMemoized = memoize((char: string) => char == null ? new ParseError("any character", 0, "end of file") : new ParseSuccess("any character", 1, char))
 export class Any extends Rule
 {
     parse(context: Context) {
@@ -96,18 +96,18 @@ export class Sequence extends Rule
     }
 
     parse(context: Context) {
-        var contextClone = context.clone()
-        var consumed = 0
-        var result = []
+        let contextClone = context.clone()
+        let consumed = 0
+        let result = []
         
-        for (var rule of this.rules) {
-            var match = rule.parse(contextClone)
+        for (let rule of this.rules) {
+            let p = rule.parse(contextClone)
 
-            if (match instanceof ParseError)
-                return match
+            if (p instanceof ParseError)
+                return p
 
-            contextClone.update(match)
-            result.push(match.value)
+            contextClone.update(p)
+            result.push(p.value)
         }
 
         return new ParseSuccess(this, contextClone.offset - context.offset, result, contextClone.state)
@@ -124,23 +124,23 @@ export class Choice extends Rule
     }
 
     parse(context: Context) {
-        var errors: ParseError[] = []
-        for(var rule of this.rules) {
-            var match = rule.parse(context)
-            if (match instanceof ParseSuccess)
-               return match
+        let errors: ParseError[] = []
+        for(let rule of this.rules) {
+            let p = rule.parse(context)
+            if (p instanceof ParseSuccess)
+               return p
             
-            errors.push(match)
+            errors.push(p)
         }
 
-        var maxOffset = 0
-        for (var error of errors) {
+        let maxOffset = 0
+        for (let error of errors) {
             if (error.offset > maxOffset)
                 maxOffset = error.offset
         }
 
-        var expectations: string[] = []
-        for (var error of errors) {
+        let expectations: string[] = []
+        for (let error of errors) {
             if (error.offset == maxOffset) {
                 if (typeof error.expected == 'string')
                     expectations.push(error.expected)
@@ -167,18 +167,18 @@ export class Repeat extends Rule
     }
 
     parse(context: Context) {
-        var contextClone = context.clone()
-        var matches = 0
-        var result: any[] = []
+        let contextClone = context.clone()
+        let matches = 0
+        let result: any[] = []
 
         while (matches < this.max) {
-            var match = this.rule.parse(contextClone)
-            if (match instanceof ParseSuccess) {
+            let p = this.rule.parse(contextClone)
+            if (p instanceof ParseSuccess) {
                 matches++
-                contextClone.update(match)
-                result.push(match.value)
+                contextClone.update(p)
+                result.push(p.value)
             } else if (matches < this.min) {
-                return match
+                return p
             } else {
                 break
             }
@@ -198,9 +198,9 @@ export class Optional extends Rule
     }
 
     parse(context: Context) {
-        var match = this.rule.parse(context)
-        if (match instanceof ParseSuccess)
-            return match
+        let p = this.rule.parse(context)
+        if (p instanceof ParseSuccess)
+            return p
         return new ParseSuccess(this, 0, null)
     }
 
@@ -219,8 +219,8 @@ export class Not extends Rule
     }
 
     parse(context: Context) {
-        var match = this.rule.parse(context)
-        if (match instanceof ParseSuccess)
+        let p = this.rule.parse(context)
+        if (p instanceof ParseSuccess)
             return new ParseError(null, context.offset, this.rule)
         return new ParseSuccess(this, 0, null)
     }
