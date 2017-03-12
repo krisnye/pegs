@@ -1,8 +1,9 @@
 import Context from "./Context"
 import ParseError from "./ParseError"
 import ParseSuccess from "./ParseSuccess"
+import BaseObject from "./BaseObject"
 
-abstract class Rule {
+abstract class Rule extends BaseObject {
 
     //  The identifier name of this rule. must be a valid identifier
     name: string | undefined = undefined

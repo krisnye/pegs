@@ -1,5 +1,6 @@
+import BaseObject from "./BaseObject"
 
-export default class ParseSuccess {
+export default class ParseSuccess extends BaseObject {
 
     //  found is an object that you can call .toString() on to get a description of what was found
     //  it is only used for error handling and debugging
@@ -9,6 +10,7 @@ export default class ParseSuccess {
     state: object | null
 
     constructor(found: object | string, consumed: number, result: any, state: object | null = null) {
+        super()
         this.found = found
         this.consumed = consumed
         this.result = result
