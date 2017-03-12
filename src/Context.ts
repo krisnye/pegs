@@ -8,14 +8,14 @@ export default class Context
     state: object = {}
     grammar: Grammar
 
-    constructor(source: string, offset: number, state: object, grammar: Grammar) {
+    constructor(grammar: Grammar, source: string, offset: number, state: object = {}) {
+        this.grammar = grammar
         this.source = source
         this.offset = offset
         this.state = state
-        this.grammar = grammar
     }
 
     clone() {
-        return new Context(this.source, this.offset, JSON.parse(JSON.stringify(this.state)), this.grammar);
+        return new Context(this.grammar, this.source, this.offset, JSON.parse(JSON.stringify(this.state)));
     }
 }

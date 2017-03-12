@@ -6,7 +6,7 @@ const Rule = require("../lib/Rule").default
 const {Terminal, CharRange, Reference, Any, Sequence, Choice, Repeat, Optional, Not, Extract, Action} = require("../lib/Rules")
 
 function testRule(rule, source, pass = true, value, grammar = new Grammar({})) {
-    var ctx = new Context(source, 0, {}, grammar);
+    var ctx = new Context(grammar, source, 0, {});
     var match = rule.parse(ctx);
     console.log(source)
     console.log(match.toString())
@@ -17,7 +17,7 @@ function testRule(rule, source, pass = true, value, grammar = new Grammar({})) {
     console.log("PASSED!\n")
 }
 
-function name(rule, name) {
+function name(name, rule) {
     rule.name = name
     return rule
 }
@@ -50,14 +50,15 @@ testRule(test, "abc 123!", false);
 
 testRule(new Sequence(makeListRule(number), end), "1,2,3,4,5");
 
-var grammar = new Grammar({
-    "list" : new Sequence(
-        new Terminal('['),
-        makeListRule(new Reference("value")),
-        new Terminal(']')
-        ),
-    "value" : new Choice(number, new Reference("list"))
-});
+var grammar = new Grammar([
+    name("list", new Sequence(
+            new Terminal('['),
+            makeListRule(new Reference("value")),
+            new Terminal(']')
+        )
+    ),
+    name("value", new Choice(number, new Reference("list")))
+]);
 test = new Sequence(new Reference("list"), end);
 testRule(test, "[1,[2,3],[4,[5]]]", true, null, grammar)
 testRule(test, "[1,[2,3],[4,[5]]]]", false, null, grammar)
@@ -66,7 +67,7 @@ test = new Extract(new Sequence(new Terminal("a"), new Terminal("b"), new Termin
 testRule(test, "abc", true, "b")
 
 test = new Action(
-    new Sequence(name(new Terminal("a"), "alpha"), new Terminal("b"), name(new Terminal("c"), "charlie")),
+    new Sequence(name("alpha", new Terminal("a")), new Terminal("b"), name("charlie", new Terminal("c"))),
     "return alpha + charlie"
 )
 testRule(test, "abc", true, "ac")
