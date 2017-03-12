@@ -17,11 +17,6 @@ function testRule(rule, source, pass = true, value, grammar = new Grammar({})) {
     console.log("PASSED!\n")
 }
 
-function name(name, rule) {
-    rule.name = name
-    return rule
-}
-
 var alphaLower = new CharRange('a', 'z')
 var alphaUpper = new CharRange('A', 'Z')
 var alpha = new Choice(alphaLower, alphaUpper)
@@ -51,13 +46,12 @@ testRule(test, "abc 123!", false);
 testRule(new Sequence(makeListRule(number), end), "1,2,3,4,5");
 
 var grammar = new Grammar([
-    name("list", new Sequence(
-            new Terminal('['),
-            makeListRule(new Reference("value")),
-            new Terminal(']')
-        )
-    ),
-    name("value", new Choice(number, new Reference("list")))
+    new Sequence(
+        new Terminal('['),
+        makeListRule(new Reference("value")),
+        new Terminal(']')
+    ).setName("list"),
+    new Choice(number, new Reference("list")).setName("value")
 ]);
 test = new Sequence(new Reference("list"), end);
 testRule(test, "[1,[2,3],[4,[5]]]", true, null, grammar)
@@ -67,7 +61,7 @@ test = new Extract(new Sequence(new Terminal("a"), new Terminal("b"), new Termin
 testRule(test, "abc", true, "b")
 
 test = new Action(
-    new Sequence(name("alpha", new Terminal("a")), new Terminal("b"), name("charlie", new Terminal("c"))),
+    new Sequence(new Terminal("a").setName("alpha"), new Terminal("b"), new Terminal("c").setName("charlie")),
     "return alpha + charlie"
 )
 testRule(test, "abc", true, "ac")
