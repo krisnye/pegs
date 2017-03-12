@@ -14,6 +14,13 @@ function memoize<O>(fn: (input:string) => O) {
     }
 }
 
+// advances context to where the parse success left off
+function advance(context: Context, success: ParseSuccess) {
+        context.offset += success.consumed;
+        if (success.state != null)
+            context.state = success.state;
+}
+
 //  tries to match an exact string and return it
 export class Terminal extends Rule
 {
@@ -106,7 +113,7 @@ export class Sequence extends Rule
             if (p instanceof ParseError)
                 return p
 
-            contextClone.update(p)
+            advance(contextClone, p);
             result.push(p.value)
         }
 
@@ -175,7 +182,7 @@ export class Repeat extends Rule
             let p = this.rule.parse(contextClone)
             if (p instanceof ParseSuccess) {
                 matches++
-                contextClone.update(p)
+                advance(contextClone, p);
                 result.push(p.value)
             } else if (matches < this.min) {
                 return p
