@@ -6,14 +6,14 @@ export default class ParseSuccess extends BaseObject {
     //  it is only used for error handling and debugging
     found: object | string
     consumed: number
-    result: any
+    value: any
     state: object | null
 
     constructor(found: object | string, consumed: number, result: any, state: object | null = null) {
         super()
         this.found = found
         this.consumed = consumed
-        this.result = result
+        this.value = result
         this.state = state
     }
 }

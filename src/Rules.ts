@@ -107,7 +107,7 @@ export class Sequence extends Rule
                 return match
 
             contextClone.update(match)
-            result.push(match.result)
+            result.push(match.value)
         }
 
         return new ParseSuccess(this, contextClone.offset - context.offset, result, contextClone.state)
@@ -176,7 +176,7 @@ export class Repeat extends Rule
             if (match instanceof ParseSuccess) {
                 matches++
                 contextClone.update(match)
-                result.push(match.result)
+                result.push(match.value)
             } else if (matches < this.min) {
                 return match
             } else {
@@ -223,5 +223,26 @@ export class Not extends Rule
         if (match instanceof ParseSuccess)
             return new ParseError(null, context.offset, this.rule)
         return new ParseSuccess(this, 0, null)
+    }
+}
+
+export class Extract extends Rule {
+
+    sequence: Sequence
+    index: number
+
+    constructor(sequence: Sequence, index:number) {
+        super()
+        if (index < 0 || index >= sequence.rules.length)
+            throw new Error("Invalid index: " + index)
+        this.sequence = sequence
+        this.index = index
+    }
+
+    parse(context:Context) {
+        let p = this.sequence.parse(context)
+        if (p instanceof ParseSuccess)
+            p = new ParseSuccess(p.found, p.consumed, p.value[this.index], p.state)
+        return p
     }
 }
