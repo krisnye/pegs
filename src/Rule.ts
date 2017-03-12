@@ -14,10 +14,7 @@ abstract class Rule extends BaseObject {
     abstract parse(context: Context): ParseError | ParseSuccess
 
     toString(): string {
-        if (this.label != null)
-            return this.label
-        let className = (this.constructor as any).name
-        return className + JSON.stringify(this)
+        return this.label || super.toString()
     }
 
 }
