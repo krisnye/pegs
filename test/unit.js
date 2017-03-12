@@ -5,34 +5,6 @@ const Grammar = require("../lib/Grammar").default
 const Rule = require("../lib/Rule").default
 const {Terminal, CharRange, Reference, Any, Sequence, Choice, Repeat, Optional, Not} = require("../lib/Rules")
 
-function prettyJSON(obj) {
-    var result = "";
-    var count = 0;
-    if (Array.isArray(obj)) {
-        result += '[';
-        for (var elem of obj) {
-            if(count > 0)
-                result += ', '
-            result += prettyJSON(elem);
-            count++;
-        }
-        result += ']';
-    } else if (typeof obj === 'object') {
-        result += '{';
-        for (var key in obj) {
-            if(count > 0)
-                result += ', '
-            result += key + ' : ';
-            result += prettyJSON(obj[key]);
-            count++;
-        }
-        result += '}';
-    } else {
-        result += JSON.stringify(obj);
-    }
-    return result;
-}
-
 function testRule(rule, source, pass = true, grammar = new Grammar({})) {
     var ctx = new Context(source, 0, {}, grammar);
     var match = rule.parse(ctx);
@@ -43,7 +15,6 @@ function testRule(rule, source, pass = true, grammar = new Grammar({})) {
     console.log("PASSED!\n")
 }
 
-var ctx = new Context("", 0, {}, new Grammar({}))
 var alphaLower = new CharRange('a', 'z')
 var alphaUpper = new CharRange('A', 'Z')
 var alpha = new Choice(alphaLower, alphaUpper)
@@ -64,7 +35,6 @@ function makeListRule(rule) {
          )))
 }
 
-ctx.source = "abc 123"
 var test = new Sequence(word, mws, number, end)
 testRule(test, "abc 123");
 

@@ -8,7 +8,8 @@
     "repository": "https://github.com/krisnye/pegs.git",
     "scripts": {
         "build": "tsc -p .",
-        "watch": "tsc -p . --watch & nodemon --watch lib --watch test test/unit.js"
+        "watch": "tsc -p . --watch & nodemon --watch lib --watch test test/unit.js",
+        "watchWin": "start tsc -p . --watch & nodemon --watch lib --watch test test/unit.js"
     },
     "directories": {
         "lib": "lib",
