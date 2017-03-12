@@ -37,11 +37,9 @@ function makeListRule(rule) {
 
 var test = new Sequence(word, mws, number, end)
 testRule(test, "abc 123");
-
 testRule(test, "abc 123!", false);
 
-test = new Sequence(makeListRule(number), end)
-testRule(test, "1,2,3,4,5");
+testRule(new Sequence(makeListRule(number), end), "1,2,3,4,5");
 
 var grammar = new Grammar({
     "list" : new Sequence(
@@ -51,6 +49,6 @@ var grammar = new Grammar({
         ),
     "value" : new Choice(number, new Reference("list"))
 });
-test = new Sequence(new Reference("list"), end)
-testRule(new Sequence(new Reference("list"), end), "[1,[2,3],[4,[5]]]", true, grammar)
-testRule(new Sequence(new Reference("list"), end), "[1,[2,3],[4,[5]]]]", false, grammar)
+test = new Sequence(new Reference("list"), end);
+testRule(test, "[1,[2,3],[4,[5]]]", true, grammar)
+testRule(test, "[1,[2,3],[4,[5]]]]", false, grammar)
