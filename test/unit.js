@@ -6,14 +6,14 @@ const Rule = require("../lib/Rule").default
 const {Terminal, CharRange, Reference, Any, Sequence, Choice, Repeat, Optional, NotPredicate, Extract, Action, StringValue, CustomPredicate} = require("../lib/Rules")
 
 function testRule(rule, source, pass = true, value, grammar = new Grammar({})) {
-    var ctx = new Context(grammar, source, 0, {});
-    var match = rule.parse(ctx);
+    var ctx = new Context(grammar, source, 0, {})
+    var match = rule.parse(ctx)
     console.log(source)
     console.log(match.toString())
     if (pass != (match instanceof ParseSuccess))
-        throw new Error("Rule should have " + (pass ? "passed " : "failed ") + "but didn't!");
+        throw new Error("Rule should have " + (pass ? "passed " : "failed ") + "but didn't!")
     if (value != null && JSON.stringify(match.value) != JSON.stringify(value))
-        throw new Error("Rule value should have been " + JSON.stringify(value) + "but was " + JSON.stringify(match.value));
+        throw new Error("Rule value should have been " + JSON.stringify(value) + "but was " + JSON.stringify(match.value))
     console.log("PASSED!\n")
 }
 
@@ -25,6 +25,7 @@ var ws = new Terminal(" ")
 var word = new Repeat(alpha, 1)
 var number = new Repeat(num, 1)
 var mws = new Repeat(ws, 1)
+var ows = new Repeat(ws)
 var end = new NotPredicate(new Any())
 var comma = new Terminal(',')
 function makeListRule(rule) {
@@ -40,10 +41,10 @@ function makeListRule(rule) {
 }
 
 var test = new Sequence(word, mws, number, end)
-testRule(test, "abc 123");
-testRule(test, "abc 123!", false);
+testRule(test, "abc 123")
+testRule(test, "abc 123!", false)
 
-testRule(new Sequence(makeListRule(number), end), "1,2,3,4,5");
+testRule(new Sequence(makeListRule(number), end), "1,2,3,4,5")
 
 var grammar = new Grammar([
     new Sequence(
