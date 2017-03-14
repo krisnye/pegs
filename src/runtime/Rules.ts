@@ -46,6 +46,7 @@ export class Terminal extends Rule
 {
     success: ParseSuccess
     match: string
+
     constructor(match: string) {
         super()
         this.match = match
@@ -53,6 +54,7 @@ export class Terminal extends Rule
         //  using Object.defineProperty so it's not enumerable
         Object.defineProperty(this, 'success', {value: new ParseSuccess(this, this.match.length, this.match)})
     }
+
     parse(context: Context) {
         for (let i = 0; i < this.match.length; i++) {
             if (context.source[context.offset + i] !== this.match[i])
@@ -129,6 +131,7 @@ export class Sequence extends Rule
         //  these additional context properties are present while parsing a sequence, used by CustomPredicate
         contextClone.rules = this.rules
         contextClone.values = values
+        contextClone.location = () => contextClone.getLocationCalculator().getLocation(context.offset, contextClone.offset)
         
         let index = 0
         for (let rule of this.rules) {
