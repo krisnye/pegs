@@ -1,18 +1,32 @@
-const ParseError = require("../lib/ParseError").default
-const ParseSuccess = require("../lib/ParseSuccess").default
-const Context = require("../lib/Context").default
-const Grammar = require("../lib/Grammar").default
-const Rule = require("../lib/Rule").default
-const {Terminal, CharRange, Reference, Any, Sequence, Choice, Repeat, Optional, NotPredicate, Extract, Action, StringValue, CustomPredicate} = require("../lib/Rules")
+import {
+    Context,
+    Grammar,
+    Rule,
+    ParseError,
+    ParseSuccess,
+    Terminal,
+    CharRange,
+    Reference,
+    Any,
+    Sequence,
+    Choice,
+    Repeat,
+    Optional,
+    NotPredicate,
+    Extract,
+    Action,
+    StringValue,
+    CustomPredicate
+} from "../runtime"
 
-function testRule(rule, source, pass = true, value, grammar = new Grammar({})) {
+function testRule(rule:Rule, source:string, pass = true, value?:any, grammar = new Grammar([])) {
     var ctx = new Context(grammar, source, 0, {})
     var match = rule.parse(ctx)
     console.log(source)
     console.log(match.toString())
     if (pass != (match instanceof ParseSuccess))
         throw new Error("Rule should have " + (pass ? "passed " : "failed ") + "but didn't!")
-    if (value != null && JSON.stringify(match.value) != JSON.stringify(value))
+    if (match instanceof ParseSuccess && value != null && JSON.stringify(match.value) != JSON.stringify(value))
         throw new Error("Rule value should have been " + JSON.stringify(value) + "but was " + JSON.stringify(match.value))
     console.log("PASSED!\n")
 }
@@ -28,7 +42,7 @@ var mws = new Repeat(ws, 1)
 var ows = new Repeat(ws)
 var end = new NotPredicate(new Any())
 var comma = new Terminal(',')
-function makeListRule(rule) {
+function makeListRule(rule:Rule) {
     return new Sequence(
         rule,
         new Repeat(
@@ -40,7 +54,7 @@ function makeListRule(rule) {
     )
 }
 
-var test = new Sequence(word, mws, number, end)
+var test:Rule = new Sequence(word, mws, number, end)
 testRule(test, "abc 123")
 testRule(test, "abc 123!", false)
 
