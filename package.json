@@ -20,7 +20,9 @@
     },
     "dependencies": {},
     "devDependencies": {
-        "typescript": "^2.2.1"
+        "typescript": "^2.2.1",
+        "pegjs": "~0.10.0"
+
     },
     "author": {
         "name": "Kris Nye",
