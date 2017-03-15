@@ -9,7 +9,9 @@
     "scripts": {
         "build": "tsc -p .",
         "watch": "tsc -p . --watch & nodemon --watch lib --watch test lib/tests/Unit.js",
-        "watchWin": "start tsc -p . --watch & nodemon --watch lib --watch test lib/tests/Unit.js"
+        "watchWin": "start tsc -p . --watch & nodemon --watch lib --watch test lib/tests/Unit.js",
+        "parser": "tsc -p . --watch & nodemon --watch lib --watch src -e pegjs,ts,js lib/compiler/Generator.js",
+        "parserWin": "start tsc -p . --watch & nodemon --watch lib --watch src -e pegjs,ts,js lib/compiler/Generator.js"
     },
     "directories": {
         "lib": "lib",

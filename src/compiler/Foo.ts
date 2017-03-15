@@ -1,1 +1,0 @@
-console.log("Foo is just a placeholder")
