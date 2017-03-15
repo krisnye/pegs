@@ -9,6 +9,7 @@ function array(args: any[], sep = ', ') {
     return '[' + args.join('\n') + ']';
 }
 
+//convert to sequence since Rules.Action only accepts a sequence
 function ensureSequence(expression: any) {
     if(expression.type == "sequence")
        return astToJS(expression)
@@ -19,7 +20,7 @@ function ensureSequence(expression: any) {
 function astToJS(ast: any): any {
     switch (ast.type) {
         // We need to add an initializer function to our grammars to correspond with pegjs initializers.
-        case "grammar": return obj("Grammar", array(ast.rules.map(astToJS), ',\n'));
+        case "grammar": return (ast.initializer ? ast.initializer.code + '\n' : "") + obj("Grammar", array(ast.rules.map(astToJS), ',\n'))
         case "choice": return obj.apply("Choice", ast.alternatives.map(astToJS));
         case "sequence": return obj.apply("Sequence", (ast.elements.map(astToJS)));
         case "rule_ref": return obj("Reference", JSON.stringify(ast.name));
