@@ -1,2 +1,1 @@
-a = &b
-b = "hello world"
+a = (a b c)

@@ -21,10 +21,14 @@ function astToJS(ast: any): any {
     switch (ast.type) {
         // We need to add an initializer function to our grammars to correspond with pegjs initializers.
         case "grammar": return (ast.initializer ? ast.initializer.code + '\n' : "") + obj("Grammar", array(ast.rules.map(astToJS), ',\n'))
-        case "choice": return obj.apply("Choice", ast.alternatives.map(astToJS));
-        case "sequence": return obj.apply("Sequence", (ast.elements.map(astToJS)));
+        case "choice": return obj("Choice", ...ast.alternatives.map(astToJS))
+        case "sequence": return obj("Sequence", ...ast.elements.map(astToJS))
+        // Group is an expression in parenthesis. 
+        // It's important because it acts as a local scope. EG: (k:a) {return k} != k:a {return k}
+        // For now a Rules.Sequence works fine for restricting scope.
+        case "group": return obj("Sequence", astToJS(ast.expression))
         case "rule_ref": return obj("Reference", JSON.stringify(ast.name));
-        case "rule": return astToJS(ast.expression) + ".setName(" + JSON.stringify(ast.name) + ")";
+        case "rule": return astToJS(ast.expression) + ".setName(" + JSON.stringify(ast.name) + ")"
         case "any": return obj("Any");
         case "literal": return obj("Terminal", JSON.stringify(ast.value))
         case "class": return obj("CharRange", JSON.stringify(ast.parts[0][0]), JSON.stringify(ast.parts[0][1]))
@@ -40,6 +44,9 @@ function astToJS(ast: any): any {
         case "semantic_and": return obj("CustomPredicate", JSON.stringify(ast.code))
         //TODO: case "semantic_not": return 
     }
+
+    console.log(ast)
+    throw new Error("Unrecognized rule type: " + ast.type)
 }
 
 let parserText = fs.readFileSync('src/compiler/Parser.pegjs', { encoding: 'utf8' });
