@@ -107,11 +107,14 @@ export class Reference extends Rule
 
 }
 
-let anyMemoized = memoize((char: string) => char == null ? new ParseError("any character", 0, "end of file") : new ParseSuccess("any character", 1, char))
 export class Any extends Rule
 {
     parse(context: Context) {
-        return anyMemoized(context.source[context.offset])
+        let char = context.source[context.offset]
+        if (char == null)
+            return new ParseError("any character", context.offset, 0, "end of file")
+        else
+            return new ParseSuccess("any character", 1, char)
     }
 }
 
@@ -136,10 +139,8 @@ export class Sequence extends Rule
         let index = 0
         for (let rule of this.rules) {
             let p = rule.parse(contextClone)
-
             if (p instanceof ParseError)
                 return p
-
             advance(contextClone, p);
             values.push(p.value)
             index++
@@ -213,6 +214,7 @@ export class Repeat extends Rule
                 advance(contextClone, p);
                 result.push(p.value)
             } else if (matches < this.min) {
+                // TODO: This index is relative and wrong!!!!!
                 return p
             } else {
                 break
@@ -256,7 +258,7 @@ export class NotPredicate extends Rule
     parse(context: Context) {
         let p = this.rule.parse(context)
         if (p instanceof ParseSuccess)
-            return new ParseError(null, context.offset, this.rule)
+            return new ParseError(null, context.offset, p.consumed, this.rule)
         //  NotPredicate rule does not consume any input or return any value
         return new ParseSuccess(this, 0, null)
     }
@@ -380,7 +382,7 @@ export class CustomPredicate extends Rule
         }
         if (this.handlerFunction(context, context.values))
             return new ParseSuccess(this, 0, null)
-        return new ParseError(this, 0)
+        return new ParseError(this, context.offset)
     }
 
     toString() {

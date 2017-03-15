@@ -16,7 +16,7 @@ export default class Context
     values: any[] | null = null     //  present while parsing sequences, contains values parsed so far in sequence
     location: () => Location        //  present while parsing sequences
 
-    constructor(grammar: Grammar, source: string, offset: number, state: object = {}, root: Context) {
+    constructor(grammar: Grammar, source: string, offset: number, state: object = {}, root?: Context) {
         this.root = root || this
         this.grammar = grammar
         this.source = source

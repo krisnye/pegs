@@ -19,16 +19,56 @@ import {
     CustomPredicate
 } from "../runtime"
 
-function testRule(rule:Rule, source:string, pass = true, value?:any, grammar = new Grammar([])) {
-    var ctx = new Context(grammar, source, 0, {})
-    var match = rule.parse(ctx)
-    console.log(source)
-    console.log(match.toString())
-    if (pass != (match instanceof ParseSuccess))
-        throw new Error("Rule should have " + (pass ? "passed " : "failed ") + "but didn't!")
-    if (match instanceof ParseSuccess && value != null && JSON.stringify(match.value) != JSON.stringify(value))
-        throw new Error("Rule value should have been " + JSON.stringify(value) + "but was " + JSON.stringify(match.value))
-    console.log("PASSED!\n")
+const red   = '\u001b[31m'
+const blue  = '\u001b[36m'
+const green = '\u001b[32m'
+const endColor = '\u001b[0m'
+
+let testStart = 0
+let testCount = 0
+let testFails = 0
+function start() {
+    testStart = new Date().getTime()
+}
+function finish() {
+    let testFinish = new Date().getTime()
+    let time = testFinish - testStart
+    let testPass = testCount - testFails
+    let color = testFails ? red : blue
+
+    if (testFails == 0) {
+        console.log(color + testPass + "/" + testCount + " Passed (" + time + "ms)" + endColor)
+    }
+    else {
+        console.log(color + testFails + "/" + testCount + " Failed (" + time + "ms)" + endColor)
+    }
+}
+start()
+
+function testRule(rule:Rule, source:string, pass: boolean | number = true, value?:any, grammar = new Grammar([])) {
+    testCount++
+    function fail(message: string) {
+        testFails++
+        console.log("rule: " + rule)
+        console.log("source: " + source)
+        console.log(red + message)
+    }
+
+    var context = new Context(grammar, source, 0, {})
+    var result = rule.parse(context)
+    var shouldFail = pass == false || typeof pass == 'number'
+    //  if pass is a number that indicates an offset where an error is expected
+    if (shouldFail == (result instanceof ParseSuccess))
+        return fail("Rule should have " + (pass ? "passed " : "failed ") + "but didn't!")
+
+    if (typeof pass == 'number' && result instanceof ParseError) {
+        if (result.offset != pass)
+            return fail("Rule should have returned error offset " + pass + " but returned " + result.offset)
+    }
+    else {
+        if (result instanceof ParseSuccess && value != null && JSON.stringify(result.value) != JSON.stringify(value))
+            return fail("Rule value should have been " + JSON.stringify(value) + "but was " + JSON.stringify(result.value))
+    }
 }
 
 var alphaLower = new CharRange('a', 'z')
@@ -106,3 +146,8 @@ test = new Sequence(
     new Terminal("c").setName("charlie")
 )
 testRule(test, "abc", false)
+
+//  test for proper errors.
+testRule(test, "abd", 1)
+
+finish()
