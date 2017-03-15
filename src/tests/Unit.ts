@@ -148,6 +148,6 @@ test = new Sequence(
 testRule(test, "abc", false)
 
 //  test for proper errors.
-testRule(test, "abd", 1)
+testRule(test, "abd", 2)
 
 finish()
