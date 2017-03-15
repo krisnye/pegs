@@ -47,15 +47,18 @@ start()
 
 function testRule(rule:Rule, source:string, pass: boolean | number = true, value?:any, grammar = new Grammar([])) {
     testCount++
+    var context = new Context(grammar, source, 0, {})
+    var result = rule.parse(context)
+
     function fail(message: string) {
         testFails++
         console.log("rule: " + rule)
         console.log("source: " + source)
+        console.log("result: " + result)
+
         console.log(red + message)
     }
 
-    var context = new Context(grammar, source, 0, {})
-    var result = rule.parse(context)
     var shouldFail = pass == false || typeof pass == 'number'
     //  if pass is a number that indicates an offset where an error is expected
     if (shouldFail == (result instanceof ParseSuccess))
@@ -96,7 +99,7 @@ function makeListRule(rule:Rule) {
 
 var test:Rule = new Sequence(word, mws, number, end)
 testRule(test, "abc 123")
-testRule(test, "abc 123!", false)
+testRule(test, "abc 123!", 7)
 
 testRule(new Sequence(makeListRule(number), end), "1,2,3,4,5")
 
@@ -110,7 +113,8 @@ var grammar = new Grammar([
 ]);
 test = new Sequence(new Reference("list"), end);
 testRule(test, "[1,[2,3],[4,[5]]]", true, null, grammar)
-testRule(test, "[1,[2,3],[4,[5]]]]", false, null, grammar)
+testRule(test, "[1,[2,3],[4,[5]]]]", 17, null, grammar)
+testRule(test, "[1,[2,3],[4,[5]]", 16, null, grammar)
 
 //  Extract
 test = new Extract(new Sequence(new Terminal("a"), new Terminal("b"), new Terminal("c")), 1)
@@ -145,7 +149,7 @@ test = new Sequence(
     new CustomPredicate("return alpha == bravo"),
     new Terminal("c").setName("charlie")
 )
-testRule(test, "abc", false)
+testRule(test, "abc", 2)
 
 //  test for proper errors.
 testRule(test, "abd", 2)
