@@ -56,7 +56,7 @@ function convertCharClassPart(part: any) {
 function astToJS(ast: any): any {
     try {
     switch (ast.type) {
-        // We need to add an initializer function to our grammars to correspond with pegjs initializers.
+        // We may want to add an initializer function to our grammars to correspond with pegjs initializers.
         case "grammar": return (ast.initializer ? ast.initializer.code + '\n' : "") + "let grammar = " + obj("Grammar", array(ast.rules.map(astToJS), ',\n'))
         case "choice": return obj("Choice", ...ast.alternatives.map(astToJS))
         case "sequence": return obj("Sequence", ...ast.elements.map(astToJS))
@@ -84,7 +84,7 @@ function astToJS(ast: any): any {
         //case "semantic_not": 
     } }
     catch (e) {
-        console.log(e.message)
+        console.log(red, e.message, endColor)
         console.log(red, ast, endColor)
         return "<ERROR:" + ast.type + ">"
     }
