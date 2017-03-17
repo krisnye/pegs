@@ -1,5 +1,5 @@
-let peg = require('pegjs');
-let fs = require('fs');
+let peg = global.require('pegjs');
+let fs = global.require('fs');
 
 function obj(name: string, ...args: any[]) {
     return 'new ' + name + '(' + args.join(', ') + ')';
