@@ -1,1 +1,2 @@
-a = &b
+DecimalDigit
+  = [0-9]
