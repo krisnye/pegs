@@ -161,11 +161,11 @@ export class Choice extends Rule
 
     parse(context: Context) {
         let errors: ParseError[] = []
-        for(let rule of this.rules) {
+        for (let rule of this.rules) {
             let p = rule.parse(context)
             if (p instanceof ParseSuccess)
                return p
-            
+
             errors.push(p)
         }
 
@@ -175,17 +175,25 @@ export class Choice extends Rule
                 maxOffset = error.offset
         }
 
-        let expectations: string[] = []
+        let expectations: object[] = []
+        let unexpected: object | null = null
+        let length = 0
         for (let error of errors) {
             if (error.offset == maxOffset) {
                 if (typeof error.expected == 'string')
                     expectations.push(error.expected)
                 else
                     Array.prototype.push.apply(expectations, error.expected)
-            }
-        }        
+                
+                if (error.unexpected != null)
+                    unexpected = error.unexpected
 
-        return new ParseError(expectations, maxOffset)
+                if (error.length > length)
+                    length = error.length
+            }
+        }
+
+        return new ParseError(expectations.length == 1 ? expectations[0] : expectations, maxOffset)
     }
 }
 
