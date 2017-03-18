@@ -354,6 +354,11 @@ export class CustomPredicate extends Rule
         this.handlerBody = handlerBody
     }
 
+    setHandler(handlerFunction: (context:Context, values:any[]) => any) {
+        this.handlerFunction = handlerFunction
+        return this
+    }
+
     parseInternal(context: Context) {
         if (context.rules == null || context.values == null)
             throw new Error("CustomPredicate requires context.rules and context.values")
