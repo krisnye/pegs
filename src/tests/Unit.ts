@@ -2,8 +2,6 @@ import {
     Context,
     Grammar,
     Rule,
-    ParseError,
-    ParseSuccess,
     Terminal,
     CharRange,
     Reference,
@@ -61,16 +59,16 @@ function testRule(rule:Rule, source:string, pass: boolean | number = true, value
 
     var shouldFail = pass == false || typeof pass == 'number'
     //  if pass is a number that indicates an offset where an error is expected
-    if (shouldFail == (result instanceof ParseSuccess))
+    if (shouldFail == (result))
         return fail("Rule should have " + (pass ? "passed " : "failed ") + "but didn't!")
 
-    if (typeof pass == 'number' && result instanceof ParseError) {
-        if (result.offset != pass)
-            return fail("Rule should have returned error offset " + pass + " but returned " + result.offset)
+    if (typeof pass == 'number' && !result) {
+        if (context.failureOffset != pass)
+            return fail("Rule should have returned error offset " + pass + " but returned " + context.failureOffset)
     }
     else {
-        if (result instanceof ParseSuccess && value != null && JSON.stringify(result.value) != JSON.stringify(value))
-            return fail("Rule value should have been " + JSON.stringify(value) + "but was " + JSON.stringify(result.value))
+        if (result && value != null && JSON.stringify(context.successValue) != JSON.stringify(value))
+            return fail("Rule value should have been " + JSON.stringify(value) + "but was " + JSON.stringify(context.successValue))
     }
 }
 
@@ -78,11 +76,11 @@ var alphaLower = new CharRange('a', 'z')
 var alphaUpper = new CharRange('A', 'Z')
 var alpha = new Choice(alphaLower, alphaUpper)
 var num = new CharRange('0', '9')
-var ws = new Terminal(" ")
+var ws = new Choice(new Terminal(" "), new Terminal("\r"), new Terminal("\n")).setLabel('whitespace')
 var word = new Repeat(alpha, 1)
 var number = new Repeat(num, 1)
 var mws = new Repeat(ws, 1)
-var ows = new Repeat(ws)
+var __ = new Repeat(ws).setLabel('whitespace-repeat')
 var end = new NotPredicate(new Any())
 var comma = new Terminal(',')
 function makeListRule(rule:Rule) {
@@ -90,11 +88,13 @@ function makeListRule(rule:Rule) {
         rule,
         new Repeat(
             new Sequence(
+                __,
                 comma,
+                __,
                 rule
-            )
-        )
-    )
+            ).setLabel('listCommaRule')
+        ).setLabel('listRepeat')
+    ).setLabel('listRule')
 }
 
 var test:Rule = new Sequence(word, mws, number, end)
@@ -153,5 +153,21 @@ testRule(test, "abc", 2)
 
 //  test for proper errors.
 testRule(test, "abd", 2)
+
+//  test for good errors
+grammar = new Grammar([
+    new Sequence(
+        new Terminal('['),
+        __,
+        //  Optional fails, but should be the farthest found.
+        makeListRule(new Reference("value")).setLabel('values'),
+        __,
+        new Terminal(']')
+    ).setName("list"),
+    __,
+    new Choice(number, new Reference("list")).setName("value")
+]);
+
+// grammar.parse("[ 1,  \n[2,3],\n[x4,[5]\n]\n]")
 
 finish()

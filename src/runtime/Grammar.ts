@@ -1,7 +1,5 @@
 import Rule from "./Rule"
 import Context from "./Context"
-import ParseError from "./ParseError"
-import ParseSuccess from "./ParseSuccess"
 
 export default class Grammar
 {
@@ -17,11 +15,18 @@ export default class Grammar
 
     //  either returns the resulting parse value or throws a ParseError
     parse(source:string, start: Rule = this.start) : any {
-        let c = new Context(this, source, 0, {})
-        let result = start.parse(c)
-        if (result instanceof ParseError)
-            throw result
-        return result.value
+        let context = new Context(this, source, 0, {})
+        let result: boolean
+        try {
+            result = start.parse(context)
+        }
+        catch (e) {
+            result = e
+        }
+        if (result)
+            return context.successValue
+        else
+            throw new Error("TODO: get Message")
     }
 
 }

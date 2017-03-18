@@ -1,6 +1,4 @@
 import Context from "./Context"
-import ParseError from "./ParseError"
-import ParseSuccess from "./ParseSuccess"
 import Rule from "./Rule"
 
 //  memoization function to improve performance
@@ -15,10 +13,10 @@ function memoize<O>(fn: (input:string) => O) {
 }
 
 // advances context to where the parse success left off
-function advance(context: Context, success: ParseSuccess) {
-        context.offset += success.consumed;
-        if (success.state != null)
-            context.state = success.state;
+function advance(context: Context) {
+        context.offset += context.successConsumed
+        if (context.successState != null)
+            context.state = context.successState
 }
 
 //  creates a function that will extract named rules out into local variables for use by the function body
@@ -44,23 +42,27 @@ function createFunctionFromBody(rules:Rule[], body: string): (context:Context, v
 //  tries to match an exact string AndPredicate return it
 export class Terminal extends Rule
 {
-    success: ParseSuccess
     match: string
 
     constructor(match: string) {
         super()
         this.match = match
-        //  we can just cache success since they all look alike
-        //  using Object.defineProperty so it's not enumerable
-        Object.defineProperty(this, 'success', {value: new ParseSuccess(this, this.match.length, this.match)})
     }
 
-    parse(context: Context) {
+    parseInternal(context: Context) {
         for (let i = 0; i < this.match.length; i++) {
-            if (context.source[context.offset + i] !== this.match[i])
-                return new ParseError(this.match, context.offset + i)
+            if (context.source[context.offset + i] !== this.match[i]) {
+                // if (context.offset == 15)
+                //     console.log(context.getStack())
+                // console.log('>>>>> FUCKING CHAR ' + JSON.stringify(context.source[context.offset + i]) + ', <<<<<< ' + context.offset + ' >>>>>>, ' + JSON.stringify(this.match))
+                return context.failure(this, context.offset + i)
+            }
         }
-        return this.success
+        return context.success(this.match.length, this.match)
+    }
+
+    toString() {
+        return "'" + this.match + "'"
     }
 }
 
@@ -79,12 +81,12 @@ export class CharRange extends Rule
             throw new Error("Lower AndPredicate upper characters are in wrong order!")
     }
 
-    parse(context: Context) {
+    parseInternal(context: Context) {
         let code = context.source.charCodeAt(context.offset);
         if (this.lower <= code && this.upper >= code)
-            return new ParseSuccess(this, 1, context.source.charAt(context.offset));
+            return context.success(1, context.source.charAt(context.offset));
         else
-            return new ParseError(this, context.offset);
+            return context.failure(this, context.offset);
     }
 
     toString(): string {
@@ -100,7 +102,7 @@ export class Reference extends Rule
         super()
         this.name = name
     }
-    parse(context: Context) {
+    parseInternal(context: Context) {
         let rule = context.grammar.rules[this.name]
         return rule.parse(context)
     }
@@ -109,13 +111,14 @@ export class Reference extends Rule
 
 export class Any extends Rule
 {
-    parse(context: Context) {
+    parseInternal(context: Context) {
         let char = context.source[context.offset]
         if (char == null)
-            return new ParseError("any character", context.offset, 0, "end of file")
+            return context.failure("any character", context.offset, 0, "end of file")
         else
-            return new ParseSuccess("any character", 1, char)
+            return context.success(1, char)
     }
+
 }
 
 export class Sequence extends Rule
@@ -127,7 +130,7 @@ export class Sequence extends Rule
         this.rules = rules;
     }
 
-    parse(context: Context) {
+    parseInternal(context: Context) {
         let consumed = 0
         let values: any[] = []
         let contextClone = context.clone()
@@ -139,14 +142,14 @@ export class Sequence extends Rule
         let index = 0
         for (let rule of this.rules) {
             let p = rule.parse(contextClone)
-            if (p instanceof ParseError)
-                return p
-            advance(contextClone, p);
-            values.push(p.value)
+            if (!p)
+                return context.failure(contextClone.failureExpected, contextClone.failureOffset, contextClone.failureLength, contextClone.failureUnexpected)
+            advance(contextClone);
+            values.push(contextClone.successValue)
             index++
         }
 
-        return new ParseSuccess(this, contextClone.offset - context.offset, values, contextClone.state)
+        return context.success(contextClone.offset - context.offset, values, contextClone.state)
     }
 }
 
@@ -159,41 +162,14 @@ export class Choice extends Rule
         this.rules = rules
     }
 
-    parse(context: Context) {
-        let errors: ParseError[] = []
+    parseInternal(context: Context) {
         for (let rule of this.rules) {
             let p = rule.parse(context)
-            if (p instanceof ParseSuccess)
+            if (p)
                return p
-
-            errors.push(p)
         }
 
-        let maxOffset = 0
-        for (let error of errors) {
-            if (error.offset > maxOffset)
-                maxOffset = error.offset
-        }
-
-        let expectations: object[] = []
-        let unexpected: object | null = null
-        let length = 0
-        for (let error of errors) {
-            if (error.offset == maxOffset) {
-                if (typeof error.expected == 'string')
-                    expectations.push(error.expected)
-                else
-                    Array.prototype.push.apply(expectations, error.expected)
-                
-                if (error.unexpected != null)
-                    unexpected = error.unexpected
-
-                if (error.length > length)
-                    length = error.length
-            }
-        }
-
-        return new ParseError(expectations.length == 1 ? expectations[0] : expectations, maxOffset)
+        return false
     }
 }
 
@@ -203,33 +179,34 @@ export class Repeat extends Rule
     min: number
     max: number
 
-    constructor(rule: Rule, min: number = 0, max: number = Number.MAX_VALUE) {
+    constructor(rule: Rule, min: number = 0, max: number = -1) {
         super()
         this.rule = rule
         this.max = max
         this.min = min
     }
 
-    parse(context: Context) {
+    parseInternal(context: Context) {
         let contextClone = context.clone()
         let matches = 0
-        let result: any[] = []
+        let values: any[] = []
 
-        while (matches < this.max) {
-            let p = this.rule.parse(contextClone)
-            if (p instanceof ParseSuccess) {
+        while (matches != this.max) {
+            var startOffset = contextClone.offset
+            let result = this.rule.parse(contextClone)
+            if (result) {
                 matches++
-                advance(contextClone, p);
-                result.push(p.value)
-            } else if (matches < this.min) {
-                // TODO: This index is relative and wrong!!!!!
-                return p
-            } else {
+                advance(contextClone);
+                values.push(contextClone.successValue)
+            }
+            else {
+                if (matches < this.min)
+                    return context.failure(contextClone.failureExpected, contextClone.failureOffset, contextClone.failureLength, contextClone.failureUnexpected)
                 break
             }
         }
 
-        return new ParseSuccess(this, contextClone.offset - context.offset, result, contextClone.state)
+        return context.success(contextClone.offset - context.offset, values, contextClone.state)
     }
 }
 
@@ -242,11 +219,8 @@ export class Optional extends Rule
         this.rule = rule
     }
 
-    parse(context: Context) {
-        let p = this.rule.parse(context)
-        if (p instanceof ParseSuccess)
-            return p
-        return new ParseSuccess(this, 0, null)
+    parseInternal(context: Context) {
+        return this.rule.parse(context) || context.success(0, null)
     }
 
     toString(): string {
@@ -263,12 +237,12 @@ export class NotPredicate extends Rule
         this.rule = rule
     }
 
-    parse(context: Context) {
-        let p = this.rule.parse(context)
-        if (p instanceof ParseSuccess)
-            return new ParseError(null, context.offset, p.consumed, this.rule)
+    parseInternal(context: Context) {
+        let result = this.rule.parse(context)
+        if (result)
+            return context.failure(null, context.offset, context.successValue, this.rule)
         //  NotPredicate rule does not consume any input or return any value
-        return new ParseSuccess(this, 0, null)
+        return context.success(0, null)
     }
 
     toString() {
@@ -285,13 +259,13 @@ export class AndPredicate extends Rule
         this.rule = rule
     }
 
-    parse(context: Context) {
-        let p = this.rule.parse(context)
-        if (p instanceof ParseSuccess) {
+    parseInternal(context: Context) {
+        let result = this.rule.parse(context)
+        if (result) {
             //  AndPredicate rule does not consume any input or return any value
-            return new ParseSuccess(this.rule, 0, null)
+            return context.success(0, null)
         }
-        return p
+        return result
     }
 
     toString() {
@@ -309,11 +283,11 @@ export class StringValue extends Rule
         this.rule = rule
     }
 
-    parse(context: Context) {
+    parseInternal(context: Context) {
         let p = this.rule.parse(context)
-        if (p instanceof ParseSuccess) {
-            let stringValue = context.source.substring(context.offset, context.offset + p.consumed)
-            return new ParseSuccess(p.found, p.consumed, stringValue)
+        if (p) {
+            let stringValue = context.source.substring(context.offset, context.offset + context.successConsumed)
+            return context.success(context.successConsumed, stringValue)
         }
         return p
     }
@@ -336,10 +310,10 @@ export class Extract extends Rule {
         this.index = index
     }
 
-    parse(context:Context) {
-        let p = this.sequence.parse(context)
-        if (p instanceof ParseSuccess)
-            p = new ParseSuccess(p.found, p.consumed, p.value[this.index], p.state)
+    parseInternal(context:Context) {
+        let p = this.sequence.parseInternal(context)
+        if (p)
+            p = context.success(context.successConsumed, context.successValue[this.index], context.successState)
         return p
     }
 
@@ -358,11 +332,11 @@ export class Action extends Rule {
         this.handler = handler
     }
 
-    parse(context:Context) {
-        let p = this.sequence.parse(context)
-        if (p instanceof ParseSuccess) {
-            let value = this.handler(context, p.value as [any])
-            p = new ParseSuccess(p.found, p.consumed, value, p.state)
+    parseInternal(context:Context) {
+        let p = this.sequence.parseInternal(context)
+        if (p) {
+            let value = this.handler(context, context.successValue)
+            p = context.success(context.successConsumed, value, context.successState)
         }
         return p
     }
@@ -380,7 +354,7 @@ export class CustomPredicate extends Rule
         this.handlerBody = handlerBody
     }
 
-    parse(context: Context) {
+    parseInternal(context: Context) {
         if (context.rules == null || context.values == null)
             throw new Error("CustomPredicate requires context.rules and context.values")
 
@@ -389,8 +363,8 @@ export class CustomPredicate extends Rule
             this.handlerFunction = createFunctionFromBody(precedingRules, this.handlerBody)
         }
         if (this.handlerFunction(context, context.values))
-            return new ParseSuccess(this, 0, null)
-        return new ParseError(this, context.offset)
+            return context.success(0, null)
+        return context.failure(this, context.offset)
     }
 
     toString() {
