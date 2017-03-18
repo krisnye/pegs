@@ -1,2 +1,1 @@
-DecimalDigit
-  = [0-9]
+number = k:[0-9]+ {return Number(k)}

@@ -1,14 +1,9 @@
-let peg = global.require('pegjs')
-let fs = global.require('fs')
-let runtime = global.require('../runtime')
+let peg = require('pegjs')
+let fs = require('fs')
+let runtime = require('../runtime')
 
 const red   = '\u001b[31m'
 const endColor = '\u001b[0m'
-
-let header = []
-header.push("let runtime = require('../runtime')")
-for(let key in runtime)
-    header.push('let ' + key + ' = runtime.' + key)
 
 function obj(name: string, ...args: any[]) {
     return 'new ' + name + '(' + args.join(', ') + ')';
@@ -59,11 +54,19 @@ function convertCharClassPart(part: any) {
         return obj("CharRange", quote(part[0]), quote(part[1]))
 }
 
+function addScopeInformation (ast: any, scopes: string[][] = []) {
+    scopes.push([])
+    switch (ast.type) {
+        
+    }
+    scopes.pop()
+}
+
 function astToJS(ast: any): any {
     try {
     switch (ast.type) {
         // We may want to add an initializer function to our grammars to correspond with pegjs initializers.
-        case "grammar": return (ast.initializer ? ast.initializer.code + '\n' : "") + "exports['default'] = " + obj("Grammar", array(ast.rules.map(astToJS), ',\n'))
+        case "grammar": return (ast.initializer ? ast.initializer.code + '\n' : "") + "exports.grammar = " + obj("Grammar", array(ast.rules.map(astToJS), ',\n'))
         case "choice": return obj("Choice", ...ast.alternatives.map(astToJS))
         case "sequence": return obj("Sequence", ...ast.elements.map(astToJS))
         // Group is an expression in parenthesis. 
@@ -100,11 +103,19 @@ function astToJS(ast: any): any {
     return "<ERROR:" + ast.type + ">"
 }
 
+let header = []
+header.push("let runtime = require('../runtime')")
+header.push("function location(){return null}")
+for(let key in runtime)
+    header.push('let ' + key + ' = runtime.' + key)
+
 let parserText = fs.readFileSync('src/compiler/Parser.pegjs', { encoding: 'utf8' });
 let parser = peg.generate(parserText);
-//let input = fs.readFileSync('src/compiler/Input.pegjs', { encoding: 'utf8' });
-let input = fs.readFileSync('src/compiler/Parser.pegjs', { encoding: 'utf8' });
+let input = fs.readFileSync('src/compiler/Input.pegjs', { encoding: 'utf8' });
+//let input = fs.readFileSync('src/compiler/Parser.pegjs', { encoding: 'utf8' });
 let result = parser.parse(input);
-let js = header.join('\n') + astToJS(result);
-fs.writeFileSync('lib/compiler/Output.js', js)
-console.log(js);
+addScopeInformation(result)
+console.log(result)
+//let js = header.join('\n') + astToJS(result);
+//fs.writeFileSync('lib/compiler/Parser.js', js)
+//console.log(js);
