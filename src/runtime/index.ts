@@ -1,7 +1,5 @@
 export {default as Context} from "./Context"
 export {default as Grammar} from "./Grammar"
-export {default as ParseError} from "./ParseError"
-export {default as ParseSuccess} from "./ParseSuccess"
 export {default as Position} from "./Position"
 export {default as Rule} from "./Rule"
 export {default as SourceLocation} from "./Location"
