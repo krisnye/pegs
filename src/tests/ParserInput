@@ -1,1 +1,2 @@
-x86
+{console.log('No more rhyming and I mean it!')}
+start = k:"Anybody want a peanut?" & {return true} {return k}

@@ -1,4 +1,5 @@
-let peg = require('pegjs')
+//let peg = require('pegjs')
+let peg = require('./PegJsSelfParser.js')
 let fs = require('fs')
 let runtime = require('../runtime')
 
@@ -56,64 +57,63 @@ function convertCharClassPart(part: any) {
 
 //Currently CustomPredicate and Action differ from their PEG.js analog in that they can't see higher scopes.
 //This may cause problems.
-function addScopeInformation (ast: any, index = 0, outerScope: any[] = []): string[] {
-    let scope: string[] = []
-
-    if (ast.type == "semantic_and")
-        ast.scope = outerScope.slice()
-
-    if (ast.type == "labeled")
-        outerScope.push({name: ast.label, index: index})
+function addScopeInformation (ast: any, parent: any = null, index = 0) {
 
     for (let member of ['rules', 'alternatives', 'elements']) {
         if (ast[member]) {
             let i = 0;
             for (let elem of ast[member])
-                addScopeInformation(elem, i++, scope)
+                addScopeInformation(elem, ast, i++)
         }
     }
 
-    let innerScope: any[] = []
     if (ast.expression)
-        innerScope = addScopeInformation(ast.expression, 0, scope)
-
+        addScopeInformation(ast.expression, ast, 0)
 
     if (ast.type == "action")
-        ast.scope = scope.concat(innerScope)
+        ast.scope = scopeUpto(ast.expression)
 
-    console.log(ast.type)
-    console.log(ast.scope)
-    return scope
+    if (ast.type == "semantic_and")
+        ast.scope = scopeUpto(parent, index)
+}
+
+function scopeUpto(ast: any, index: number = Infinity) {
+    if (ast.type == "labeled")
+        return [{name: ast.label, index: 0}]
+
+    if (ast.type == "sequence") {
+        let scope = []
+        let i = 0
+        for (let rule of ast.elements) {
+            if (i >= index)
+               break
+            if (rule.type == "labeled")
+                scope.push({name: rule.label, index: i})
+            i++
+        }
+        return scope
+    }
+
+    return []
 }
 
 //  creates a function that will extract named rules out into local variables for use by the function body
 function createFunctionFromBody(scope: any[], body: string): string {
-    // let namesToIndexes: {[name:string]:number} = {}
-    // for (let i = 0; i < scope.length; i++)
-    // {
-    //     let name = scope[i]
-    //     if (name != null)
-    //         namesToIndexes[name] = i
-    // }
     let localVariables = scope.map(
         (elem) => {
             return "let " + elem.name + " = __values[" + elem.index + "]"
         }
-    ).join(";")
+    ).join(";\n")
 
-    return "(function(__context, __values) {let location = () => null;" + localVariables + ";" + body + "})"
+    return "\nfunction(__context, __values) {\nlet location = () => __context.offset;\nlet text = () => __context.source[__context.offset];\n" + localVariables + ";\n" + body + "}"
 }
 
-function astToJS(ast: any): any {
+export function astToJS(ast: any): any {
     try {
     switch (ast.type) {
-        // We may want to add an initializer function to our grammars to correspond with pegjs initializers.
         case "grammar": return (ast.initializer ? ast.initializer.code + '\n' : "") + "exports.grammar = " + obj("Grammar", array(ast.rules.map(astToJS), ',\n\n'))
         case "choice": return obj("Choice", ...ast.alternatives.map(astToJS))
         case "sequence": return obj("Sequence", ...ast.elements.map(astToJS))
-        // Group is an expression in parenthesis. 
-        // It's important because it acts as a local scope. EG: (k:a) {return k} != k:a {return k}
-        // For now a Rules.Sequence works fine for restricting scope.
         case "group": return obj("Group", astToJS(ast.expression))
         case "rule_ref": return obj("Reference", JSON.stringify(ast.name));
         case "rule": return astToJS(ast.expression) + ".setName(" + JSON.stringify(ast.name) + ")"
@@ -145,18 +145,21 @@ function astToJS(ast: any): any {
     return "<ERROR:" + ast.type + ">"
 }
 
-let header = []
+let header: string[] = []
 header.push("let runtime = require('../runtime')\n")
 for (let key in runtime)
     header.push('let ' + key + ' = runtime.' + key)
 header.push("\n")
 
-let parserText = fs.readFileSync('src/compiler/Parser.pegjs', { encoding: 'utf8' });
-let parser = peg.generate(parserText);
-let input = fs.readFileSync('src/compiler/Input.pegjs', { encoding: 'utf8' });
-//let input = fs.readFileSync('src/compiler/Parser.pegjs', { encoding: 'utf8' });
-let result = parser.parse(input);
-addScopeInformation(result)
-let js = header.join('\n') + astToJS(result);
-fs.writeFileSync('lib/compiler/Parser.js', js)
-//console.log(js);
+
+export function generate(input: any, writeToFile = true, path = 'lib/compiler/Parser.js') {
+    let ast = (typeof input == 'string') ? peg.parse(input) : input;
+    addScopeInformation(ast)
+    let js = header.join('\n') + astToJS(ast);
+    if (writeToFile)
+        fs.writeFileSync(path, js)
+    return js;
+}
+
+let text = fs.readFileSync('src/compiler/Input.pegjs', { encoding: 'utf8' });
+generate(text as string)
