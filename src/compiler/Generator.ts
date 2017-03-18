@@ -1,8 +1,14 @@
-let peg = require('pegjs')
-let fs = require('fs')
+let peg = global.require('pegjs')
+let fs = global.require('fs')
+let runtime = global.require('../runtime')
 
 const red   = '\u001b[31m'
 const endColor = '\u001b[0m'
+
+let header = []
+header.push("let runtime = require('../runtime')")
+for(let key in runtime)
+    header.push('let ' + key + ' = runtime.' + key)
 
 function obj(name: string, ...args: any[]) {
     return 'new ' + name + '(' + args.join(', ') + ')';
@@ -57,7 +63,6 @@ function astToJS(ast: any): any {
     try {
     switch (ast.type) {
         // We may want to add an initializer function to our grammars to correspond with pegjs initializers.
-        case "grammar": return (ast.initializer ? ast.initializer.code + '\n' : "") + "let grammar = " + obj("Grammar", array(ast.rules.map(astToJS), ',\n'))
         case "choice": return obj("Choice", ...ast.alternatives.map(astToJS))
         case "sequence": return obj("Sequence", ...ast.elements.map(astToJS))
         // Group is an expression in parenthesis. 
@@ -99,6 +104,6 @@ let parser = peg.generate(parserText);
 //let input = fs.readFileSync('src/compiler/Input.pegjs', { encoding: 'utf8' });
 let input = fs.readFileSync('src/compiler/Parser.pegjs', { encoding: 'utf8' });
 let result = parser.parse(input);
-let js = astToJS(result);
+let js = header.join('\n') + astToJS(result);
 fs.writeFileSync('lib/compiler/Output.js', js)
 console.log(js);
