@@ -41,7 +41,7 @@ function quote(s: any) {
 
 function convertCharClass(ast: any) {
     let args = ast.parts.map(convertCharClassPart)
-    if(args.length == 1)
+    if (args.length == 1)
         return args[0]
     else
         return obj("Choice", ...args)
@@ -54,25 +54,67 @@ function convertCharClassPart(part: any) {
         return obj("CharRange", quote(part[0]), quote(part[1]))
 }
 
-function addScopeInformation (ast: any, scopes: string[][] = []) {
-    scopes.push([])
-    switch (ast.type) {
-        
+//Currently CustomPredicate and Action differ from their PEG.js analog in that they can't see higher scopes.
+//This may cause problems.
+function addScopeInformation (ast: any, index = 0, outerScope: any[] = []): string[] {
+    let scope: string[] = []
+
+    if (ast.type == "semantic_and")
+        ast.scope = outerScope.slice()
+
+    if (ast.type == "labeled")
+        outerScope.push({name: ast.label, index: index})
+
+    for (let member of ['rules', 'alternatives', 'elements']) {
+        if (ast[member]) {
+            let i = 0;
+            for (let elem of ast[member])
+                addScopeInformation(elem, i++, scope)
+        }
     }
-    scopes.pop()
+
+    let innerScope: any[] = []
+    if (ast.expression)
+        innerScope = addScopeInformation(ast.expression, 0, scope)
+
+
+    if (ast.type == "action")
+        ast.scope = scope.concat(innerScope)
+
+    console.log(ast.type)
+    console.log(ast.scope)
+    return scope
+}
+
+//  creates a function that will extract named rules out into local variables for use by the function body
+function createFunctionFromBody(scope: any[], body: string): string {
+    // let namesToIndexes: {[name:string]:number} = {}
+    // for (let i = 0; i < scope.length; i++)
+    // {
+    //     let name = scope[i]
+    //     if (name != null)
+    //         namesToIndexes[name] = i
+    // }
+    let localVariables = scope.map(
+        (elem) => {
+            return "let " + elem.name + " = __values[" + elem.index + "]"
+        }
+    ).join(";")
+
+    return "(function(__context, __values) {let location = () => null;" + localVariables + ";" + body + "})"
 }
 
 function astToJS(ast: any): any {
     try {
     switch (ast.type) {
         // We may want to add an initializer function to our grammars to correspond with pegjs initializers.
-        case "grammar": return (ast.initializer ? ast.initializer.code + '\n' : "") + "exports.grammar = " + obj("Grammar", array(ast.rules.map(astToJS), ',\n'))
+        case "grammar": return (ast.initializer ? ast.initializer.code + '\n' : "") + "exports.grammar = " + obj("Grammar", array(ast.rules.map(astToJS), ',\n\n'))
         case "choice": return obj("Choice", ...ast.alternatives.map(astToJS))
         case "sequence": return obj("Sequence", ...ast.elements.map(astToJS))
         // Group is an expression in parenthesis. 
         // It's important because it acts as a local scope. EG: (k:a) {return k} != k:a {return k}
         // For now a Rules.Sequence works fine for restricting scope.
-        case "group": return obj("Sequence", astToJS(ast.expression))
+        case "group": return obj("Group", astToJS(ast.expression))
         case "rule_ref": return obj("Reference", JSON.stringify(ast.name));
         case "rule": return astToJS(ast.expression) + ".setName(" + JSON.stringify(ast.name) + ")"
         case "any": return obj("Any");
@@ -88,8 +130,8 @@ function astToJS(ast: any): any {
         // We use name where pegjs uses label and label where pegjs uses name.
         case "labeled": return astToJS(ast.expression) + ".setName(" + JSON.stringify(ast.label) + ")"
         case "named": return astToJS(ast.expression) + ".setLabel(" + JSON.stringify(ast.name) + ")"
-        case "action": return obj("Action", ensureSequence(ast.expression), JSON.stringify(ast.code))
-        case "semantic_and": return obj("CustomPredicate", JSON.stringify(ast.code))
+        case "action": return obj("Action", ensureSequence(ast.expression), createFunctionFromBody(ast.scope, ast.code))
+        case "semantic_and": return obj("CustomPredicate", "''") + ".setHandler(" + createFunctionFromBody(ast.scope, ast.code) + ")"
         //case "semantic_not": 
     } }
     catch (e) {
@@ -104,10 +146,10 @@ function astToJS(ast: any): any {
 }
 
 let header = []
-header.push("let runtime = require('../runtime')")
-header.push("function location(){return null}")
-for(let key in runtime)
+header.push("let runtime = require('../runtime')\n")
+for (let key in runtime)
     header.push('let ' + key + ' = runtime.' + key)
+header.push("\n")
 
 let parserText = fs.readFileSync('src/compiler/Parser.pegjs', { encoding: 'utf8' });
 let parser = peg.generate(parserText);
@@ -115,7 +157,6 @@ let input = fs.readFileSync('src/compiler/Input.pegjs', { encoding: 'utf8' });
 //let input = fs.readFileSync('src/compiler/Parser.pegjs', { encoding: 'utf8' });
 let result = parser.parse(input);
 addScopeInformation(result)
-console.log(result)
-//let js = header.join('\n') + astToJS(result);
-//fs.writeFileSync('lib/compiler/Parser.js', js)
+let js = header.join('\n') + astToJS(result);
+fs.writeFileSync('lib/compiler/Parser.js', js)
 //console.log(js);

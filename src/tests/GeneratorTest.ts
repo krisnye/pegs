@@ -1,10 +1,9 @@
 let parser = require('../../lib/compiler/Parser.js')
+let fs = require('fs')
 import {
     Context,
     Grammar,
     Rule,
-    ParseError,
-    ParseSuccess,
     Terminal,
     CharRange,
     Reference,
@@ -21,8 +20,9 @@ import {
 } from "../runtime"
 
 let grammar = parser.grammar
-console.log(Object.keys(grammar.rules))
-let c = new Context(grammar, "a = b", 0)
-let ref = new Reference("Grammar")
+let input = fs.readFileSync('src/tests/ParserInput', { encoding: 'utf8' });
+let c = new Context(grammar, input, 0)
+let ref = new Reference("start")
 let result = ref.parse(c)
 console.log(result)
+console.log(c.successValue)

@@ -319,6 +319,23 @@ export class Extract extends Rule {
 
 }
 
+export class Group extends Rule {
+    rule: Rule
+
+    constructor(rule: Rule) {
+        super()
+        this.rule = rule
+    }
+
+    parseInternal(context: Context) {
+        return this.rule.parse(context)
+    }
+
+    toString() {
+        return "(" + this.rule + ")"
+    }
+}
+
 export class Action extends Rule {
 
     sequence: Sequence

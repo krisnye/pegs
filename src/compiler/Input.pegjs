@@ -1,1 +1,1 @@
-number = k:[0-9]+ {return Number(k)}
+start = (k:$([0-9]+)) {console.log(__values); return Number(k)}

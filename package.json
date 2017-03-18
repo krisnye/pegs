@@ -12,7 +12,7 @@
         "watchWin": "start tsc -p . --watch & nodemon --watch lib --watch test lib/tests/Unit.js",
         "parserGen": "tsc -p . --watch & nodemon --watch src -e pegjs,ts,js lib/compiler/Generator.js",
         "parserGenWin": "start tsc -p . --watch & nodemon --watch src -e pegjs,ts,js lib/compiler/Generator.js",
-        "parserTestWin": "start tsc -p . --watch & nodemon --watch src -e pegjs,ts,js lib/tests/GeneratorTest.js"
+        "parserTest": "tsc -p . & node lib/compiler/Generator.js & node lib/tests/GeneratorTest.js"
     },
     "directories": {
         "lib": "lib",
