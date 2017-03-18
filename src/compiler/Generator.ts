@@ -63,6 +63,7 @@ function astToJS(ast: any): any {
     try {
     switch (ast.type) {
         // We may want to add an initializer function to our grammars to correspond with pegjs initializers.
+        case "grammar": return (ast.initializer ? ast.initializer.code + '\n' : "") + "exports['default'] = " + obj("Grammar", array(ast.rules.map(astToJS), ',\n'))
         case "choice": return obj("Choice", ...ast.alternatives.map(astToJS))
         case "sequence": return obj("Sequence", ...ast.elements.map(astToJS))
         // Group is an expression in parenthesis. 
