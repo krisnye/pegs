@@ -97,13 +97,13 @@ export class CharRange extends Rule
 
 export class Reference extends Rule
 {
-    name: string
-    constructor(name: string) {
+    reference: string
+    constructor(reference: string) {
         super()
-        this.name = name
+        this.reference = reference
     }
     parseInternal(context: Context) {
-        let rule = context.grammar.rules[this.name]
+        let rule = context.grammar.rules[this.reference]
         return rule.parse(context)
     }
 
