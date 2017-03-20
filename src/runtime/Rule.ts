@@ -3,13 +3,24 @@ import BaseObject from "./BaseObject"
 
 abstract class Rule extends BaseObject {
 
-    parse(context: Context): boolean {
-        context.push(this)
+    //  unique object that represents a failure to parse a rule.
+    static failure = Symbol('Rule.failure')
+    static passed(result:any) { return result !== Rule.failure }
+
+    parse(context: Context): any {
+        context.pushRule(this)
+        var saveOffset = context.offset
+        var saveState = context.state
         var result = this.parseInternal(context)
-        context.pop()
+        if (!Rule.passed(result)) {
+            // our rule failed to parse, so we must restore previous state.
+            context.offset = saveOffset
+            context.state = saveState
+        }
+        context.popRule()
         return result
     }
-    protected abstract parseInternal(context: Context): boolean
+    protected abstract parseInternal(context: Context): any
 
     //  The identifier name of this rule. must be a valid identifier
     name?: string

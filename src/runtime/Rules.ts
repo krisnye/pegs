@@ -12,13 +12,6 @@ function memoize<O>(fn: (input:string) => O) {
     }
 }
 
-// advances context to where the parse success left off
-function advance(context: Context) {
-        context.offset += context.successConsumed
-        if (context.successState != null)
-            context.state = context.successState
-}
-
 //  creates a function that will extract named rules out into local variables for use by the function body
 function createFunctionFromBody(rules:Rule[], body: string): (context:Context, values:[any]) => object {
     let namesToIndexes: {[name:string]:number} = {}
@@ -55,14 +48,15 @@ export class Terminal extends Rule
                 // if (context.offset == 15)
                 //     console.log(context.getStack())
                 // console.log('>>>>> FUCKING CHAR ' + JSON.stringify(context.source[context.offset + i]) + ', <<<<<< ' + context.offset + ' >>>>>>, ' + JSON.stringify(this.match))
-                return context.failure(this, context.offset + i)
+                return context.failure(context.offset + i)
             }
         }
-        return context.success(this.match.length, this.match)
+        context.offset += this.match.length
+        return this.match
     }
 
     toString() {
-        return "'" + this.match + "'"
+        return JSON.stringify(this.match)
     }
 }
 
@@ -83,14 +77,17 @@ export class CharRange extends Rule
 
     parseInternal(context: Context) {
         let code = context.source.charCodeAt(context.offset);
-        if (this.lower <= code && this.upper >= code)
-            return context.success(1, context.source.charAt(context.offset));
-        else
-            return context.failure(this, context.offset);
+        if (this.lower <= code && this.upper >= code) {
+            context.offset++
+            return context.source[context.offset];
+        }
+        else {
+            return context.failure(context.offset);
+        }
     }
 
     toString(): string {
-        return this.label || '[' + this.lower + '-' + this.upper + ']'
+        return this.label || '[' + String.fromCharCode(this.lower) + '-' + String.fromCharCode(this.upper) + ']'
     }
 
 }
@@ -113,10 +110,13 @@ export class Any extends Rule
 {
     parseInternal(context: Context) {
         let char = context.source[context.offset]
-        if (char == null)
-            return context.failure("any character", context.offset, 0, "end of file")
-        else
-            return context.success(1, char)
+        if (char == null) {
+            return context.failure()
+        }
+        else {
+            context.offset++
+            return char
+        }
     }
 
 }
@@ -133,23 +133,21 @@ export class Sequence extends Rule
     parseInternal(context: Context) {
         let consumed = 0
         let values: any[] = []
-        let contextClone = context.clone()
-        //  these additional context properties are present while parsing a sequence, used by CustomPredicate
-        contextClone.rules = this.rules
-        contextClone.values = values
-        contextClone.location = () => contextClone.getLocationCalculator().getLocation(context.offset, contextClone.offset)
-        
+
         let index = 0
         for (let rule of this.rules) {
-            let p = rule.parse(contextClone)
-            if (!p)
-                return context.failure(contextClone.failureExpected, contextClone.failureOffset, contextClone.failureLength, contextClone.failureUnexpected)
-            advance(contextClone);
-            values.push(contextClone.successValue)
+            //  these additional context properties are present while parsing a sequence, used by CustomPredicate
+            context.rules = this.rules
+            context.values = values
+            // context.location = () => contextClone.getLocationCalculator().getLocation(context.offset, contextClone.offset)
+            let value = rule.parse(context)
+            if (!Rule.passed(value))
+                return value
+            values.push(value)
             index++
         }
 
-        return context.success(contextClone.offset - context.offset, values, contextClone.state)
+        return values
     }
 }
 
@@ -164,12 +162,12 @@ export class Choice extends Rule
 
     parseInternal(context: Context) {
         for (let rule of this.rules) {
-            let p = rule.parse(context)
-            if (p)
-               return p
+            let value = rule.parse(context)
+            if (Rule.passed(value))
+               return value
         }
 
-        return false
+        return Rule.failure
     }
 }
 
@@ -187,26 +185,23 @@ export class Repeat extends Rule
     }
 
     parseInternal(context: Context) {
-        let contextClone = context.clone()
         let matches = 0
         let values: any[] = []
 
         while (matches != this.max) {
-            var startOffset = contextClone.offset
-            let result = this.rule.parse(contextClone)
-            if (result) {
+            let value = this.rule.parse(context)
+            if (Rule.passed(value)) {
                 matches++
-                advance(contextClone);
-                values.push(contextClone.successValue)
+                values.push(value)
             }
             else {
                 if (matches < this.min)
-                    return context.failure(contextClone.failureExpected, contextClone.failureOffset, contextClone.failureLength, contextClone.failureUnexpected)
+                    return context.failure(context.failureOffset)
                 break
             }
         }
 
-        return context.success(contextClone.offset - context.offset, values, contextClone.state)
+        return values
     }
 }
 
@@ -220,7 +215,10 @@ export class Optional extends Rule
     }
 
     parseInternal(context: Context) {
-        return this.rule.parse(context) || context.success(0, null)
+        let value = this.rule.parse(context)
+        if (Rule.passed(value))
+            return value
+        return undefined
     }
 
     toString(): string {
@@ -238,11 +236,14 @@ export class NotPredicate extends Rule
     }
 
     parseInternal(context: Context) {
-        let result = this.rule.parse(context)
-        if (result)
-            return context.failure(null, context.offset, context.successValue, this.rule)
+        let initialOffset = context.offset
+        let value = this.rule.parse(context)
+        context.offset = initialOffset
+        if (Rule.passed(value)) {
+            return context.failure()
+        }
         //  NotPredicate rule does not consume any input or return any value
-        return context.success(0, null)
+        return undefined
     }
 
     toString() {
@@ -260,12 +261,14 @@ export class AndPredicate extends Rule
     }
 
     parseInternal(context: Context) {
-        let result = this.rule.parse(context)
-        if (result) {
+        let initialOffset = context.offset
+        let value = this.rule.parse(context)
+        if (Rule.passed(value)) {
             //  AndPredicate rule does not consume any input or return any value
-            return context.success(0, null)
+            context.offset = initialOffset
+            return undefined
         }
-        return result
+        return value
     }
 
     toString() {
@@ -284,12 +287,12 @@ export class StringValue extends Rule
     }
 
     parseInternal(context: Context) {
-        let p = this.rule.parse(context)
-        if (p) {
-            let stringValue = context.source.substring(context.offset, context.offset + context.successConsumed)
-            return context.success(context.successConsumed, stringValue)
+        let initialOffset = context.offset
+        let value = this.rule.parse(context)
+        if (Rule.passed(value)) {
+            value = context.source.substring(initialOffset, context.offset)
         }
-        return p
+        return value
     }
 
     toString() {
@@ -311,10 +314,10 @@ export class Extract extends Rule {
     }
 
     parseInternal(context:Context) {
-        let p = this.sequence.parseInternal(context)
-        if (p)
-            p = context.success(context.successConsumed, context.successValue[this.index], context.successState)
-        return p
+        let value = this.sequence.parseInternal(context)
+        if (Rule.passed(value))
+            value = value[this.index]
+        return value
     }
 
 }
@@ -350,12 +353,11 @@ export class Action extends Rule {
     }
 
     parseInternal(context:Context) {
-        let p = this.sequence.parseInternal(context)
-        if (p) {
-            let value = this.handler(context, context.successValue)
-            p = context.success(context.successConsumed, value, context.successState)
+        let value = this.sequence.parseInternal(context)
+        if (Rule.passed(value)) {
+            value = this.handler(context, value)
         }
-        return p
+        return value
     }
 
 }
@@ -385,8 +387,8 @@ export class CustomPredicate extends Rule
             this.handlerFunction = createFunctionFromBody(precedingRules, this.handlerBody)
         }
         if (this.handlerFunction(context, context.values))
-            return context.success(0, null)
-        return context.failure(this, context.offset)
+            return undefined
+        return context.failure()
     }
 
     toString() {

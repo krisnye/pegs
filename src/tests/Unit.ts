@@ -46,14 +46,14 @@ start()
 function testRule(rule:Rule, source:string, pass: boolean | number = true, value?:any, grammar = new Grammar([])) {
     testCount++
     var context = new Context(grammar, source, 0, {})
-    var result = rule.parse(context)
+    var parseResult = rule.parse(context)
+    var result = Rule.passed(parseResult)
 
     function fail(message: string) {
         testFails++
         console.log("rule: " + rule)
         console.log("source: " + source)
         console.log("result: " + result)
-
         console.log(red + message)
     }
 
@@ -67,8 +67,8 @@ function testRule(rule:Rule, source:string, pass: boolean | number = true, value
             return fail("Rule should have returned error offset " + pass + " but returned " + context.failureOffset)
     }
     else {
-        if (result && value != null && JSON.stringify(context.successValue) != JSON.stringify(value))
-            return fail("Rule value should have been " + JSON.stringify(value) + "but was " + JSON.stringify(context.successValue))
+        if (result && value != null && JSON.stringify(parseResult) != JSON.stringify(value))
+            return fail("Rule value should have been " + JSON.stringify(value) + "but was " + JSON.stringify(parseResult))
     }
 }
 

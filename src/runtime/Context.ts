@@ -5,10 +5,8 @@ import Location from "./Location"
 
 export default class Context
 {
-    readonly root: Context
     readonly grammar: Grammar
     readonly source: string
-    readonly debug: boolean
     offset: number = 0
     state: object = {}
     private stack?: Rule[]
@@ -16,64 +14,56 @@ export default class Context
     rules?: Rule[]              //  present while parsing sequences
     values?: any[]              //  present while parsing sequences, contains values parsed so far in sequence
     location?: () => Location   //  present while parsing sequences
-    //  parsing success fields
-    successConsumed: number
-    successValue: any
-    successState: object | null
-    //  parsing failure fields
-    failureExpected: object | string | null
-    failureOffset: number
-    failureLength: number
-    failureUnexpected: object | string | null
 
-    constructor(grammar: Grammar, source: string, offset: number, state: object = {}, debug: boolean = false, root?: Context) {
-        this.root = root || this
+    //  furthest failure
+    failureOffset: number
+
+    constructor(grammar: Grammar, source: string, offset: number, state: object = {}) {
         this.grammar = grammar
         this.source = source
         this.offset = offset
         this.state = state
-        this.debug = debug
     }
 
-    success(consumed: number, value: any, state: object | null = null) {
-        this.successConsumed = consumed
-        this.successValue = value
-        this.successState = state
-        // return new ParseSuccess(this.getStack()[this.getStack().length - 1], consumed, value, state)
-        return true
-    }
-
-    failure(expected: object | string | null, offset: number, length: number = 0, unexpected: object | string | null = null) {
-        this.failureExpected = expected
-        this.failureOffset = offset
-        this.failureLength = length
-        this.failureUnexpected = unexpected
-        // return new ParseError(expected, offset, length, unexpected)
-        return false
+    failure(offset: number = this.offset) {
+        if (this.failureOffset == null || this.failureOffset < offset) {
+            this.failureOffset = offset
+        }
+        return Rule.failure
     }
 
     getLocationCalculator() {
-        if (this.root.locationCalculator == null)
-            this.root.locationCalculator = new LocationCalculator(this.source)
-        return this.root.locationCalculator
+        if (this.locationCalculator == null)
+            this.locationCalculator = new LocationCalculator(this.source)
+        return this.locationCalculator
     }
 
     getStack() {
-        if (this.root.stack == null)
-            this.root.stack = []
-        return this.root.stack
+        if (this.stack == null)
+            this.stack = []
+        return this.stack
     }
 
-    push(rule: Rule) {
+    pushRule(rule: Rule) {
         this.getStack().push(rule)
     }
 
-    pop() {
+    popRule() {
         this.getStack().pop()
     }
 
-    clone() {
-        return new Context(this.grammar, this.source, this.offset, JSON.parse(JSON.stringify(this.state)), this.debug, this.root);
+    // stateStack: object[]
+    // pushState() {
+    //     if (this.stateStack == null)
+    //         this.stateStack = []
+    //     this.stateStack.push(this.state)
+    // }
+    // popState() {
+    //     this.state = this.stateStack.pop() as object
+    // }
+
+    getErrorMessage(expected: any /* Set */, offset: number, length: number, unexpected?: string) {
+
     }
 
 }

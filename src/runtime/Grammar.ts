@@ -16,17 +16,17 @@ export default class Grammar
     //  either returns the resulting parse value or throws a ParseError
     parse(source:string, start: Rule = this.start) : any {
         let context = new Context(this, source, 0, {})
-        let result: boolean
+        let result: any
         try {
             result = start.parse(context)
         }
         catch (e) {
             result = e
         }
-        if (result)
-            return context.successValue
+        if (Rule.passed(result))
+            return result
         else
-            throw new Error("TODO: get Message")
+            throw new Error("Error offset: " + context.failureOffset)
     }
 
 }
