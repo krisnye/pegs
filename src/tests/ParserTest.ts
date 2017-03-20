@@ -2,7 +2,7 @@
 // let fs = require('fs')
 // import {
 //     Context,
-//     Grammar,
+//     Parser,
 //     Rule,
 //     Terminal,
 //     CharRange,
@@ -22,9 +22,9 @@
 //     generate
 // } from "../compiler/Generator"
 
-// let grammar = parser.grammar
+// let parser = parser.grammar
 // let input = fs.readFileSync('src/tests/ParserInput', { encoding: 'utf8' });
-// let c = new Context(grammar, input, 0)
+// let c = new Context(parser, input, 0)
 // let ref = new Reference("Grammar")
 // let result = ref.parse(c)
 // console.log(result)

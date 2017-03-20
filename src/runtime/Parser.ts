@@ -1,7 +1,7 @@
 import Rule from "./Rule"
 import Context from "./Context"
 
-export default class Grammar
+export default class Parser
 {
     rules: {[name:string]:Rule} = {}
     start: Rule

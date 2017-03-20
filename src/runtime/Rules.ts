@@ -100,7 +100,7 @@ export class Reference extends Rule
         this.reference = reference
     }
     parseInternal(context: Context) {
-        let rule = context.grammar.rules[this.reference]
+        let rule = context.parser.rules[this.reference]
         return rule.parse(context)
     }
 

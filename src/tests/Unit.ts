@@ -43,32 +43,32 @@ function finish() {
 }
 start()
 
-function testRule(rule:Rule, source:string, pass: boolean | number = true, value?:any, grammar = new Grammar([])) {
+function testRule(rule:Rule, source:string, pass: boolean | number = true, expectedValue?:any, grammar = new Grammar([])) {
     testCount++
     var context = new Context(grammar, source, 0, {})
-    var parseResult = rule.parse(context)
-    var result = Rule.passed(parseResult)
+    var value = rule.parse(context)
+    var passed = Rule.passed(value)
 
     function fail(message: string) {
         testFails++
         console.log("rule: " + rule)
         console.log("source: " + source)
-        console.log("result: " + result)
+        console.log("result: " + passed)
         console.log(red + message)
     }
 
     var shouldFail = pass == false || typeof pass == 'number'
     //  if pass is a number that indicates an offset where an error is expected
-    if (shouldFail == (result))
+    if (shouldFail == passed)
         return fail("Rule should have " + (pass ? "passed " : "failed ") + "but didn't!")
 
-    if (typeof pass == 'number' && !result) {
+    if (typeof pass == 'number' && !passed) {
         if (context.failureOffset != pass)
             return fail("Rule should have returned error offset " + pass + " but returned " + context.failureOffset)
     }
     else {
-        if (result && value != null && JSON.stringify(parseResult) != JSON.stringify(value))
-            return fail("Rule value should have been " + JSON.stringify(value) + "but was " + JSON.stringify(parseResult))
+        if (passed && expectedValue != null && JSON.stringify(value) != JSON.stringify(expectedValue))
+            return fail("Rule value should have been " + JSON.stringify(expectedValue) + "but was " + JSON.stringify(value))
     }
 }
 
