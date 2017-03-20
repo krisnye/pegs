@@ -7,25 +7,34 @@ export default class Context
 {
     readonly parser: Parser
     readonly source: string
+    readonly debug: false
     offset: number = 0
     state: object = {}
-    private stack?: Rule[]
+    protected stack: Rule[] = []
     private locationCalculator?: LocationCalculator
     rules?: Rule[]              //  present while parsing sequences
     values?: any[]              //  present while parsing sequences, contains values parsed so far in sequence
     location?: () => Location   //  present while parsing sequences
-    failureOffset: number       //  furthest failure offset used for creating errors
+    failureOffsetStart: number = 0      //  furthest failure offset start used for creating errors
+    failureOffsetFinish: number = 0     //  furthest failure offset finish used for creating errors
 
-    constructor(parser: Parser, source: string, offset: number, state: object = {}) {
+    constructor(parser: Parser, source: string) {
         this.parser = parser
         this.source = source
-        this.offset = offset
-        this.state = state
     }
 
-    failure(offset: number = this.offset) {
-        if (this.failureOffset == null || this.failureOffset < offset) {
-            this.failureOffset = offset
+    pushRule(rule: Rule) {
+        this.stack.push(rule)
+    }
+
+    popRule() {
+        this.stack.pop()
+    }
+
+    failure(failureOffsetFinish: number = this.offset) {
+        if (this.offset >= this.failureOffsetStart) {
+            this.failureOffsetStart = this.offset
+            this.failureOffsetFinish = failureOffsetFinish
         }
         return Rule.failure
     }
@@ -36,22 +45,9 @@ export default class Context
         return this.locationCalculator
     }
 
-    getStack() {
-        if (this.stack == null)
-            this.stack = []
-        return this.stack
-    }
-
-    pushRule(rule: Rule) {
-        this.getStack().push(rule)
-    }
-
-    popRule() {
-        this.getStack().pop()
-    }
-
-    getErrorMessage(expected: any /* Set */, offset: number, length: number, unexpected?: string) {
-
+    getErrorMessage() {
+        //  todo: populate info with debug flag and use it here to make a pimp ass error message
+        return "Error fucking offset: " + this.failureOffsetStart
     }
 
 }

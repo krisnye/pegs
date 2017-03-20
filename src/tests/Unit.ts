@@ -1,6 +1,6 @@
 import {
     Context,
-    Grammar,
+    Parser,
     Rule,
     Terminal,
     CharRange,
@@ -28,6 +28,8 @@ let testFails = 0
 function start() {
     testStart = new Date().getTime()
 }
+start()
+
 function finish() {
     let testFinish = new Date().getTime()
     let time = testFinish - testStart
@@ -41,11 +43,25 @@ function finish() {
         console.log(color + testFails + "/" + testCount + " Failed (" + time + "ms)" + endColor)
     }
 }
-start()
 
-function testRule(rule:Rule, source:string, pass: boolean | number = true, expectedValue?:any, grammar = new Grammar([])) {
+function testError(parser: Parser, source: string, message: string) {
     testCount++
-    var context = new Context(grammar, source, 0, {})
+    try{
+        parser.parse(source)
+        testFails++
+    }
+    catch (e) {
+        if (e.message != message) {
+            testFails++
+            console.log("Parsing " + source + " expected error " + JSON.stringify(message) +  ", actual error: " + JSON.stringify(e.message))
+        }
+    }
+
+}
+
+function testRule(rule:Rule, source:string, pass: boolean | number = true, expectedValue?:any, parser = new Parser([])) {
+    testCount++
+    var context = new Context(parser, source)
     var value = rule.parse(context)
     var passed = Rule.passed(value)
 
@@ -63,8 +79,8 @@ function testRule(rule:Rule, source:string, pass: boolean | number = true, expec
         return fail("Rule should have " + (pass ? "passed " : "failed ") + "but didn't!")
 
     if (typeof pass == 'number' && !passed) {
-        if (context.failureOffset != pass)
-            return fail("Rule should have returned error offset " + pass + " but returned " + context.failureOffset)
+        if (context.failureOffsetStart != pass)
+            return fail("Rule should have returned error offset " + pass + " but returned " + context.failureOffsetStart)
     }
     else {
         if (passed && expectedValue != null && JSON.stringify(value) != JSON.stringify(expectedValue))
@@ -76,11 +92,11 @@ var alphaLower = new CharRange('a', 'z')
 var alphaUpper = new CharRange('A', 'Z')
 var alpha = new Choice(alphaLower, alphaUpper)
 var num = new CharRange('0', '9')
-var ws = new Choice(new Terminal(" "), new Terminal("\r"), new Terminal("\n")).setLabel('whitespace')
+var ws = new Choice(new Terminal(" "), new Terminal("\r"), new Terminal("\n"))
 var word = new Repeat(alpha, 1)
 var number = new Repeat(num, 1)
 var mws = new Repeat(ws, 1)
-var __ = new Repeat(ws).setLabel('whitespace-repeat')
+var __ = new Repeat(ws).setLabel('Whitespace')
 var end = new NotPredicate(new Any())
 var comma = new Terminal(',')
 function makeListRule(rule:Rule) {
@@ -103,7 +119,7 @@ testRule(test, "abc 123!", 7)
 
 testRule(new Sequence(makeListRule(number), end), "1,2,3,4,5")
 
-var grammar = new Grammar([
+var parser = new Parser([
     new Sequence(
         new Terminal('['),
         makeListRule(new Reference("value")),
@@ -112,9 +128,9 @@ var grammar = new Grammar([
     new Choice(number, new Reference("list")).setName("value")
 ]);
 test = new Sequence(new Reference("list"), end);
-testRule(test, "[1,[2,3],[4,[5]]]", true, null, grammar)
-testRule(test, "[1,[2,3],[4,[5]]]]", 17, null, grammar)
-testRule(test, "[1,[2,3],[4,[5]]", 16, null, grammar)
+testRule(test, "[1,[2,3],[4,[5]]]", true, null, parser)
+testRule(test, "[1,[2,3],[4,[5]]]]", 17, null, parser)
+testRule(test, "[1,[2,3],[4,[5]]", 16, null, parser)
 
 //  Extract
 test = new Extract(new Sequence(new Terminal("a"), new Terminal("b"), new Terminal("c")), 1)
@@ -155,19 +171,20 @@ testRule(test, "abc", 2)
 testRule(test, "abd", 2)
 
 //  test for good errors
-grammar = new Grammar([
+parser = new Parser([
     new Sequence(
         new Terminal('['),
         __,
         //  Optional fails, but should be the farthest found.
-        makeListRule(new Reference("value")).setLabel('values'),
+        makeListRule(new Reference("value")).setName('values'),
         __,
         new Terminal(']')
-    ).setName("list"),
+    ).setName("list").setLabel('Array'),
     __,
-    new Choice(number, new Reference("list")).setName("value")
+    new Choice(number.setLabel('Number'), new Reference("list")).setName("value")
 ]);
 
-// grammar.parse("[ 1,  \n[2,3],\n[x4,[5]\n]\n]")
+testError(parser, "[ 1,  \n[2,3],\n[x4,[5]\n]\n]", "Expected Number or Array")
+testError(parser, "crap", "Expected Array")
 
 finish()

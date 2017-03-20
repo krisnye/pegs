@@ -1,5 +1,6 @@
 import Rule from "./Rule"
 import Context from "./Context"
+import ErrorContext from "./ErrorContext"
 
 export default class Parser
 {
@@ -15,18 +16,15 @@ export default class Parser
 
     //  either returns the resulting parse value or throws a ParseError
     parse(source:string, start: Rule = this.start) : any {
-        let context = new Context(this, source, 0, {})
-        let result: any
-        try {
-            result = start.parse(context)
-        }
-        catch (e) {
-            result = e
-        }
-        if (Rule.passed(result))
-            return result
-        else
-            throw new Error("Error offset: " + context.failureOffset)
+        let context = new Context(this, source)
+        let value = start.parse(context)
+        if (Rule.passed(value))
+            return value
+
+        //  ok, our parse failed... so we need to do another parse with debugging enabled
+        let errorContext = new ErrorContext(context)
+        start.parse(errorContext)
+        throw errorContext.getError()
     }
 
 }

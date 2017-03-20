@@ -7,6 +7,8 @@ abstract class Rule extends BaseObject {
     static failure = Symbol('Rule.failure')
     static passed(result:any) { return result !== Rule.failure }
 
+    isWhitespace: boolean = false
+
     parse(context: Context): any {
         context.pushRule(this)
         var saveOffset = context.offset

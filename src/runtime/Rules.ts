@@ -40,14 +40,12 @@ export class Terminal extends Rule
     constructor(match: string) {
         super()
         this.match = match
+        this.isWhitespace = match.trim().length == 0
     }
 
     parseInternal(context: Context) {
         for (let i = 0; i < this.match.length; i++) {
             if (context.source[context.offset + i] !== this.match[i]) {
-                // if (context.offset == 15)
-                //     console.log(context.getStack())
-                // console.log('>>>>> FUCKING CHAR ' + JSON.stringify(context.source[context.offset + i]) + ', <<<<<< ' + context.offset + ' >>>>>>, ' + JSON.stringify(this.match))
                 return context.failure(context.offset + i)
             }
         }
@@ -82,7 +80,7 @@ export class CharRange extends Rule
             return context.source[context.offset];
         }
         else {
-            return context.failure(context.offset);
+            return context.failure();
         }
     }
 
@@ -196,7 +194,7 @@ export class Repeat extends Rule
             }
             else {
                 if (matches < this.min)
-                    return context.failure(context.failureOffset)
+                    return value
                 break
             }
         }
