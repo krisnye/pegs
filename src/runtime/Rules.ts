@@ -58,34 +58,44 @@ export class Terminal extends Rule
     }
 }
 
-
-//todo: memoize this.
 export class CharRange extends Rule
 {
     lower: number
     upper: number
+    ignoreCase: boolean
+    inverted: boolean
 
-    constructor(lower: string, upper: string) {
+    constructor(lower: string, upper: string, ignoreCase: boolean = false, inverted: boolean = false) {
         super()
+        this.ignoreCase = ignoreCase
+        this.inverted = inverted
         this.lower = lower.charCodeAt(0)
         this.upper = upper.charCodeAt(0)
         if (this.lower > this.upper)
-            throw new Error("Lower AndPredicate upper characters are in wrong order!")
+            throw new Error("Lower and upper characters are in wrong order!")
     }
 
     parseInternal(context: Context) {
-        let code = context.source.charCodeAt(context.offset);
-        if (this.lower <= code && this.upper >= code) {
+        let ch = context.source.charAt(context.offset)
+        if ((this.charMatches(ch) || this.ignoreCase && this.charMatches(this.flipCase(ch))) != this.inverted) {
             context.offset++
             return context.source[context.offset];
-        }
-        else {
+        } else {
             return context.failure();
         }
     }
+    
+    charMatches(ch: string) {
+        let code = ch.charCodeAt(0)
+        return this.lower <= code && this.upper >= code
+    }
+
+    flipCase(ch: string) {
+        return ch.toUpperCase() === ch ? ch.toLowerCase() : ch.toUpperCase()
+    }
 
     toString(): string {
-        return this.label || '[' + String.fromCharCode(this.lower) + '-' + String.fromCharCode(this.upper) + ']'
+        return this.label || (this.inverted ? '[^' : '[') + String.fromCharCode(this.lower) + '-' + String.fromCharCode(this.upper) + (this.ignoreCase ? ']i' : ']')
     }
 
 }

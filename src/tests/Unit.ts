@@ -134,6 +134,19 @@ testRule(test, "[1,[2,3],[4,[5]]]", true, null, parser)
 testRule(test, "[1,[2,3],[4,[5]]]]", 17, null, parser)
 testRule(test, "[1,[2,3],[4,[5]]", 16, null, parser)
 
+// CharRange
+test = new CharRange('A', 'z', true)
+testRule(test, '[') // '[' is between A and z and should still match
+test = new CharRange('a', 'z', true)
+testRule(test, 'G')
+test = new CharRange('a', 'z', false, true)
+testRule(test, 'G')
+testRule(test, 'g', false)
+test = new CharRange('a', 'z', true, true)
+testRule(test, 'G', false)
+testRule(test, 'g', false)
+
+
 //  Extract
 test = new Extract(new Sequence(new Terminal("a"), new Terminal("b"), new Terminal("c")), 1)
 testRule(test, "abc", true, "b")
