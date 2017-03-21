@@ -1,6 +1,6 @@
 declare var require: (name:string) => any
 
-let peg = require('./PegJsSelfParser.js')
+let pegjs = require('./PegJsSelfParser.js')
 let fs = require('fs')
 let runtime = require('../runtime')
 
@@ -84,7 +84,7 @@ function createFunctionFromBody(scope: any[], body: string): string {
         }
     ).join(";\n")
 
-    return "\nfunction(__context, __values) {\nlet location = () => __context.offset;\nlet text = () => __context.source[__context.offset];\n" + localVariables + ";\n" + body + "}"
+    return "\nfunction(__context, __values) {\nlet location = () => __context.offset;\nlet text = () => __context.source[__context.offset - 1];\n" + localVariables + ";\n" + body + "}"
 }
 
 function obj(name: string, ...args: any[]) {
@@ -122,24 +122,28 @@ function quote(s: any) {
   }
 
 function convertCharClass(ast: any) {
-    let args = ast.parts.map(convertCharClassPart)
+    let args = ast.parts.map((part: any) => convertCharClassPart(part, ast.ignoreCase, ast.invert))
     if (args.length == 1)
         return args[0]
     else
         return obj("Choice", ...args)
 }
 
-function convertCharClassPart(part: any) {
-    if(typeof part == 'string')
+function convertCharClassPart(part: any, ignoreCase: any, invert: any) {
+    if(typeof part == 'string') {
         return obj("Terminal", quote(part))
-    else
-        return obj("CharRange", quote(part[0]), quote(part[1]))
+    } else {
+        let args = [quote(part[0]), quote(part[1])]
+        if (ignoreCase || invert) args.push(JSON.stringify(ignoreCase))
+        if (invert) args.push('true')
+        return obj("CharRange", ...args)
+    }
 }
 
 export function astToJS(ast: any): any {
     try {
     switch (ast.type) {
-        case "grammar": return (ast.initializer ? ast.initializer.code + '\n' : "") + "exports.grammar = " + obj("Parser", array(ast.rules.map(astToJS), ',\n\n'))
+        case "grammar": return (ast.initializer ? ast.initializer.code + '\n' : "") + "exports.parser = " + obj("Parser", array(ast.rules.map(astToJS), ',\n\n'))
         case "choice": return obj("Choice", ...ast.alternatives.map(astToJS))
         case "sequence": return obj("Sequence", ...ast.elements.map(astToJS))
         case "group": return obj("Group", astToJS(ast.expression))
@@ -180,7 +184,7 @@ for (let key in runtime)
 header.push("\n")
 
 export function generate(input: any, writeToFile = true, path = 'lib/compiler/Parser.js') {
-    let ast = (typeof input == 'string') ? peg.parse(input) : input;
+    let ast = (typeof input == 'string') ? pegjs.parse(input) : input;
     let badRef: any = badReference(ast)
     if (badRef !== undefined) {
         console.log("Line: " + badRef.location.start.line + ' Column: ' + badRef.location.start.column + ", No such rule: " + badRef.name)

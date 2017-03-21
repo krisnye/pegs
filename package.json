@@ -14,7 +14,8 @@
         "compile": "tsc -p . & node lib/compiler/Generator.js",
         "watchCompile": "tsc -p . --watch & nodemon --watch src -e pegjs,ts,js lib/compiler/Generator.js",
         "watchCompileWin": "start tsc -p . --watch & nodemon --watch src -e pegjs,ts,js lib/compiler/Generator.js",
-        "testParser": "tsc -p . & node lib/tests/ParserTest.js"
+        "testParser": "tsc -p . & node lib/tests/ParserTest.js",
+        "performance" : "tsc -p . & node lib/tests/ParserPerformance.js"
     },
     "directories": {
         "lib": "lib",
