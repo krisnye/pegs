@@ -1,11 +1,11 @@
 declare var require: (name:string) => any
 
-let fs = require('fs')
+var fs = require('fs')
 
-let pegs = require('../../lib/compiler/Parser.js').parser
-let pegjs = require('../../lib/compiler/PegJsSelfParser.js')
+var pegs = require('../../lib/compiler/Parser.js').parser
+var pegjs = require('../../lib/compiler/PegJsSelfParser.js')
 
-let source = fs.readFileSync('src/tests/ParserInput', { encoding: 'utf8' });
+var source = fs.readFileSync('src/tests/ParserInput', { encoding: 'utf8' });
 
 function traverse(ast: any, callback: any) {
     try {
@@ -17,12 +17,12 @@ function traverse(ast: any, callback: any) {
     } catch(e) {}
 }
 
-let pegsTime = new Date().getTime()
-let pegsOut = pegs.parse(source)
+var pegsTime = new Date().getTime()
+var pegsOut = pegs.parse(source)
 pegsTime = new Date().getTime() - pegsTime
 
-let pegjsTime = new Date().getTime()
-let pegjsOut = pegjs.parse(source)
+var pegjsTime = new Date().getTime()
+var pegjsOut = pegjs.parse(source)
 pegjsTime = new Date().getTime() - pegjsTime
 
 for (let ast of [pegsOut, pegjsOut]) traverse(ast, (ast: any) => {
