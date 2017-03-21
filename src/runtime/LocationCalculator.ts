@@ -12,7 +12,8 @@ export default class LocationCalculator
         this.source = source
         let line = 1
         let column = 1
-        for (let i = 0; i < source.length; i++) {
+        //  add final line and column numbers for the EOF Location, we do this by comparing with <=
+        for (let i = 0; i <= source.length; i++) {
             this.lines[i] = line
             this.columns[i] = column
             if (source.charCodeAt(i) == 10) {
@@ -27,8 +28,8 @@ export default class LocationCalculator
 
     getLocation(start: number, end: number) {
         return new Location(
-            new Position(start, this.lines[Math.min(start, this.lines.length-1)], this.columns[Math.min(start, this.columns.length-1)]),
-            new Position(end, this.lines[Math.min(end, this.lines.length-1)], this.columns[Math.min(end, this.columns.length-1)])
+            new Position(start, this.lines[start], this.columns[start]),
+            new Position(end, this.lines[end], this.columns[end])
         )
     }
 

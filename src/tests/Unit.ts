@@ -55,9 +55,9 @@ function testError(parser: Parser, source: string, expected: string) {
             testFails++
             console.log("Parsing " + source + " expected error " + expected +  ", actual error: " + e.message)
         }
-        else {
+        // else {
             console.log(e.message)
-        }
+        // }
     }
 }
 
@@ -186,7 +186,7 @@ parser = new Parser([
     new Choice(number.setLabel('Number'), new Reference("list")).setName("value")
 ]);
 
-testError(parser, "[ 1,  \n[2,3],\n[x4,[5]\n]\n]", "Expected Number or Array")
+testError(parser, "[1,\n    [2,3],\n    [x4,[5]\n    ]\n]", "Expected Number or Array")
 testError(parser, "crap", "Expected Array")
 
 //  TODO: Fix this, it's reporting too far up the rule stack, where offset isn't the same.

@@ -4,6 +4,12 @@ import Parser from "./Parser"
 import Location from "./Location"
 import * as Colors from "./Colors"
 
+function pad(text: string, length: number) {
+    while (text.length < length)
+        text = " " + text
+    return text
+}
+
 function getRuleLabel(rules: StackFrame[], offset: number) {
     for (let i = rules.length - 1; i >= 0; i--) {
         let frame = rules[i]
@@ -67,12 +73,6 @@ export default class ErrorContext extends Context
         return expected
     }
 
-    pad(text: string, length: number) {
-        while (text.length < length)
-            text = " " + text
-        return text
-    }
-
     wrapErrorLine(lineNumber: number, errorLocation: Location, start: string, end: string) {
         let lineText = this.getLine(lineNumber)
         if (lineText == null)
@@ -82,38 +82,43 @@ export default class ErrorContext extends Context
             return lineText
         if (lineNumber > errorLocation.start.line && lineNumber < errorLocation.end.line)
             return start + lineText + end
-        console.log(lineNumber, errorLocation.start.line)
         let startIndex = lineNumber == errorLocation.start.line ? errorLocation.start.column : 1
         let endIndex = lineNumber == errorLocation.end.line ? errorLocation.end.column : lineText.length
+        if (startIndex >= lineText.length) {
+            //  error is at end of file.
+            let append = Colors.Dim + "</EOF>"
+            lineText += append
+            endIndex = startIndex + append.length
+        }
         if (startIndex == endIndex)
             endIndex += 1
         let result = lineText.substring(0, startIndex - 1) + start + lineText.substring(startIndex - 1, endIndex - 1) + end + lineText.substring(endIndex - 1)
         return result
     }
 
-    getLinesWithNumbers(startLine: number, endLine: number, errorLocation: Location) {
-        let length = Math.max(Math.max(0, startLine).toString().length, endLine.toString().length)
+    getLinesWithNumbers(startLine: number, endLine: number, errorLocation: Location): [number, string] {
+        let lineDigits = Math.max(Math.max(0, startLine).toString().length, endLine.toString().length)
+        let linePrefix = "| "
         let lines = []
         for (let i = startLine; i <= endLine; i++) {
             let line = this.wrapErrorLine(i, errorLocation, Colors.BgMagenta, Colors.Reset)
             if (line != null) {
-                lines.push(Colors.Dim + this.pad(i.toString(), length) + "| " + Colors.Reset + line)
+                lines.push(Colors.Dim + pad(i.toString(), lineDigits) + linePrefix + Colors.Reset + line)
             }
         }
-        return lines.join('\n')
+        return [lineDigits + linePrefix.length, lines.join('\n')]
     }
 
     getError() {
         let location = this.getLocationCalculator().getLocation(this.debugErrorOffsetStart, this.debugErrorOffsetFinish)
         let errorLine = location.start.line
-        let lines = this.getLinesWithNumbers(errorLine - 3, errorLine, location)
-        console.log(lines)
+        let [padLength, lines] = this.getLinesWithNumbers(errorLine - 2, errorLine + 2, location)
 
         let expected = this.getExpected(false)
         if (expected.length == 0)
             expected = this.getExpected(true)
         let expectedString = "Expected " + expected.join(" or ")
-        let message = expectedString
+        let message = lines + "\n\n" + pad(" ", padLength) + expectedString + "\n"
         let error: any = new Error(message)
         error.expected = expectedString
         return error
