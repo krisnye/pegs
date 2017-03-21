@@ -7,6 +7,86 @@ let runtime = require('../runtime')
 const red   = '\u001b[31m'
 const endColor = '\u001b[0m'
 
+//Currently CustomPredicate and Action differ from their PEG.js analog in that they can't see higher scopes.
+//This may cause problems.
+function addScopeInformation (ast: any, parent: any = null, index = 0) {
+
+    for (let member of ['rules', 'alternatives', 'elements']) {
+        if (ast[member]) {
+            let i = 0;
+            for (let elem of ast[member])
+                addScopeInformation(elem, ast, i++)
+        }
+    }
+
+    if (ast.expression)
+        addScopeInformation(ast.expression, ast, 0)
+
+    if (ast.type == "action")
+        ast.scope = scopeUpto(ast.expression)
+
+    if (ast.type == "semantic_and")
+        ast.scope = scopeUpto(parent, index)
+}
+
+function scopeUpto(ast: any, index: number = Infinity) {
+    if (ast.type == "labeled")
+        return [{name: ast.label, index: 0}]
+
+    if (ast.type == "sequence") {
+        let scope = []
+        let i = 0
+        for (let rule of ast.elements) {
+            if (i >= index)
+               break
+            if (rule.type == "labeled")
+                scope.push({name: rule.label, index: i})
+            i++
+        }
+        return scope
+    }
+
+    return []
+}
+
+function badReference(ast: any) {
+    let rules: any = {}
+    let references: any = []
+    rulesAndReferences(ast, rules, references)
+    for (let ref of references) {
+        if (rules[ref.name] == undefined)
+            return ref
+    }
+}
+
+function rulesAndReferences(ast: any, rules: any = {}, references: any = []){
+    for (let member of ['rules', 'alternatives', 'elements']) {
+        if (ast[member]) {
+            for (let elem of ast[member])
+                rulesAndReferences(elem, rules, references)
+        }
+    }
+
+    if (ast.expression)
+        rulesAndReferences(ast.expression, rules, references)
+
+    if (ast.type == "rule")
+        rules[ast.name] = true
+    else if (ast.type == "rule_ref")
+        references.push(ast)
+}
+
+//  creates a function that will extract named rules out into local variables for use by the function body
+function createFunctionFromBody(scope: any[], body: string): string {
+    let localVariables = scope.map(
+        (elem) => {
+            return "let " + elem.name + " = __values[" + elem.index + "]"
+        }
+    ).join(";\n")
+
+    return "\nfunction(__context, __values) {\nlet location = () => __context.offset;\nlet text = () => __context.source[__context.offset];\n" + localVariables + ";\n" + body + "}"
+}
+
 function obj(name: string, ...args: any[]) {
     return 'new ' + name + '(' + args.join(', ') + ')';
 }
@@ -56,59 +136,6 @@ function convertCharClassPart(part: any) {
         return obj("CharRange", quote(part[0]), quote(part[1]))
 }
 
-//Currently CustomPredicate and Action differ from their PEG.js analog in that they can't see higher scopes.
-//This may cause problems.
-function addScopeInformation (ast: any, parent: any = null, index = 0) {
-
-    for (let member of ['rules', 'alternatives', 'elements']) {
-        if (ast[member]) {
-            let i = 0;
-            for (let elem of ast[member])
-                addScopeInformation(elem, ast, i++)
-        }
-    }
-
-    if (ast.expression)
-        addScopeInformation(ast.expression, ast, 0)
-
-    if (ast.type == "action")
-        ast.scope = scopeUpto(ast.expression)
-
-    if (ast.type == "semantic_and")
-        ast.scope = scopeUpto(parent, index)
-}
-
-function scopeUpto(ast: any, index: number = Infinity) {
-    if (ast.type == "labeled")
-        return [{name: ast.label, index: 0}]
-
-    if (ast.type == "sequence") {
-        let scope = []
-        let i = 0
-        for (let rule of ast.elements) {
-            if (i >= index)
-               break
-            if (rule.type == "labeled")
-                scope.push({name: rule.label, index: i})
-            i++
-        }
-        return scope
-    }
-
-    return []
-}
-
-//  creates a function that will extract named rules out into local variables for use by the function body
-function createFunctionFromBody(scope: any[], body: string): string {
-    let localVariables = scope.map(
-        (elem) => {
-            return "let " + elem.name + " = __values[" + elem.index + "]"
-        }
-    ).join(";\n")
-
-    return "\nfunction(__context, __values) {\nlet location = () => __context.offset;\nlet text = () => __context.source[__context.offset];\n" + localVariables + ";\n" + body + "}"
-}
-
 export function astToJS(ast: any): any {
     try {
     switch (ast.type) {
@@ -152,9 +179,12 @@ for (let key in runtime)
     header.push('let ' + key + ' = runtime.' + key)
 header.push("\n")
 
-
 export function generate(input: any, writeToFile = true, path = 'lib/compiler/Parser.js') {
     let ast = (typeof input == 'string') ? peg.parse(input) : input;
+    let badRef: any = badReference(ast)
+    if (badRef !== undefined) {
+        console.log("Line: " + badRef.location.start.line + ' Column: ' + badRef.location.start.column + ", No such rule: " + badRef.name)
+    }
     addScopeInformation(ast)
     let js = header.join('\n') + astToJS(ast);
     if (writeToFile)
