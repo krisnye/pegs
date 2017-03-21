@@ -1,3 +1,5 @@
+This is the base performance before any optimizations.
+
 Statistical profiling result from isolate-00000000003BA5F0-v8.log, (33670 ticks, 697 unaccounted, 0 excluded).
 
  [Shared libraries]:

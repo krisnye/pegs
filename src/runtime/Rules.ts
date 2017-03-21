@@ -44,9 +44,16 @@ export class Terminal extends Rule
     }
 
     parseInternal(context: Context) {
-        for (let i = 0; i < this.match.length; i++) {
-            if (context.source[context.offset + i] !== this.match[i]) {
-                return context.failure(context.offset + i)
+        if (!context.debug) {
+            if (context.source.substr(context.offset, this.match.length) != this.match)
+                return context.failure(context.offset)
+            context.offset += this.match.length
+            return this.match
+        } else {
+            for (let i = 0; i < this.match.length; i++) {
+                if (context.source[context.offset + i] !== this.match[i]) {
+                    return context.failure(context.offset + i)
+                }
             }
         }
         context.offset += this.match.length
