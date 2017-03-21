@@ -77,12 +77,10 @@ export class CharRange extends Rule
 
     parseInternal(context: Context) {
         let ch = context.source.charAt(context.offset)
-        if ((this.charMatches(ch) || this.ignoreCase && this.charMatches(this.flipCase(ch))) != this.inverted) {
-            context.offset++
-            return context.source[context.offset];
-        } else {
+        if ((this.charMatches(ch) || this.ignoreCase && this.charMatches(this.flipCase(ch))) != this.inverted)
+            return context.source[context.offset++];
+        else
             return context.failure();
-        }
     }
     
     charMatches(ch: string) {
