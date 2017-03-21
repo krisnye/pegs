@@ -44,19 +44,21 @@ function finish() {
     }
 }
 
-function testError(parser: Parser, source: string, message: string) {
+function testError(parser: Parser, source: string, expected: string) {
     testCount++
-    try{
+    try {
         parser.parse(source)
         testFails++
     }
     catch (e) {
-        if (e.message != message) {
+        if (e.expected != expected) {
             testFails++
-            console.log("Parsing " + source + " expected error " + JSON.stringify(message) +  ", actual error: " + JSON.stringify(e.message))
+            console.log("Parsing " + source + " expected error " + expected +  ", actual error: " + e.message)
+        }
+        else {
+            console.log(e.message)
         }
     }
-
 }
 
 function testRule(rule:Rule, source:string, pass: boolean | number = true, expectedValue?:any, parser = new Parser([])) {
@@ -108,9 +110,9 @@ function makeListRule(rule:Rule) {
                 comma,
                 __,
                 rule
-            ).setLabel('listCommaRule')
-        ).setLabel('listRepeat')
-    ).setLabel('listRule')
+            )
+        )
+    )
 }
 
 var test:Rule = new Sequence(word, mws, number, end)
@@ -186,5 +188,8 @@ parser = new Parser([
 
 testError(parser, "[ 1,  \n[2,3],\n[x4,[5]\n]\n]", "Expected Number or Array")
 testError(parser, "crap", "Expected Array")
+
+//  TODO: Fix this, it's reporting too far up the rule stack, where offset isn't the same.
+testError(parser, "[ 1,  \n[2,3],\n[4,[5]\n]", 'Expected "," or "]"')
 
 finish()

@@ -1,5 +1,6 @@
 import Context from "./Context"
 import BaseObject from "./BaseObject"
+declare var Symbol: any
 
 abstract class Rule extends BaseObject {
 

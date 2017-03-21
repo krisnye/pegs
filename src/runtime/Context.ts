@@ -10,7 +10,6 @@ export default class Context
     readonly debug: false
     offset: number = 0
     state: object = {}
-    protected stack: Rule[] = []
     private locationCalculator?: LocationCalculator
     rules?: Rule[]              //  present while parsing sequences
     values?: any[]              //  present while parsing sequences, contains values parsed so far in sequence
@@ -23,13 +22,18 @@ export default class Context
         this.source = source
     }
 
-    pushRule(rule: Rule) {
-        this.stack.push(rule)
+    private lines: string[]
+    getLines() {
+        if (this.lines == null)
+            this.lines = this.source.split(/\r?\n/g)
+        return this.lines
+    }
+    getLine(indexStartingAtOne: number) {
+        return this.getLines()[indexStartingAtOne - 1]
     }
 
-    popRule() {
-        this.stack.pop()
-    }
+    pushRule(rule: Rule) {}
+    popRule() {}
 
     failure(failureOffsetFinish: number = this.offset) {
         if (this.offset >= this.failureOffsetStart) {

@@ -1,4 +1,5 @@
-//let peg = require('pegjs')
+declare var require: (name:string) => any
+
 let peg = require('./PegJsSelfParser.js')
 let fs = require('fs')
 let runtime = require('../runtime')
