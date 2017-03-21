@@ -216,7 +216,7 @@ export class Optional extends Rule
         let value = this.rule.parse(context)
         if (Rule.passed(value))
             return value
-        return undefined
+        return null
     }
 
     toString(): string {

@@ -139,7 +139,7 @@ function convertCharClassPart(part: any) {
 export function astToJS(ast: any): any {
     try {
     switch (ast.type) {
-        case "grammar": return (ast.initializer ? ast.initializer.code + '\n' : "") + "exports.grammar = " + obj("Grammar", array(ast.rules.map(astToJS), ',\n\n'))
+        case "grammar": return (ast.initializer ? ast.initializer.code + '\n' : "") + "exports.grammar = " + obj("Parser", array(ast.rules.map(astToJS), ',\n\n'))
         case "choice": return obj("Choice", ...ast.alternatives.map(astToJS))
         case "sequence": return obj("Sequence", ...ast.elements.map(astToJS))
         case "group": return obj("Group", astToJS(ast.expression))
