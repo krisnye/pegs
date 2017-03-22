@@ -10,7 +10,7 @@ var pegs = require('../../lib/compiler/Parser.js').parser
 var source = fs.readFileSync('src/tests/ParserInput', { encoding: 'utf8' });
 
 var time = new Date().getTime()
-for(let i = 0; i < 1000; i++) pegs.parse(source)
+for(let i = 0; i < 100; i++) pegs.parse(source)
 time = new Date().getTime() - time
 
 console.log('Done in ' + time + 'ms.')

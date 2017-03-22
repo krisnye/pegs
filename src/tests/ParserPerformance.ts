@@ -17,7 +17,7 @@ function traverse(ast: any, callback: any) {
     } catch(e) {}
 }
 
-var count = 10
+var count = 100
 
 var pegsTime = new Date().getTime()
 for (let i = 0; i < count; i++)
