@@ -129,6 +129,10 @@ function escapeString(s: any) {
       .replace(/[\u1000-\uFFFF]/g,      function(ch: any) { return '\\u'  + hex(ch) })
 }
 
+function escapeRegExp(str: string) {
+  return escapeString(str).replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\^\$\|]/g, "\\$&");
+}
+
 function convertCharClass(ast: any) {
     let parts = ast.parts.map(convertCharClassPart).join('')
     return obj("Regex", (ast.inverted ? '/[^' : '/[') + parts + (ast.ignoreCase ? ']/yi': ']/y'))
@@ -137,10 +141,6 @@ function convertCharClass(ast: any) {
 function convertCharClassPart(part: any) {
     if(typeof part == 'string') return escapeRegExp(part)
     else return escapeRegExp(part[0]) + '-' + escapeRegExp(part[1])
-}
-
-function escapeRegExp(str: string) {
-  return escapeString(str).replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\^\$\|]/g, "\\$&");
 }
 
 export function astToJS(ast: any): any {

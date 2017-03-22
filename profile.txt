@@ -1,178 +1,140 @@
-This is the base performance before any optimizations.
-
-Statistical profiling result from isolate-00000000003BA5F0-v8.log, (33670 ticks, 697 unaccounted, 0 excluded).
+Statistical profiling result from isolate-00000000004864B0-v8.log, (3138 ticks, 61 unaccounted, 0 excluded).
 
  [Shared libraries]:
    ticks  total  nonlib   name
-  10719   31.8%          C:\Program Files\nodejs\node.exe
-    345    1.0%          C:\Windows\SYSTEM32\ntdll.dll
-     12    0.0%          C:\Windows\system32\kernel32.dll
-      2    0.0%          C:\Windows\system32\WINMM.dll
-      1    0.0%          C:\Windows\system32\KERNELBASE.dll
+    353   11.2%          C:\Program Files\nodejs\node.exe
+    126    4.0%          C:\Windows\SYSTEM32\ntdll.dll
+      5    0.2%          C:\Windows\system32\kernel32.dll
 
  [JavaScript]:
    ticks  total  nonlib   name
-   3507   10.4%   15.5%  LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-   3068    9.1%   13.6%  LazyCompile: *Terminal.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:45:49
-   2882    8.6%   12.8%  LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-   2191    6.5%    9.7%  Stub: LoadICStub
-   1383    4.1%    6.1%  Stub: CEntryStub {1}
-   1003    3.0%    4.4%  Stub: CEntryStub
-    977    2.9%    4.3%  Builtin: Call_ReceiverIsNotNullOrUndefined
-    967    2.9%    4.3%  Stub: CompareICStub {1}
-    852    2.5%    3.8%  Builtin: CallFunction_ReceiverIsNotNullOrUndefined
-    565    1.7%    2.5%  KeyedLoadIC: A keyed load IC from the snapshot {1}
-    521    1.5%    2.3%  Handler: An IC handler from the snapshot
-    508    1.5%    2.2%  LazyCompile: ~CharRange.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:74:50
-    451    1.3%    2.0%  Stub: CompareICStub
-    432    1.3%    1.9%  LazyCompile: ~CharRange.charMatches C:\code\JS\pegs\lib\runtime\Rules.js:81:48
-    294    0.9%    1.3%  LazyCompile: *CharRange.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:74:50
-    162    0.5%    0.7%  LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:340:47
-    126    0.4%    0.6%  Handler: parse {15}
-    108    0.3%    0.5%  Stub: FastArrayPushStub
-    105    0.3%    0.5%  Handler: parseInternal {19}
-     99    0.3%    0.4%  LazyCompile: *CharRange.charMatches C:\code\JS\pegs\lib\runtime\Rules.js:81:48
-     90    0.3%    0.4%  Handler: parse {7}
-     84    0.2%    0.4%  Handler: charAt
-     81    0.2%    0.4%  Stub: CompareICStub {2}
-     79    0.2%    0.3%  LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:137:49
-     79    0.2%    0.3%  Handler: parseInternal {8}
-     77    0.2%    0.3%  Handler: parse
-     71    0.2%    0.3%  Handler: charCodeAt
-     71    0.2%    0.3%  Builtin: ArgumentsAdaptorTrampoline
-     69    0.2%    0.3%  Handler: parseInternal
-     64    0.2%    0.3%  LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-     62    0.2%    0.3%  LazyCompile: *charCodeAt native string.js:50:28
-     59    0.2%    0.3%  LazyCompile: *charAt native string.js:42:24
-     53    0.2%    0.2%  Handler: parse {14}
-     40    0.1%    0.2%  LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:190:47
-     39    0.1%    0.2%  LazyCompile: *Context.failure C:\code\JS\pegs\lib\runtime\Context.js:24:42
-     38    0.1%    0.2%  Handler: An IC handler from the snapshot {1}
-     37    0.1%    0.2%  Handler: parseInternal {18}
-     36    0.1%    0.2%  Handler: parse {1}
-     30    0.1%    0.1%  Handler: parse {8}
-     27    0.1%    0.1%  Handler: charMatches
-     26    0.1%    0.1%  Stub: StringEqualStub
-     23    0.1%    0.1%  Handler: parseInternal {10}
-     22    0.1%    0.1%  Stub: LoadFieldStub {1}
-     22    0.1%    0.1%  LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:236:53
-     22    0.1%    0.1%  Handler: failure
-     21    0.1%    0.1%  Stub: ToBooleanICStub
-     21    0.1%    0.1%  Handler: parse {16}
-     19    0.1%    0.1%  LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:321:46
-     18    0.1%    0.1%  Stub: CompareICStub {6}
-     16    0.0%    0.1%  Handler: parseInternal {1}
-     14    0.0%    0.1%  LazyCompile: ~charCodeAt native string.js:50:28
-     14    0.0%    0.1%  Handler: An IC handler from the snapshot {4}
-     11    0.0%    0.0%  Stub: FastNewClosureStub
-      9    0.0%    0.0%  LazyCompile: *DoJoin native array.js:129:16
-      9    0.0%    0.0%  Handler: An IC handler from the snapshot {6}
-      8    0.0%    0.0%  Handler: An IC handler from the snapshot {2}
-      7    0.0%    0.0%  Stub: RecordWriteStub
-      7    0.0%    0.0%  LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:280:52
-      7    0.0%    0.0%  Handler: parseInternal {9}
-      7    0.0%    0.0%  Handler: parseInternal {2}
-      7    0.0%    0.0%  Handler: parse {19}
-      6    0.0%    0.0%  Handler: parse {10}
-      6    0.0%    0.0%  Handler: Rule
-      6    0.0%    0.0%  Handler: An IC handler from the snapshot {3}
-      5    0.0%    0.0%  Stub: CompareICStub {7}
-      5    0.0%    0.0%  LazyCompile: *<anonymous> C:\code\JS\pegs\lib\compiler\Parser.js:461:9
-      5    0.0%    0.0%  Handler: parse {4}
-      5    0.0%    0.0%  Handler: parse {3}
-      5    0.0%    0.0%  Handler: An IC handler from the snapshot {5}
-      4    0.0%    0.0%  Stub: LoadFieldStub
-      4    0.0%    0.0%  Stub: CompareICStub {4}
-      4    0.0%    0.0%  LazyCompile: ~charAt native string.js:42:24
-      4    0.0%    0.0%  LazyCompile: *InnerArrayFilter native array.js:913:26
-      4    0.0%    0.0%  Handler: parseInternal {20}
-      4    0.0%    0.0%  Handler: parseInternal {12}
-      4    0.0%    0.0%  Handler: Initializer
-      3    0.0%    0.0%  Stub: RecordWriteStub {1}
-      3    0.0%    0.0%  Stub: CompareICStub {5}
-      3    0.0%    0.0%  Stub: CompareICStub {3}
-      3    0.0%    0.0%  LazyCompile: ~location C:\code\JS\pegs\lib\compiler\Parser.js:217:16
-      3    0.0%    0.0%  LazyCompile: ~Terminal.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:45:49
-      3    0.0%    0.0%  LazyCompile: ~CharRange.flipCase C:\code\JS\pegs\lib\runtime\Rules.js:85:45
-      3    0.0%    0.0%  LazyCompile: *DefineIndexedProperty native array.js:48:31
-      3    0.0%    0.0%  Handler: parseInternal {4}
-      3    0.0%    0.0%  Handler: parseInternal {3}
-      3    0.0%    0.0%  Handler: parseInternal {22}
-      3    0.0%    0.0%  Handler: parseInternal {21}
-      3    0.0%    0.0%  Handler: parse {2}
-      3    0.0%    0.0%  Handler: parse {18}
-      3    0.0%    0.0%  Handler: ChoiceExpression
-      3    0.0%    0.0%  Handler: ActionExpression
-      2    0.0%    0.0%  Stub: ToLengthStub
-      2    0.0%    0.0%  Stub: SubStringStub
-      2    0.0%    0.0%  Stub: RecordWriteStub {2}
-      2    0.0%    0.0%  LazyCompile: ~location C:\code\JS\pegs\lib\compiler\Parser.js:300:16
-      2    0.0%    0.0%  LazyCompile: ~Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:137:49
-      2    0.0%    0.0%  LazyCompile: ~DoJoin native array.js:129:16
-      2    0.0%    0.0%  LazyCompile: Join native array.js:172:14
-      2    0.0%    0.0%  LazyCompile: *toLowerCase native string.js:348:29
-      2    0.0%    0.0%  LazyCompile: *substring native string.js:298:25
-      2    0.0%    0.0%  LazyCompile: *join native array.js:347:19
-      2    0.0%    0.0%  LazyCompile: *Optional.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:217:49
-      2    0.0%    0.0%  KeyedLoadIC: A keyed load IC from the snapshot
-      2    0.0%    0.0%  Handler: parseInternal {6}
-      2    0.0%    0.0%  Handler: parseInternal {5}
-      2    0.0%    0.0%  Handler: parseInternal {16}
-      2    0.0%    0.0%  Handler: parseInternal {15}
-      2    0.0%    0.0%  Handler: parse {9}
-      2    0.0%    0.0%  Handler: parse {5}
-      2    0.0%    0.0%  Handler: parse {12}
-      2    0.0%    0.0%  Handler: parse {11}
-      2    0.0%    0.0%  Handler: SequenceExpression
-      2    0.0%    0.0%  Builtin: CallFunction_ReceiverIsAny
-      1    0.0%    0.0%  Stub: ToStringStub
-      1    0.0%    0.0%  Stub: ToNumberStub
-      1    0.0%    0.0%  Stub: RecordWriteStub {3}
-      1    0.0%    0.0%  Stub: LoadConstantStub
-      1    0.0%    0.0%  Stub: ArraySingleArgumentConstructorStub
-      1    0.0%    0.0%  LazyCompile: ~toUpperCase native string.js:356:29
-      1    0.0%    0.0%  LazyCompile: ~map native array.js:994:18
-      1    0.0%    0.0%  LazyCompile: ~Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-      1    0.0%    0.0%  LazyCompile: ~Reference C:\code\JS\pegs\lib\runtime\Rules.js:96:23
-      1    0.0%    0.0%  LazyCompile: ~<anonymous> C:\code\JS\pegs\lib\compiler\Parser.js:326:9
-      1    0.0%    0.0%  LazyCompile: ~<anonymous> C:\code\JS\pegs\lib\compiler\Parser.js:216:9
-      1    0.0%    0.0%  LazyCompile: *map native array.js:994:18
-      1    0.0%    0.0%  LazyCompile: *list.map.element C:\code\JS\pegs\lib\compiler\Parser.js:48:21
-      1    0.0%    0.0%  LazyCompile: *filter native array.js:927:21
-      1    0.0%    0.0%  LazyCompile: *defineProperty native v8natives.js:573:30
-      1    0.0%    0.0%  LazyCompile: *UseSparseVariant native array.js:95:26
-      1    0.0%    0.0%  LazyCompile: *InnerArrayJoin native array.js:334:24
-      1    0.0%    0.0%  LazyCompile: *CharRange.flipCase C:\code\JS\pegs\lib\runtime\Rules.js:85:45
-      1    0.0%    0.0%  LazyCompile: *Any.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:113:44
-      1    0.0%    0.0%  LazyCompile: *<anonymous> C:\code\JS\pegs\lib\compiler\Parser.js:367:9
-      1    0.0%    0.0%  LazyCompile: *<anonymous> C:\code\JS\pegs\lib\compiler\Parser.js:138:9
-      1    0.0%    0.0%  LazyCompile: *<anonymous> C:\code\JS\pegs\lib\compiler\Parser.js:121:9
-      1    0.0%    0.0%  KeyedStoreIC: A keyed store IC from the snapshot
-      1    0.0%    0.0%  Handler: parseInternal {7}
-      1    0.0%    0.0%  Handler: parseInternal {23}
-      1    0.0%    0.0%  Handler: parseInternal {17}
+    380   12.1%   14.3%  Stub: LoadICStub
+    192    6.1%    7.2%  Builtin: CallFunction_ReceiverIsNotNullOrUndefined
+    187    6.0%    7.0%  LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+    183    5.8%    6.9%  LazyCompile: ~Terminal.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:36:49
+    153    4.9%    5.8%  LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+    144    4.6%    5.4%  Handler: An IC handler from the snapshot {1}
+    130    4.1%    4.9%  Builtin: Call_ReceiverIsNotNullOrUndefined
+    122    3.9%    4.6%  LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+    115    3.7%    4.3%  Stub: CompareICStub {1}
+    110    3.5%    4.1%  Stub: FastArrayPushStub
+     85    2.7%    3.2%  KeyedLoadIC: A keyed load IC from the snapshot {1}
+     78    2.5%    2.9%  LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+     49    1.6%    1.8%  LazyCompile: *Terminal.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:36:49
+     48    1.5%    1.8%  LazyCompile: *exec native regexp.js:116:30
+     46    1.5%    1.7%  LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+     41    1.3%    1.5%  Stub: RegExpExecStub
+     40    1.3%    1.5%  LazyCompile: *charCodeAt native string.js:50:28
+     37    1.2%    1.4%  Stub: CEntryStub
+     34    1.1%    1.3%  LazyCompile: *Regex.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:94:46
+     28    0.9%    1.1%  LazyCompile: *Context.failure C:\code\JS\pegs\lib\runtime\Context.js:24:42
+     27    0.9%    1.0%  Handler: An IC handler from the snapshot {3}
+     24    0.8%    0.9%  LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     19    0.6%    0.7%  LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+     19    0.6%    0.7%  Handler: charCodeAt
+     17    0.5%    0.6%  Stub: SubStringStub
+     15    0.5%    0.6%  LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+     11    0.4%    0.4%  Stub: FastNewClosureStub
+     11    0.4%    0.4%  LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+     11    0.4%    0.4%  Handler: parse {7}
+      9    0.3%    0.3%  Handler: parse {9}
+      9    0.3%    0.3%  Handler: failure
+      8    0.3%    0.3%  Handler: parseInternal {3}
+      8    0.3%    0.3%  Handler: parse {11}
+      7    0.2%    0.3%  Stub: CompareICStub {2}
+      7    0.2%    0.3%  RegExp: [0-9a-f]
+      7    0.2%    0.3%  Handler: parseInternal {8}
+      7    0.2%    0.3%  Handler: parseInternal {16}
+      6    0.2%    0.2%  LazyCompile: ~charCodeAt native string.js:50:28
+      5    0.2%    0.2%  Handler: parseInternal {7}
+      5    0.2%    0.2%  Handler: parseInternal {17}
+      5    0.2%    0.2%  Handler: parseInternal {11}
+      5    0.2%    0.2%  Handler: parse {5}
+      5    0.2%    0.2%  Handler: parse {2}
+      5    0.2%    0.2%  Handler: parse {19}
+      5    0.2%    0.2%  Handler: An IC handler from the snapshot {4}
+      5    0.2%    0.2%  Function: ~<anonymous> native harmony-regexp-exec.js:2:10
+      4    0.1%    0.2%  Stub: RecordWriteStub
+      4    0.1%    0.2%  RegExp: [0-9]
+      4    0.1%    0.2%  RegExp: "[A-Z\\xC0-\\xD6\\xD8-\\xDE\\u0100\\u0102\\u0104\\u0106\\u0108\\u010A\\u010C\\u010E\\u0110\\u0112\\u0114\\u0116\\u0118\\u011A\\u011C\\u011E\\u0120\\u0122\\u0124\\u0126\\u0128\\u012A\\u012C\\u012E\\u0130\\u0132\\u0134\\u0136\\u0139\\u013B\\u013D\\u013F\\u0141\\u0143\\u0145\\u0147\\u014A\\u014C\\u014E\\u0150\\u0152\\u0154\\u0156\\u0158\\u015A\\u015C\\u015E\\u0160\\u0162\\u0164\\u0166\\u0168\\u016A\\u016C\\u016E\\u0170\\u0172\\u0174\\u0176\\u0178-\\u0179\\u017B\\u017D\\u0181-\\u0182\\u0184\\u0186-\\u0187\\u0189-\\u018B\\u018E-\\u0191\\u0193-\\u0194\\u0196-\\u0198\\u019C-\\u019D\\u019F-\\u01A0\\u01A2\\u01A4\\u01A6-\\u01A7\\u01A9\\u01AC\\u01AE-\\u01AF\\u01B1-\\u01B3\\u01B5\\u01B7-\\u01B8\\u01BC\\u01C4\\u01C7\\u01CA\\u01CD\\u01CF\\u01D1\\u01D3\\u01D5\\u01D7\\u01D9\\u01DB\\u01DE\\u01E0\\u01E2\\u01E4\\u01E6\\u01E8\\u01EA\\u01EC\\u01EE\\u01F1\\u01F4\\u01F6-\\u01F8\\u01FA\\u01FC\\u01FE\\u0200\\u0202\\u0204\\u0206\\u0208\\u020A\\u020C\\u020E\\u0210\\u0212\\u0214\\u0216\\u0218\\u021A\\u021C\\u021E\\u0220\\u0222\\u0224\\u0226\\u0228\\u022A\\u022C\\u022E\\u0230\\u0232\\u023A-\\u023B\\u023D-\\u023E\\u0241\\u0243-\\u0246\\u0248\\u024A\\u024C\\u024E\\u0370\\u0372\\u0376\\u037F\\u0386\\u0388-\\u038A\\u038C\\u038E-\\u038F\\u0391-\\u03A1\\u03A3-\\u03AB\\u03CF\\u03D2-\\u03D4\\u03D8\\u03DA\\u03DC\\u03DE\\u03E0\\u03E2\\u03E4\\u03E6\\u03E8\\u03EA\\u03EC\\u03EE\\u03F4\\u03F7\\u03F9-\\u03FA\\u03FD-\\u042F\\u0460\\u0462\\u0464\\u0466\\u0468\\u046A\\u046C\\u046E\\u0470\\u0472\\u0474\\u0476\\u0478\\u047A\\u047C\\u047E\\u0480\\u048A\\u048C\\u048E\\u0490\\u0492\\u0494\\u0496\\u0498\\u049A\\u049C\\u049E\\u04A0\\u04A2\\u04A4\\u04A6\\u04A8\\u04AA\\u04AC\\u04AE\\u04B0\\u04B2\\u04B4\\u04B6\\u04B8\\u04BA\\u04BC\\u04BE\\u04C0-\\u04C1\\u04C3\\u04C5\\u04C7\\u04C9\\u04CB\\u04CD\\u04D0\\u04D2\\u04D4\\u04D6\\u04D8\\u04DA\\u04DC\\u04DE\\u04E0\\u04E2\\u04E4\\u04E6\\u04E8\\u04EA\\u04EC\\u04EE\\u04F0\\u04F2\\u04F4\\u04F6\\u04F8\\u04FA\\u04FC\\u04FE\\u0500\\u0502\\u0504\\u0506\\u0508\\u050A\\u050C\\u050E\\u0510\\u0512\
+      4    0.1%    0.2%  LazyCompile: ~map native array.js:994:18
+      4    0.1%    0.2%  Handler: parseInternal {12}
+      4    0.1%    0.2%  Handler: parse {8}
+      4    0.1%    0.2%  Handler: parse {16}
+      3    0.1%    0.1%  RegExp: [\\n\\r\\u2028\\u2029]
+      3    0.1%    0.1%  KeyedLoadIC: A keyed load IC from the snapshot
+      3    0.1%    0.1%  Handler: parseInternal {5}
+      3    0.1%    0.1%  Handler: parseInternal {4}
+      3    0.1%    0.1%  Handler: parseInternal {2}
+      3    0.1%    0.1%  Handler: parseInternal {1}
+      3    0.1%    0.1%  Handler: parseInternal {13}
+      3    0.1%    0.1%  Handler: parseInternal
+      3    0.1%    0.1%  Handler: parse {4}
+      3    0.1%    0.1%  Handler: parse {1}
+      3    0.1%    0.1%  Handler: parse {10}
+      2    0.1%    0.1%  Stub: ToStringStub
+      2    0.1%    0.1%  Stub: ToLengthStub
+      2    0.1%    0.1%  Stub: FastNewContextStub
+      2    0.1%    0.1%  Stub: BinaryOpICStub
+      2    0.1%    0.1%  LazyCompile: Join native array.js:172:14
+      2    0.1%    0.1%  LazyCompile: *DefineIndexedProperty native array.js:48:31
+      2    0.1%    0.1%  LazyCompile: *<anonymous> C:\code\JS\pegs\lib\compiler\Parser.js:217:9
+      2    0.1%    0.1%  Handler: parseInternal {20}
+      2    0.1%    0.1%  Handler: parseInternal {18}
+      2    0.1%    0.1%  Handler: parseInternal {10}
+      2    0.1%    0.1%  Handler: parse {3}
+      2    0.1%    0.1%  Handler: parse {12}
+      2    0.1%    0.1%  Handler: An IC handler from the snapshot {2}
+      2    0.1%    0.1%  Handler: An IC handler from the snapshot
+      2    0.1%    0.1%  Builtin: Construct
+      2    0.1%    0.1%  Builtin: CallFunction_ReceiverIsAny
+      1    0.0%    0.0%  Stub: ToIntegerStub
+      1    0.0%    0.0%  Stub: LoadFieldStub
+      1    0.0%    0.0%  Stub: CompareICStub {5}
+      1    0.0%    0.0%  Stub: CompareICStub {4}
+      1    0.0%    0.0%  Stub: CompareICStub {3}
+      1    0.0%    0.0%  Stub: CompareICStub
+      1    0.0%    0.0%  Stub: CEntryStub {1}
+      1    0.0%    0.0%  RegExp: [ \\xA0\\u1680\\u2000-\\u200A\\u202F\\u205F\\u3000]
+      1    0.0%    0.0%  RegExp: "[\\u0300-\\u036F\\u0483-\\u0487\\u0591-\\u05BD\\u05BF\\u05C1-\\u05C2\\u05C4-\\u05C5\\u05C7\\u0610-\\u061A\\u064B-\\u065F\\u0670\\u06D6-\\u06DC\\u06DF-\\u06E4\\u06E7-\\u06E8\\u06EA-\\u06ED\\u0711\\u0730-\\u074A\\u07A6-\\u07B0\\u07EB-\\u07F3\\u0816-\\u0819\\u081B-\\u0823\\u0825-\\u0827\\u0829-\\u082D\\u0859-\\u085B\\u08E3-\\u0902\\u093A\\u093C\\u0941-\\u0948\\u094D\\u0951-\\u0957\\u0962-\\u0963\\u0981\\u09BC\\u09C1-\\u09C4\\u09CD\\u09E2-\\u09E3\\u0A01-\\u0A02\\u0A3C\\u0A41-\\u0A42\\u0A47-\\u0A48\\u0A4B-\\u0A4D\\u0A51\\u0A70-\\u0A71\\u0A75\\u0A81-\\u0A82\\u0ABC\\u0AC1-\\u0AC5\\u0AC7-\\u0AC8\\u0ACD\\u0AE2-\\u0AE3\\u0B01\\u0B3C\\u0B3F\\u0B41-\\u0B44\\u0B4D\\u0B56\\u0B62-\\u0B63\\u0B82\\u0BC0\\u0BCD\\u0C00\\u0C3E-\\u0C40\\u0C46-\\u0C48\\u0C4A-\\u0C4D\\u0C55-\\u0C56\\u0C62-\\u0C63\\u0C81\\u0CBC\\u0CBF\\u0CC6\\u0CCC-\\u0CCD\\u0CE2-\\u0CE3\\u0D01\\u0D41-\\u0D44\\u0D4D\\u0D62-\\u0D63\\u0DCA\\u0DD2-\\u0DD4\\u0DD6\\u0E31\\u0E34-\\u0E3A\\u0E47-\\u0E4E\\u0EB1\\u0EB4-\\u0EB9\\u0EBB-\\u0EBC\\u0EC8-\\u0ECD\\u0F18-\\u0F19\\u0F35\\u0F37\\u0F39\\u0F71-\\u0F7E\\u0F80-\\u0F84\\u0F86-\\u0F87\\u0F8D-\\u0F97\\u0F99-\\u0FBC\\u0FC6\\u102D-\\u1030\\u1032-\\u1037\\u1039-\\u103A\\u103D-\\u103E\\u1058-\\u1059\\u105E-\\u1060\\u1071-\\u1074\\u1082\\u1085-\\u1086\\u108D\\u109D\\u135D-\\u135F\\u1712-\\u1714\\u1732-\\u1734\\u1752-\\u1753\\u1772-\\u1773\\u17B4-\\u17B5\\u17B7-\\u17BD\\u17C6\\u17C9-\\u17D3\\u17DD\\u180B-\\u180D\\u18A9\\u1920-\\u1922\\u1927-\\u1928\\u1932\\u1939-\\u193B\\u1A17-\\u1A18\\u1A1B\\u1A56\\u1A58-\\u1A5E\\u1A60\\u1A62\\u1A65-\\u1A6C\\u1A73-\\u1A7C\\u1A7F\\u1AB0-\\u1ABD\\u1B00-\\u1B03\\u1B34\\u1B36-\\u1B3A\\u1B3C\\u1B42\\u1B6B-\\u1B73\\u1B80-\\u1B81\\u1BA2-\\u1BA5\\u1BA8-\\u1BA9\\u1BAB-\\u1BAD\\u1BE6\\u1BE8-\\u1BE9\\u1BED\\u1BEF-\\u1BF1\\u1C2C-\\u1C33\\u1C36-\\u1C37\\u1CD0-\\u1CD2\\u1CD4-\\u1CE0\\u1CE2-\\u1CE8\\u1CED\\u1CF4\\u1CF8-\\u1CF9\\u1DC0-\\u1DF5\\u1DFC-\\u1DFF\\u20D0-\\u20DC\\u20E1\\u20E5-\\u20F0\\u2CEF-\\u2CF1\\u2D7F\\u2DE0-\\u2DFF\\u302A-\\u302D\\u3099-\\u309A\\uA66F\\uA674-\
+      1    0.0%    0.0%  LazyCompile: ~normalizeStringWin32 path.js:12:30
+      1    0.0%    0.0%  LazyCompile: ~location C:\code\JS\pegs\lib\compiler\Parser.js:187:16
+      1    0.0%    0.0%  LazyCompile: ~location C:\code\JS\pegs\lib\compiler\Parser.js:171:16
+      1    0.0%    0.0%  LazyCompile: ~Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      1    0.0%    0.0%  LazyCompile: ~Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1    0.0%    0.0%  LazyCompile: ~Optional.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:232:49
+      1    0.0%    0.0%  LazyCompile: ~MapFindEntry native collection.js:45:22
+      1    0.0%    0.0%  LazyCompile: *Any.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:128:44
+      1    0.0%    0.0%  LazyCompile: *<anonymous> C:\code\JS\pegs\lib\compiler\Parser.js:462:9
+      1    0.0%    0.0%  LazyCompile: *<anonymous> C:\code\JS\pegs\lib\compiler\Parser.js:389:9
+      1    0.0%    0.0%  LazyCompile: *<anonymous> C:\code\JS\pegs\lib\compiler\Parser.js:368:9
+      1    0.0%    0.0%  Handler: parseInternal {9}
+      1    0.0%    0.0%  Handler: parseInternal {6}
+      1    0.0%    0.0%  Handler: parseInternal {19}
+      1    0.0%    0.0%  Handler: parseInternal {15}
       1    0.0%    0.0%  Handler: parseInternal {14}
-      1    0.0%    0.0%  Handler: parseInternal {13}
-      1    0.0%    0.0%  Handler: parseInternal {11}
       1    0.0%    0.0%  Handler: parse {6}
+      1    0.0%    0.0%  Handler: parse {21}
       1    0.0%    0.0%  Handler: parse {20}
+      1    0.0%    0.0%  Handler: parse {18}
       1    0.0%    0.0%  Handler: parse {17}
+      1    0.0%    0.0%  Handler: parse {15}
+      1    0.0%    0.0%  Handler: parse {14}
       1    0.0%    0.0%  Handler: parse {13}
-      1    0.0%    0.0%  Handler: flipCase
-      1    0.0%    0.0%  Builtin: ConstructFunction
-      1    0.0%    0.0%  Builtin: Construct
-      1    0.0%    0.0%  Builtin: CallFunction_ReceiverIsNullOrUndefined
+      1    0.0%    0.0%  Handler: parse
+      1    0.0%    0.0%  Builtin: InOptimizationQueue
+      1    0.0%    0.0%  Builtin: ArgumentsAdaptorTrampoline
 
  [C++]:
    ticks  total  nonlib   name
 
  [Summary]:
    ticks  total  nonlib   name
-  21894   65.0%   96.9%  JavaScript
+   2593   82.6%   97.7%  JavaScript
       0    0.0%    0.0%  C++
-    157    0.5%    0.7%  GC
-  11079   32.9%          Shared libraries
-    697    2.1%          Unaccounted
+     54    1.7%    2.0%  GC
+    484   15.4%          Shared libraries
+     61    1.9%          Unaccounted
 
  [C++ entry points]:
    ticks    cpp   total   name
@@ -183,255 +145,953 @@ Statistical profiling result from isolate-00000000003BA5F0-v8.log, (33670 ticks,
   Callers occupying less than 2.0% are not shown.
 
    ticks parent  name
-  10719   31.8%  C:\Program Files\nodejs\node.exe
-  10499   97.9%    C:\Program Files\nodejs\node.exe
-  10004   95.3%      LazyCompile: *Terminal.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:45:49
-  10004  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-   9918   99.1%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-   9910   99.9%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-
-   3507   10.4%  LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-   3300   94.1%    LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-   3279   99.4%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-   3261   99.5%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-   3251   99.7%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-   3212   98.8%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-    113    3.2%    LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-    104   92.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     84   80.8%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-     66   78.6%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     66  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-     12   14.3%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:190:47
-     12  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      6    7.1%          LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:236:53
-      6  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     10    9.6%        LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:340:47
-     10  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      7   70.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-      3   30.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-      9    8.7%        LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:137:49
-      9  100.0%          LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:321:46
-      7   77.8%            LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:280:52
-      2   22.2%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:190:47
-      5    4.4%      LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:190:47
-      5  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      5  100.0%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:340:47
-      5  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      4    3.5%      LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:236:53
-      4  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      4  100.0%          LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:137:49
-      4  100.0%            LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:321:46
-     72    2.1%    LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:340:47
-     70   97.2%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     47   67.1%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-     47  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     47  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-     23   32.9%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-     23  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     18   78.3%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-      4   17.4%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:340:47
-      1    4.3%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:137:49
-      2    2.8%      LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-      2  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      2  100.0%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-      2  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-
-   3068    9.1%  LazyCompile: *Terminal.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:45:49
-   3067  100.0%    LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-   2990   97.5%      LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-   2981   99.7%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-   2965   99.5%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-   2950   99.5%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-
-   2882    8.6%  LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-   2853   99.0%    LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-   2843   99.6%      LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-   2820   99.2%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-   2756   97.7%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-   2711   98.4%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-
-   2191    6.5%  Stub: LoadICStub
-   1036   47.3%    LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    950   91.7%      LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-    943   99.3%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    940   99.7%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-    936   99.6%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     45    4.3%      LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-     40   88.9%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     25   62.5%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-     18   72.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      7   28.0%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:190:47
-      7   17.5%          LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:137:49
-      7  100.0%            LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:321:46
-      7   17.5%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:340:47
-      7  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      1    2.5%          LazyCompile: ~Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:137:49
-      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      3    6.7%        LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:236:53
-      3  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      3  100.0%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:137:49
-      2    4.4%        LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:190:47
-      2  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      2  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:340:47
-     31    3.0%      LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:340:47
-     31  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     19   61.3%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-     19  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     12   38.7%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-     12  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    938   42.8%    LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-    926   98.7%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    922   99.6%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-    917   99.5%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    886   96.6%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-    124    5.7%    LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-    119   96.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     83   69.7%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-     69   83.1%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     69  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-     10   12.0%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:190:47
-     10  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      4    4.8%          LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:236:53
-      4  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     28   23.5%        LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:137:49
-     27   96.4%          LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:321:46
-     19   70.4%            LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:280:52
-      5   18.5%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:190:47
-      3   11.1%            LazyCompile: *Optional.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:217:49
-      1    3.6%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      1  100.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-      8    6.7%        LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:340:47
-      8  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      6   75.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-      2   25.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-      4    3.2%      LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:236:53
-      4  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      4  100.0%          LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:137:49
-      4  100.0%            LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:321:46
-
-   1383    4.1%  Stub: CEntryStub {1}
-   1165   84.2%    C:\Program Files\nodejs\node.exe
-   1164   99.9%      LazyCompile: *Terminal.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:45:49
-   1164  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-   1164  100.0%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-   1164  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    218   15.8%    LazyCompile: *Terminal.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:45:49
-    218  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    218  100.0%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-    218  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    217   99.5%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-
-   1003    3.0%  Stub: CEntryStub
-    522   52.0%    LazyCompile: *Terminal.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:45:49
-    374   71.6%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    370   98.9%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-    369   99.7%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    369  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-    148   28.4%      C:\Program Files\nodejs\node.exe
-    148  100.0%        LazyCompile: *Terminal.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:45:49
-    148  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    148  100.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-    464   46.3%    C:\Program Files\nodejs\node.exe
-    442   95.3%      LazyCompile: *Terminal.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:45:49
-    442  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    433   98.0%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-    433  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     10    2.2%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      8   80.0%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-      8  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      8  100.0%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:137:49
-      2   20.0%        LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:137:49
-      2  100.0%          LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:321:46
-      2  100.0%            LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:280:52
-
-    977    2.9%  Builtin: Call_ReceiverIsNotNullOrUndefined
-    691   70.7%    LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-    689   99.7%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    687   99.7%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-    685   99.7%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    682   99.6%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-    254   26.0%    LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    214   84.3%      LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-    211   98.6%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    211  100.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-    210   99.5%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     21    8.3%      LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-     20   95.2%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     14   70.0%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-     11   78.6%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      3   21.4%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:190:47
-      4   20.0%          LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:137:49
-      4  100.0%            LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:321:46
-      2   10.0%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:340:47
-      2  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      1    4.8%        LazyCompile: *Optional.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:217:49
+    380   12.1%  Stub: LoadICStub
+    125   32.9%    LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     49   39.2%      LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     44   89.8%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     44  100.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     41   93.2%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3    6.8%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      4    8.2%        LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      4  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2   50.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      2   50.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1    2.0%        LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
       1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      1  100.0%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:137:49
-     13    5.1%      LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:340:47
-     13  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      8   61.5%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-      8  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      5   38.5%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
+      1  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     38   30.4%      LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     37   97.4%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     24   64.9%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     18   75.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      6   25.0%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      7   18.9%          LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      7  100.0%            LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      5   13.5%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
       5  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      6    2.4%      LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:137:49
-      3   50.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      3  100.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
+      1    2.7%          LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1    2.6%        LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     18   14.4%      LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     18  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      9   50.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      9  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      9   50.0%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      9  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     17   13.6%      LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+     14   82.4%        LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+     10   71.4%          LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+     10  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4   28.6%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      4  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3   17.6%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3  100.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
       3  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      3   50.0%        LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:321:46
-      2   66.7%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:190:47
+      3    2.4%      LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      3  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2   66.7%          LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      2  100.0%            LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      1   33.3%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     92   24.2%    LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     83   90.2%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     47   56.6%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     38   80.9%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     38  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      8   17.0%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      8  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1    2.1%          LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     26   31.3%        LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+     26  100.0%          LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+     13   50.0%            LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+     11   42.3%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      2    7.7%            LazyCompile: *Optional.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:232:49
+      5    6.0%        LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      5  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      5  100.0%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      5    6.0%        LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      5  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4   80.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      1   20.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      9    9.8%      LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      9  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      9  100.0%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      9  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     81   21.3%    LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     77   95.1%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     70   90.9%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     67   95.7%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     55   82.1%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     11   16.4%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      3    4.3%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      3  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      7    9.1%        LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      7  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      7  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      4    4.9%      LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      3   75.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2   66.7%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
       2  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      1   33.3%          LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:280:52
+      1   33.3%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1   25.0%        LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     41   10.8%    LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     41  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     21   51.2%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     21  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     20   95.2%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      1    4.8%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     20   48.8%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     20  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     20  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     22    5.8%    LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+     15   68.2%      LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      7   46.7%        LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      7  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      7  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      5   33.3%        LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      5  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      5  100.0%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      2   13.3%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2  100.0%          LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      2  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1    6.7%        LazyCompile: *Optional.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:232:49
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      7   31.8%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      7  100.0%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      7  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      7  100.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     10    2.6%    LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+     10  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4   40.0%        LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      4  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      3   30.0%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      3  100.0%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      3  100.0%            LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      3   30.0%        LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      3  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+
+    353   11.2%  C:\Program Files\nodejs\node.exe
+    277   78.5%    C:\Program Files\nodejs\node.exe
+     57   20.6%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     21   36.8%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     20   95.2%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     10   50.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      6   30.0%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      4   20.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1    4.8%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     18   31.6%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     17   94.4%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     16   94.1%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1    5.9%            LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      1    5.6%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      8   14.0%        LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      8  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4   50.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      3   37.5%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      1   12.5%            LazyCompile: ~Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      6   10.5%        LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      6  100.0%          LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      6  100.0%            LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      2    3.5%        LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      2  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     46   16.6%      LazyCompile: *defineProperty native v8natives.js:573:30
+     46  100.0%        LazyCompile: *DefineIndexedProperty native array.js:48:31
+     42   91.3%          LazyCompile: *InnerArrayFilter native array.js:913:26
+     33   78.6%            LazyCompile: *filter native array.js:927:21
+      9   21.4%            LazyCompile: ~filter native array.js:927:21
+      2    4.3%          LazyCompile: ~InnerArrayFilter native array.js:913:26
+      2  100.0%            LazyCompile: ~filter native array.js:927:21
+      2    4.3%          LazyCompile: *map native array.js:994:18
+      2  100.0%            LazyCompile: *extractList C:\code\JS\pegs\lib\compiler\Parser.js:48:23
+     23    8.3%      LazyCompile: ~runInThisContext bootstrap_node.js:403:28
+     23  100.0%        LazyCompile: NativeModule.compile bootstrap_node.js:485:44
+     23  100.0%          LazyCompile: ~NativeModule.require bootstrap_node.js:419:34
+      6   26.1%            LazyCompile: ~startup bootstrap_node.js:12:19
+      4   17.4%            Function: ~<anonymous> stream.js:1:11
+      4   17.4%            Function: ~<anonymous> module.js:1:11
+      3   13.0%            Function: ~<anonymous> tty.js:1:11
+      2    8.7%            LazyCompile: ~setupGlobalVariables bootstrap_node.js:202:32
+      2    8.7%            Function: ~<anonymous> util.js:1:11
+      1    4.3%            LazyCompile: ~setupGlobalTimeouts bootstrap_node.js:230:31
+      1    4.3%            Function: ~<anonymous> timers.js:1:11
+     16    5.8%      LazyCompile: *parseInt native v8natives.js:36:24
+     16  100.0%        LazyCompile: *<anonymous> C:\code\JS\pegs\lib\compiler\Parser.js:462:9
+     16  100.0%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     16  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     12    4.3%      LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      7   58.3%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      5   71.4%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      3   60.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2   40.0%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      2   28.6%          LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      2  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3   25.0%        LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      3  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2   66.7%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1   33.3%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      2   16.7%        LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      2  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     11    4.0%      Function: ~<anonymous> net.js:1:11
+     11  100.0%        LazyCompile: NativeModule.compile bootstrap_node.js:485:44
+     11  100.0%          LazyCompile: ~NativeModule.require bootstrap_node.js:419:34
+     11  100.0%            Function: ~<anonymous> tty.js:1:11
+     10    3.6%      LazyCompile: *Any.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:128:44
+     10  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     10  100.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     10  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      8    2.9%      LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      8  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      5   62.5%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      5  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3   37.5%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      3  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      7    2.5%      LazyCompile: *<anonymous> C:\code\JS\pegs\lib\compiler\Parser.js:462:9
+      7  100.0%        LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      7  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      7  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      6    2.2%      LazyCompile: ~exports.runInThisContext vm.js:75:36
+      6  100.0%        LazyCompile: ~Module._compile module.js:510:37
+      6  100.0%          LazyCompile: ~Module._extensions..js module.js:577:37
+      6  100.0%            LazyCompile: ~Module.load module.js:478:33
+      6    2.2%      LazyCompile: ~Terminal.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:36:49
+      6  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3   50.0%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      3  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3   50.0%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      3  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      6    2.2%      LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      6  100.0%        LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      3   50.0%          LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      3  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3   50.0%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      3  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     11    3.1%    LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      9   81.8%      LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      9  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      9  100.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      9  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2   18.2%      LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      2  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2  100.0%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      2  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+
+    192    6.1%  Builtin: CallFunction_ReceiverIsNotNullOrUndefined
+     88   45.8%    LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     42   47.7%      LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     41   97.6%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     38   92.7%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     38  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3    7.3%          LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      3  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1    2.4%        LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     25   28.4%      LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     22   88.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     17   77.3%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     14   82.4%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3   17.6%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      4   18.2%          LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      4  100.0%            LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      1    4.5%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3   12.0%        LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      3  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     10   11.4%      LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      8   80.0%        LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      4   50.0%          LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      4  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3   37.5%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      3  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1   12.5%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      2   20.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2  100.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      2  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      8    9.1%      LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      8  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      6   75.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      6  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2   25.0%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      2  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2    2.3%      LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      2  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2  100.0%          LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      2  100.0%            LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+     44   22.9%    LazyCompile: ~Terminal.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:36:49
+     43   97.7%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     19   44.2%        LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     19  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     15   78.9%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      4   21.1%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     16   37.2%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     16  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     14   87.5%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      2   12.5%            LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      8   18.6%        LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      8  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      8  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1    2.3%      LazyCompile: *Optional.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:232:49
+      1  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     14    7.3%    LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     14  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     14  100.0%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     14  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     12   85.7%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      2   14.3%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     13    6.8%    LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     13  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      7   53.8%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      7  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      7  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      6   46.2%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      6  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      5   83.3%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      1   16.7%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      7    3.6%    LazyCompile: *Regex.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:94:46
+      7  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      6   85.7%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      6  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4   66.7%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      2   33.3%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      1   14.3%        LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      7    3.6%    LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      7  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      6   85.7%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      4   66.7%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1   16.7%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1   16.7%          LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1   14.3%        LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      1  100.0%          LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      1  100.0%            LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      6    3.1%    LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      6  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3   50.0%        LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      3  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      2   33.3%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      2  100.0%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      2  100.0%            LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      1   16.7%        LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      5    2.6%    LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      3   60.0%      LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      3  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2   66.7%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      2  100.0%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      1   33.3%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2   40.0%      LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      2  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2  100.0%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      2  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4    2.1%    LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      4  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4  100.0%        LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      4  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      4    2.1%    LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      4  100.0%      LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      2   50.0%        LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      2  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      2   50.0%        LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      2  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1   50.0%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      1   50.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+
+    187    6.0%  LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     76   40.6%    LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     72   94.7%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     70   97.2%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     66   94.3%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     52   78.8%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     10   15.2%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      4    6.1%            LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      4    5.7%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      4  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2    2.8%        LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      2  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      4    5.3%      LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      4  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3   75.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      3  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1   25.0%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     57   30.5%    LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     53   93.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     35   66.0%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     29   82.9%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     28   96.6%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1    3.4%            LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      6   17.1%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      6  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      8   15.1%        LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      8  100.0%          LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      4   50.0%            LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      4   50.0%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      7   13.2%        LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      7  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4   57.1%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      3   42.9%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      2    3.8%        LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      2  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2  100.0%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      3    5.3%      LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      3  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3  100.0%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      3  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     41   21.9%    LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     41  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     32   78.0%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     32  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     32  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      9   22.0%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      9  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      8   88.9%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      1   11.1%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     10    5.3%    LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      6   60.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4   66.7%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      4  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4  100.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      2   33.3%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      1   50.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1   50.0%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      1  100.0%            LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      4   40.0%      LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      3   75.0%        LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      3  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1   25.0%        LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+
+    183    5.8%  LazyCompile: ~Terminal.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:36:49
+    182   99.5%    LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     92   50.5%      LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     92  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     76   82.6%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     76  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     16   17.4%          LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+     16  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     64   35.2%      LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     64  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     52   81.3%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     52  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     12   18.8%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     12  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     26   14.3%      LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+     24   92.3%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     24  100.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     23   95.8%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1    4.2%            LazyCompile: *Optional.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:232:49
+      2    7.7%        LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      1   50.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      1   50.0%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
       1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
 
-    967    2.9%  Stub: CompareICStub {1}
-    967  100.0%    LazyCompile: *Terminal.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:45:49
-    967  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    940   97.2%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-    935   99.5%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    935  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-
-    852    2.5%  Builtin: CallFunction_ReceiverIsNotNullOrUndefined
-    371   43.5%    LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    325   87.6%      LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-    324   99.7%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    324  100.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-    323   99.7%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     28    7.5%      LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-     26   92.9%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     20   76.9%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-     15   75.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      3   15.0%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:190:47
-      2   10.0%            LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:236:53
-      6   23.1%          LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:137:49
-      6  100.0%            LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:321:46
-      2    7.1%        LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:236:53
+    153    4.9%  LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+    142   92.8%    LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+    133   93.7%      LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+    128   96.2%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+    104   81.3%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     80   76.9%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     24   23.1%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+     21   16.4%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     21  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      5    3.8%        LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      5  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      5  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      7    4.9%      LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      7  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      7  100.0%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      7  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     10    6.5%    LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      9   90.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      7   77.8%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      7  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      5   71.4%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      2   28.6%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      2   22.2%        LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
       2  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      2  100.0%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:137:49
-     12    3.2%      LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:340:47
-     12  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      8   66.7%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-      8  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-      4   33.3%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-      4  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    308   36.2%    LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-    306   99.4%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    305   99.7%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-    302   99.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-    297   98.3%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-     99   11.6%    LazyCompile: ~CharRange.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:74:50
-     99  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     99  100.0%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-     99  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     99  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:101:50
-     42    4.9%    LazyCompile: ~CharRange.charMatches C:\code\JS\pegs\lib\runtime\Rules.js:81:48
-     29   69.0%      LazyCompile: *CharRange.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:74:50
-     29  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     29  100.0%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-     29  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     13   31.0%      LazyCompile: ~CharRange.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:74:50
-     13  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
-     13  100.0%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:167:47
-     13  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1   10.0%      LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      1  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
 
-    697    2.1%  UNKNOWN
+    144    4.6%  Handler: An IC handler from the snapshot {1}
+    102   70.8%    LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     42   41.2%      LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     39   92.9%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     35   89.7%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     35  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4   10.3%          LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      4  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3    7.1%        LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      3  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2   66.7%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1   33.3%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     24   23.5%      LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     24  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     15   62.5%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     12   80.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3   20.0%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      7   29.2%          LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      7  100.0%            LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      2    8.3%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      2  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     19   18.6%      LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     19  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     13   68.4%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     13  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      6   31.6%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      6  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     15   14.7%      LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      9   60.0%        LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      5   55.6%          LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      5  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2   22.2%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      2  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2   22.2%          LazyCompile: *Optional.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:232:49
+      2  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      6   40.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4   66.7%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      4  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2   33.3%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      1   50.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1   50.0%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+     13    9.0%    LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     11   84.6%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      8   72.7%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      8  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      6   75.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      2   25.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      3   27.3%        LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      3  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      2   15.4%      LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      2  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1   50.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1   50.0%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      9    6.3%    LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      9  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      7   77.8%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      6   85.7%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4   66.7%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      2   33.3%            LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      1   14.3%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1   11.1%        LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      1  100.0%          LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      1  100.0%            LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      1   11.1%        LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      8    5.6%    LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      8  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      5   62.5%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      5  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      5  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      3   37.5%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      3  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3  100.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      4    2.8%    LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      3   75.0%      LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      2   66.7%        LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      2  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1   33.3%        LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      1   25.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      3    2.1%    LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      3  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3  100.0%        LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      3  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+
+    130    4.1%  Builtin: Call_ReceiverIsNotNullOrUndefined
+     77   59.2%    LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     32   41.6%      LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     29   90.6%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     28   96.6%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     27   96.4%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1    3.6%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      1    3.4%          LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3    9.4%        LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      3  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2   66.7%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1   33.3%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     29   37.7%      LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     27   93.1%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     16   59.3%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     15   93.8%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1    6.3%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      7   25.9%          LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      7  100.0%            LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      4   14.8%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      4  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2    6.9%        LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      2  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      9   11.7%      LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      9  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      5   55.6%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      5  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4   44.4%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      4  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      6    7.8%      LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      6  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      5   83.3%          LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      5  100.0%            LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      1   16.7%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     16   12.3%    LazyCompile: *Regex.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:94:46
+     16  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     16  100.0%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     16  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      7   43.8%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      6   37.5%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      2   12.5%            LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      1    6.3%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     13   10.0%    LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     12   92.3%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     11   91.7%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     11  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     10   90.9%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      1    9.1%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1    8.3%        LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1    7.7%      LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      1  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     12    9.2%    LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     12  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      6   50.0%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      6  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      5   83.3%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      1   16.7%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      6   50.0%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      6  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      6  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      5    3.8%    LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      5  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4   80.0%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      3   75.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1   25.0%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1   20.0%        LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      1  100.0%          LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      1  100.0%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      3    2.3%    LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      2   66.7%      LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      1   50.0%        LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1   50.0%        LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      1   33.3%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+
+    126    4.0%  C:\Windows\SYSTEM32\ntdll.dll
+     19   15.1%    C:\Program Files\nodejs\node.exe
+      2   10.5%      LazyCompile: ~fs.Stats fs.js:150:20
+      2  100.0%        C:\Program Files\nodejs\node.exe
+      2  100.0%          LazyCompile: ~fs.lstatSync fs.js:980:24
+      2  100.0%            LazyCompile: ~realpathSync fs.js:1592:40
+      2   10.5%      LazyCompile: ~charCodeAt native string.js:50:28
+      2  100.0%        LazyCompile: ~Terminal.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:36:49
+      2  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1   50.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      1   50.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      2   10.5%      LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      2  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1   50.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1   50.0%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1    5.3%      LazyCompile: ~runInThisContext bootstrap_node.js:403:28
+      1  100.0%        LazyCompile: NativeModule.compile bootstrap_node.js:485:44
+      1  100.0%          LazyCompile: ~NativeModule.require bootstrap_node.js:419:34
+      1  100.0%            LazyCompile: ~setupGlobalVariables bootstrap_node.js:202:32
+      1    5.3%      LazyCompile: ~resolve path.js:158:28
+      1  100.0%        LazyCompile: ~startup bootstrap_node.js:12:19
+      1  100.0%          Function: ~<anonymous> bootstrap_node.js:10:10
+      1    5.3%      LazyCompile: ~exec native regexp.js:116:30
+      1  100.0%        LazyCompile: ~realpathSync fs.js:1592:40
+      1  100.0%          LazyCompile: ~toRealPath module.js:132:20
+      1  100.0%            LazyCompile: ~Module._findPath module.js:151:28
+      1    5.3%      LazyCompile: ~Rule.passed C:\code\JS\pegs\lib\runtime\Rule.js:21:28
+      1  100.0%        LazyCompile: ~Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: ~Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1    5.3%      LazyCompile: ~NativeModule.cache bootstrap_node.js:505:42
+      1  100.0%        LazyCompile: ~NativeModule.require bootstrap_node.js:419:34
+      1  100.0%          LazyCompile: ~startup bootstrap_node.js:12:19
+      1  100.0%            Function: ~<anonymous> bootstrap_node.js:10:10
+      1    5.3%      LazyCompile: ~Module._resolveFilename module.js:455:35
+      1  100.0%        LazyCompile: ~Module._load module.js:412:24
+      1  100.0%          LazyCompile: ~Module.runMain module.js:602:26
+      1  100.0%            LazyCompile: ~run bootstrap_node.js:375:15
+      1    5.3%      LazyCompile: ~InnerArrayJoin native array.js:334:24
+      1  100.0%        LazyCompile: ~join native array.js:347:19
+      1  100.0%          LazyCompile: ~setupConfig internal/process.js:102:21
+      1  100.0%            LazyCompile: ~startup bootstrap_node.js:12:19
+      1    5.3%      LazyCompile: ~Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      1  100.0%        LazyCompile: ~Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%          LazyCompile: ~Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1  100.0%            LazyCompile: ~Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1    5.3%      LazyCompile: ~Buffer.allocUnsafe buffer.js:139:30
+      1  100.0%        LazyCompile: tryCreateBuffer fs.js:470:25
+      1  100.0%          LazyCompile: ~fs.readFileSync fs.js:494:27
+      1  100.0%            LazyCompile: ~Module._extensions..js module.js:577:37
+      1    5.3%      LazyCompile: ~Any.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:128:44
+      1  100.0%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: ~Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      1    5.3%      LazyCompile: *exec native regexp.js:116:30
+      1  100.0%        LazyCompile: *Regex.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:94:46
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      1    5.3%      LazyCompile: *Rule.passed C:\code\JS\pegs\lib\runtime\Rule.js:21:28
+      1  100.0%        LazyCompile: ~StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1    5.3%      Function: ~<anonymous> C:\code\JS\pegs\lib\tests\ParserProfile.js:1:11
+      1  100.0%        LazyCompile: ~Module._compile module.js:510:37
+      1  100.0%          LazyCompile: ~Module._extensions..js module.js:577:37
+      1  100.0%            LazyCompile: ~Module.load module.js:478:33
+
+    122    3.9%  LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+    122  100.0%    LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     91   74.6%      LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     91  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     91  100.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     89   97.8%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2    2.2%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+     31   25.4%      LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     31  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     25   80.6%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     16   64.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      9   36.0%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      5   16.1%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      5  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1    3.2%          LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      1  100.0%            LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+
+    115    3.7%  Stub: CompareICStub {1}
+     74   64.3%    LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     26   35.1%      LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     26  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     12   46.2%          LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+     12  100.0%            LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+     10   38.5%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     10  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      4   15.4%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      4  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     24   32.4%      LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     23   95.8%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     22   95.7%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     19   86.4%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3   13.6%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      1    4.3%          LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1    4.2%        LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     13   17.6%      LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     13  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      7   53.8%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      7  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      6   46.2%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      6  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      8   10.8%      LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      6   75.0%        LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      5   83.3%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      5  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1   16.7%          LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2   25.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2  100.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      2  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3    4.1%      LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      3  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2   66.7%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      2  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1   33.3%          LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      1  100.0%            LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+     20   17.4%    LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     18   90.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     17   94.4%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     16   94.1%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     12   75.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      3   18.8%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1    6.3%            LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      1    5.9%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1    5.6%        LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      2   10.0%      LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      2  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2  100.0%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      2  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     15   13.0%    LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     15  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     10   66.7%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     10  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     10  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      5   33.3%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      5  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      5  100.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      5    4.3%    LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      5  100.0%      LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      3   60.0%        LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      3  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      3  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      2   40.0%        LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      2  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1   50.0%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      1   50.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+
+    110    3.5%  Stub: FastArrayPushStub
+     44   40.0%    LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+     42   95.5%      LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+     21   50.0%        LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+     21  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     21  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     18   42.9%        LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+     18  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     16   88.9%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      1    5.6%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      1    5.6%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      2    4.8%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2  100.0%          LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      2  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1    2.4%        LazyCompile: *Optional.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:232:49
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      2    4.5%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1   50.0%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      1   50.0%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      1  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     38   34.5%    LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     38  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     28   73.7%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     28  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     21   75.0%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      5   17.9%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      1    3.6%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      1    3.6%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     10   26.3%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     10  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     10  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     27   24.5%    LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+     27  100.0%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     10   37.0%        LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     10  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      6   60.0%            LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      4   40.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      8   29.6%        LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      8  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      7   87.5%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1   12.5%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      7   25.9%        LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      7  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      7  100.0%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      2    7.4%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      2  100.0%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      2  100.0%            LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+
+     85    2.7%  KeyedLoadIC: A keyed load IC from the snapshot {1}
+     85  100.0%    LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     79   92.9%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     63   79.7%        LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     53   84.1%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     52   98.1%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     10   15.9%          LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+     10  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      9   11.4%        LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      9  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      8   88.9%            LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      1   11.1%            LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      5    6.3%        LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+      5  100.0%          LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      4   80.0%            LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      1   20.0%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      6    7.1%      LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      6  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      6  100.0%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      6  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+
+     78    2.5%  LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+     54   69.2%    LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+     29   53.7%      LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+     29  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     29  100.0%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     29  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     22   40.7%      LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+     22  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     14   63.6%          LazyCompile: *Sequence.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:152:49
+     14  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      5   22.7%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+      5  100.0%            LazyCompile: *Repeat.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:205:47
+      3   13.6%          LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+      3  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2    3.7%      LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2  100.0%        LazyCompile: *NotPredicate.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:251:53
+      2  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      2  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
+     24   30.8%    LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     18   75.0%      LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+     18  100.0%        LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+     17   94.4%          LazyCompile: *Choice.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:182:47
+     17  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      1    5.6%          LazyCompile: *Reference.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:116:50
+      1  100.0%            LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      6   25.0%      LazyCompile: *Group.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:336:46
+      6  100.0%        LazyCompile: *StringValue.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:295:52
+      6  100.0%          LazyCompile: *Rule.parse C:\code\JS\pegs\lib\runtime\Rule.js:22:37
+      6  100.0%            LazyCompile: *Action.parseInternal C:\code\JS\pegs\lib\runtime\Rules.js:355:47
 
