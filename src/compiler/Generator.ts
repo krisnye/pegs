@@ -199,5 +199,5 @@ export function generate(input: any, writeToFile = true, path = 'lib/compiler/Pa
     return js;
 }
 
-let text = fs.readFileSync('src/compiler/Input.pegjs', { encoding: 'utf8' });
+let text = fs.readFileSync('src/compiler/Parser.pegjs', { encoding: 'utf8' });
 generate(text as string)

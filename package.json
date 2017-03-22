@@ -10,7 +10,7 @@
         "build": "tsc -p . & node lib/compiler/Generator.js & node lib/tests/Unit.js",
         "watch": "tsc -p . --watch & nodemon --watch lib --watch test lib/tests/Unit.js &  nodemon --watch src -e pegjs,ts,js lib/compiler/Generator.js",
         "watchWin": "start tsc -p . --watch & start nodemon --watch src -e pegjs,ts,js lib/compiler/Generator.js & nodemon --watch lib --watch test lib/tests/Unit.js",
-        "buildPegJS": "pegjs -o lib/compiler/PegJsSelfParser.js src/compiler/Parser.pegjs",
+        "buildPegJS": "pegjs -o lib/compiler/PegJsSelfParser.js src/compiler/PEGjs.pegjs",
         "perf" : "tsc -p . & node lib/tests/ParserPerformance.js",
         "profile" : "tsc -p . & node --prof lib/tests/ParserProfile.js"
     },
