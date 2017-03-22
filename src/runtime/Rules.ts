@@ -111,7 +111,7 @@ export class Regex extends Rule
 
     parseInternal(context: Context) {
         this.regex.lastIndex = context.offset
-        let result = this.regex.exec(context.source)
+        let result = context.source.match(this.regex)
         if (result != null) {
             context.offset += result[0].length
             return result[0]
