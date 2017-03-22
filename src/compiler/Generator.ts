@@ -110,7 +110,11 @@ function ensureSequence(ast: any) {
 function hex(ch: any) { return ch.charCodeAt(0).toString(16).toUpperCase() }
 
 function quote(s: any) {
-    return '"' + s
+    return '"' + escapeString(s) + '"'
+}
+
+function escapeString(s: any) {
+    return s
       .replace(/\\/g,   '\\\\')   // backslash
       .replace(/"/g,    '\\"')    // closing double quote
       .replace(/\0/g,   '\\0')    // null
@@ -122,30 +126,21 @@ function quote(s: any) {
       .replace(/[\x00-\x0F]/g,          function(ch: any) { return '\\x0' + hex(ch) })
       .replace(/[\x10-\x1F\x7F-\xFF]/g, function(ch: any) { return '\\x'  + hex(ch) })
       .replace(/[\u0100-\u0FFF]/g,      function(ch: any) { return '\\u0' + hex(ch) })
-      .replace(/[\u1000-\uFFFF]/g,      function(ch: any) { return '\\u'  + hex(ch) }) + '"'
-  }
-
-function convertCharClass(ast: any) {
-    let args = ast.parts.map((part: any) => convertCharClassPart(part, ast.ignoreCase, ast.invert))
-    if (args.length == 1)
-        return args[0]
-    else
-        return obj("Choice", ...args)
+      .replace(/[\u1000-\uFFFF]/g,      function(ch: any) { return '\\u'  + hex(ch) })
 }
 
-function convertCharClassPart(part: any, ignoreCase: any, invert: any) {
-    if(typeof part == 'string') {
-        return obj("Terminal", quote(part))
-    } else {
-        let args = [quote(part[0]), quote(part[1])]
-        if (ignoreCase || invert) args.push(JSON.stringify(ignoreCase))
-        if (invert) args.push('true')
-        return obj("CharRange", ...args)
-    }
+function convertCharClass(ast: any) {
+    let parts = ast.parts.map(convertCharClassPart).join('')
+    return obj("Regex", (ast.inverted ? '/[^' : '/[') + parts + (ast.ignoreCase ? ']/yi': ']/y'))
+}
+
+function convertCharClassPart(part: any) {
+    if(typeof part == 'string') return escapeRegExp(part)
+    else return escapeRegExp(part[0]) + '-' + escapeRegExp(part[1])
 }
 
 function escapeRegExp(str: string) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+  return escapeString(str).replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\^\$\|]/g, "\\$&");
 }
 
 export function astToJS(ast: any): any {
