@@ -4,6 +4,7 @@ import {
     Rule,
     Terminal,
     CharRange,
+    Regex,
     Reference,
     Any,
     Sequence,
@@ -146,6 +147,11 @@ test = new CharRange('a', 'z', true, true)
 testRule(test, 'G', false)
 testRule(test, 'g', false)
 
+//Regex
+test = new Regex(/hello world/y)
+testRule(test, 'hello world', true, 'hello world')
+test = new Sequence(new Regex(/hello/y), new Regex(/ world/y))
+testRule(test, 'hello world', true, ['hello', ' world'])
 
 //  Extract
 test = new Extract(new Sequence(new Terminal("a"), new Terminal("b"), new Terminal("c")), 1)

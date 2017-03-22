@@ -7,6 +7,8 @@ let runtime = require('../runtime')
 const red   = '\u001b[31m'
 const endColor = '\u001b[0m'
 
+// --------- AST proprocessing and analysis -------------- //
+
 //Currently CustomPredicate and Action differ from their PEG.js analog in that they can't see higher scopes.
 //This may cause problems.
 function addScopeInformation (ast: any, parent: any = null, index = 0) {
@@ -76,6 +78,8 @@ function rulesAndReferences(ast: any, rules: any = {}, references: any = []){
         references.push(ast)
 }
 
+// --------- Code generation -------------- //
+
 //  creates a function that will extract named rules out into local variables for use by the function body
 function createFunctionFromBody(scope: any[], body: string): string {
     let localVariables = scope.map(
@@ -138,6 +142,10 @@ function convertCharClassPart(part: any, ignoreCase: any, invert: any) {
         if (invert) args.push('true')
         return obj("CharRange", ...args)
     }
+}
+
+function escapeRegExp(str: string) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
 export function astToJS(ast: any): any {

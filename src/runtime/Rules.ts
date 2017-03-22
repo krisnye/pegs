@@ -1,16 +1,16 @@
 import Context from "./Context"
 import Rule from "./Rule"
 
-//  memoization function to improve performance
-function memoize<O>(fn: (input:string) => O) {
-    let cache: {[input:string]:O} = {}
-    return function (input:string) {
-        let result = cache[input]
-        if (result == null)
-            result = cache[input] = fn(input)
-        return result
-    }
-}
+// //  memoization function to improve performance
+// function memoize<O>(fn: (input:string) => O) {
+//     let cache: {[input:string]:O} = {}
+//     return function (input:string) {
+//         let result = cache[input]
+//         if (result == null)
+//             result = cache[input] = fn(input)
+//         return result
+//     }
+// }
 
 //  creates a function that will extract named rules out into local variables for use by the function body
 function createFunctionFromBody(rules:Rule[], body: string): (context:Context, values:[any]) => object {
@@ -44,16 +44,17 @@ export class Terminal extends Rule
     }
 
     parseInternal(context: Context) {
+
         if (!context.debug) {
             if (context.source.substr(context.offset, this.match.length) != this.match)
                 return context.failure(context.offset)
             context.offset += this.match.length
             return this.match
-        } else {
-            for (let i = 0; i < this.match.length; i++) {
-                if (context.source[context.offset + i] !== this.match[i]) {
-                    return context.failure(context.offset + i)
-                }
+        }
+
+        for (let i = 0; i < this.match.length; i++) {
+            if (context.source[context.offset + i] !== this.match[i]) {
+                return context.failure(context.offset + i)
             }
         }
         context.offset += this.match.length
@@ -105,6 +106,30 @@ export class CharRange extends Rule
 
 }
 
+export class Regex extends Rule
+{
+    regex: RegExp
+
+    constructor(regex: RegExp) {
+        super()
+        this.regex = regex
+    }
+
+    parseInternal(context: Context) {
+        this.regex.lastIndex = context.offset
+        let result = this.regex.exec(context.source)
+        if (result != null) {
+            context.offset += result[0].length
+            return result[0]
+        }
+        return context.failure(context.offset)
+    }
+
+    toString(): string {
+        return '/' + this.regex.source  + '/'
+    }
+}
+
 export class Reference extends Rule
 {
     reference: string
@@ -125,8 +150,7 @@ export class Any extends Rule
         let char = context.source[context.offset]
         if (char == null) {
             return context.failure()
-        }
-        else {
+        } else {
             context.offset++
             return char
         }
