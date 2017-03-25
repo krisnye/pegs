@@ -370,6 +370,29 @@ export class Group extends Rule {
     }
 }
 
+//  Used to Increment and Decrement state values.
+export class Increment extends Rule {
+
+    name: string
+    step: number
+
+    constructor(name: string, step: number = 1) {
+        super()
+        this.name = name
+        this.step = step
+    }
+
+    parseInternal(context: Context) {
+        context.setState(this.name, context.getState(this.name) + this.step)
+        return undefined
+    }
+
+    toString() {
+        let suffix = this.step == 1 ? "++" : this.step == -1 ? "--" : "+= " + this.step
+        return this.name + suffix
+    }
+}
+
 export class Action extends Rule {
 
     sequence: Sequence
