@@ -135,6 +135,10 @@ testRule(test, "[1,[2,3],[4,[5]]]", true, null, parser)
 testRule(test, "[1,[2,3],[4,[5]]]]", 17, null, parser)
 testRule(test, "[1,[2,3],[4,[5]]", 16, null, parser)
 
+// Backtracking
+test = new Choice(new Sequence(word, __, word, __, number), new Sequence(word, __, word, __, word))
+testRule(test, "what the fuck")
+
 // CharRange
 test = new CharRange('A', 'z', true)
 testRule(test, '[') // '[' is between A and z and should still match

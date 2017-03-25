@@ -116,8 +116,33 @@ ActionExpression
         : expression;
     }
 
+ExtractExpression
+  = "@" __ expression:PrefixedExpression {
+      return {
+        type: "labeled",
+        label: "value",
+        expression: expression,
+        location: location()
+      };
+    }
+
+ExtractSequenceExpression
+  = head:(__ PrefixedExpression)* _ extract:ExtractExpression tail:(__ PrefixedExpression)* {
+      return {
+        type: "action",
+        expression: {
+          type: "sequence",
+          elements: extractList(head, 1).concat(extract, extractList(tail, 1)),
+          location: location()
+        },
+        code: "return value;",
+        location: location()
+      }
+    }
+
 SequenceExpression
-  = head:LabeledExpression tail:(__ LabeledExpression)* {
+  = ExtractSequenceExpression
+  / head:LabeledExpression tail:(__ LabeledExpression)* {
       return tail.length > 0
         ? {
             type: "sequence",

@@ -7,7 +7,7 @@ let runtime = require('../runtime')
 const red   = '\u001b[31m'
 const endColor = '\u001b[0m'
 
-// --------- AST proprocessing and analysis -------------- //
+// --------- AST preprocessing and analysis -------------- //
 
 //Currently CustomPredicate and Action differ from their PEG.js analog in that they can't see higher scopes.
 //This may cause problems.
@@ -39,7 +39,7 @@ function dfTraverse(ast: any, callback: any, parent: any = null, index: any = 0)
         if (child !== undefined) ast.expression = child
     }
     let result = callback(ast, parent, index)
-    if (result) console.log('converted ' + ast.type + ' to ' + result.type)
+    //if (result) console.log('converted ' + ast.type + ' to ' + result.type)
     return result
 }
 

@@ -23,6 +23,7 @@ abstract class Rule extends BaseObject {
         context.popRule()
         return result
     }
+
     protected abstract parseInternal(context: Context): any
 
     //  The identifier name of this rule. must be a valid identifier
