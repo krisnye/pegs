@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "main": "lib/index.js",
     "bin": {
-        "pegs": "lib/_command.js"
+        "pegs": "lib/bin/_command.js"
     },
     "repository": "https://github.com/krisnye/pegs.git",
     "scripts": {

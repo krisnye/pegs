@@ -2,15 +2,13 @@ declare var require: (name:string) => any
 
 let pegjs = require('./PegJsSelfParser.js')
 let fs = require('fs')
-let runtime = require('../runtime')
+
+import * as runtime from "../runtime"
 
 const red   = '\u001b[31m'
 const endColor = '\u001b[0m'
 
 // --------- AST preprocessing and analysis -------------- //
-
-//Currently CustomPredicate and Action differ from their PEG.js analog in that they can't see higher scopes.
-//This may cause problems.
 
 function bfTraverse(ast: any, callback: any, parent: any = null, index: any = 0) {
     callback(ast, parent, index)
@@ -52,6 +50,9 @@ function forChildren(ast: any, callback: any) {
     }
     if (ast.expression) callback(ast.expression)
 }
+
+//Currently CustomPredicate and Action differ from their PEG.js analog in that they can't see higher scopes.
+//This may cause problems.
 
 function addScopeInformation (ast: any) {
     bfTraverse(ast, function(ast: any, parent: any, index: any) {
@@ -125,14 +126,10 @@ function regexifyRule(rule: any, ruleMap: any) {
         let result: any = {type: 'regex', flags: ''}
         switch(ast.type) {
             case "class" : {
-                let parts = ast.parts.map(convertCharClassPart).join('')
+                let parts = ast.parts.map(classPartToRegex).join('')
                 result.source =  (ast.inverted ? '[^' : '[') + parts + ']'
                 result.flags = ast.ignoreCase ? 'i' : ''
                 return result }
-            // case "optional" : {
-            //     result.source = '(?:' + ast.expression.source + ')'
-            //     result.flags = ast.expression.flags
-            //     return result }
             case "any" : {
                 result.source = '[^]'
                 return result }
@@ -142,17 +139,26 @@ function regexifyRule(rule: any, ruleMap: any) {
                 return ast.expression }
             case "group" : {
                 return ast.expression }
-            // case "simple_not": {
-            //     result.source = '(?!(' + ast.expression.source + '))'
-            //     result.flags = ast.expression.flags
-            //     return result }
-            case "literal": {
-                result.source = escapeRegExp(ast.value)
-                return result }
             case "choice" : {
                 result.source = ast.alternatives.map((child: any) => child.source).join('|')
                 result.flags = ast.alternatives[0].flags
                 return result }
+            case "rule_ref" : {
+                let deref = ruleMap[ast.name]
+                regexifyRule(deref, ruleMap)
+                if (deref.expression.type !== "regex") return
+                return deref.expression }
+            // case "optional" : {
+            //     result.source = '(?:' + ast.expression.source + ')'
+            //     result.flags = ast.expression.flags
+            //     return result }
+            // case "simple_not": {
+            //     result.source = '(?!(' + ast.expression.source + '))'
+            //     result.flags = ast.expression.flags
+            //     return result }
+            // case "literal": {
+            //     result.source = escapeRegExp(ast.value)
+            //     return result }
             // case "sequence" : {
             //     result.source = ast.elements.map((child: any) => child.source).join('')
             //     result.flags = ast.elements[0].flags
@@ -168,16 +174,11 @@ function regexifyRule(rule: any, ruleMap: any) {
             //     result.flags = ast.expression.flags
             //     result.nonconsuming = true
             //     return result }
-            case "rule_ref" : {
-                let deref = ruleMap[ast.name]
-                regexifyRule(deref, ruleMap)
-                if (deref.expression.type !== "regex") return
-                return deref.expression }
         }
     })
 }
 
-// --------- Code generation -------------- //
+// --------- Parser generation -------------- //
 
 //  creates a function that will extract named rules out into local variables for use by the function body
 function createFunctionFromBody(scope: any[], body: string): string {
@@ -189,7 +190,7 @@ function obj(name: string, ...args: any[]) { return 'new ' + name + '(' + args.j
 function array(args: any[], sep = ', ') { return '[' + args.join(sep) + ']'; }
 
 //convert to sequence since Rules.Action only accepts a sequence
-function ensureSequence(ast: any) { return ast.type == "sequence" ? astToJS(ast) : obj("Sequence", astToJS(ast)) }
+function ensureSequence(ast: any) { return ast.type == "sequence" ? ast : { type:"sequence", elements: [ast] } }
 
 function hex(ch: any) { return ch.charCodeAt(0).toString(16).toUpperCase() }
 function quote(s: any) { return '"' + escapeString(s) + '"' }
@@ -210,16 +211,24 @@ function escapeString(s: any) {
       .replace(/[\u1000-\uFFFF]/g,      function(ch: any) { return '\\u'  + hex(ch) })
 }
 
-function convertCharClassPart(part: any) { return typeof part == 'string' ? escapeRegExp(part) : escapeRegExp(part[0]) + '-' + escapeRegExp(part[1]) }
-function convertCharClass(ast: any) {
-    let parts = ast.parts.map(convertCharClassPart).join('')
-    return obj("Regex", (ast.inverted ? '/[^' : '/[') + parts + (ast.ignoreCase ? ']/yi': ']/y'))
+function classPartToRegex(part: any) { return typeof part == 'string' ? escapeRegExp(part) : escapeRegExp(part[0]) + '-' + escapeRegExp(part[1]) }
+function classToRegex(ast: any) {
+    let parts = ast.parts.map(classPartToRegex).join('')
+    return (ast.inverted ? '/[^' : '/[') + parts + (ast.ignoreCase ? ']/yi': ']/y')
+ }
+
+function getHeader() {
+    let header: string[] = []
+    header.push("let runtime = require('../runtime')\n")
+    for (let key in runtime) header.push('let ' + key + ' = runtime.' + key)
+    header.push("\n")
+    return header.join('\n')
 }
 
 export function astToJS(ast: any): any {
     try {
     switch (ast.type) {
-        case "grammar": return (ast.initializer ? ast.initializer.code + '\n' : "") + "exports.parser = " + obj("Parser", array(ast.rules.map(astToJS), ',\n\n'))
+        case "grammar": return getHeader() + (ast.initializer ? ast.initializer.code + '\n' : "") + "exports.parser = " + obj("Parser", array(ast.rules.map(astToJS), ',\n\n'))
         case "choice": return obj("Choice", ...ast.alternatives.map(astToJS))
         case "sequence": return obj("Sequence", ...ast.elements.map(astToJS))
         case "group": return obj("Group", astToJS(ast.expression))
@@ -227,19 +236,20 @@ export function astToJS(ast: any): any {
         case "rule": return astToJS(ast.expression) + ".setName(" + JSON.stringify(ast.name) + ")"
         case "any": return obj("Any");
         case "literal": return obj("Terminal", quote(ast.value))
-        case "class": return convertCharClass(ast)
+        case "class": return obj("Regex", classToRegex(ast))
         case "regex": return obj("Regex", '/' + ast.source + '/y' + ast.flags)
         // We should probably add an AndPredicate rule.
         case "simple_and": return obj("NotPredicate", obj("NotPredicate", astToJS(ast.expression)))
         case "simple_not": return obj("NotPredicate", astToJS(ast.expression))
         case "zero_or_more": return obj("Repeat", astToJS(ast.expression))
         case "one_or_more": return obj("Repeat", astToJS(ast.expression), "1")
+        case "repeat": return obj("Repeat", astToJS(ast.expression), ast.min, ast.max)
         case "optional": return obj("Optional", astToJS(ast.expression))
         case "text": return obj("StringValue", astToJS(ast.expression))
         // We use name where pegjs uses label and label where pegjs uses name.
         case "labeled": return astToJS(ast.expression) + ".setName(" + JSON.stringify(ast.label) + ")"
         case "named": return astToJS(ast.expression) + ".setLabel(" + JSON.stringify(ast.name) + ")"
-        case "action": return obj("Action", ensureSequence(ast.expression), createFunctionFromBody(ast.scope, ast.code))
+        case "action": return obj("Action", astToJS(ensureSequence(ast.expression)), createFunctionFromBody(ast.scope, ast.code))
         case "semantic_and": return obj("CustomPredicate", "''") + ".setHandler(" + createFunctionFromBody(ast.scope, ast.code) + ")"
         //case "semantic_not": 
     } }
@@ -254,25 +264,66 @@ export function astToJS(ast: any): any {
     return "<ERROR:" + ast.type + ">"
 }
 
-let header: string[] = []
-header.push("let runtime = require('../runtime')\n")
-for (let key in runtime) header.push('let ' + key + ' = runtime.' + key)
-header.push("String.prototype.join = function(sep) { if (sep == '') return this; else throw new Error('Can only join a string with empty seperator!')}")
-header.push("\n")
+export function astToObject(ast: any): any {
+    try {
+    switch (ast.type) {
+        case "grammar": {
+            if(ast.initializer) eval(ast.initializer)
+            return new runtime.Parser(ast.rules.map(astToObject))}
+        case "choice": return runtime.CharRange.apply(ast.alternatives.map(astToObject))
+        case "sequence": return runtime.Sequence.apply(ast.elements.map(astToObject))
+        case "group": return new runtime.Group(astToObject(ast.expression))
+        case "rule_ref": return new runtime.Reference(ast.name)
+        case "rule": return astToObject(ast.expression).setName(ast.name)
+        case "any": return new runtime.Any()
+        case "literal": return new runtime.Terminal(ast.value)
+        case "class": return new runtime.Regex(eval(classToRegex(ast)))
+        case "regex": return new runtime.Regex(eval('/' + ast.source + '/y' + ast.flags))
+        // We should probably add an AndPredicate rule.
+        case "simple_and": return new runtime.NotPredicate(new runtime.NotPredicate(astToObject(ast.expression)))
+        case "simple_not": return new runtime.NotPredicate(astToObject(ast.expression))
+        case "zero_or_more": return new runtime.Repeat(astToObject(ast.expression))
+        case "one_or_more": return new runtime.Repeat(astToObject(ast.expression), 1)
+        case "repeat": return new runtime.Repeat(astToObject(ast.expression), ast.min, ast.max)
+        case "optional": return new runtime.Optional(astToObject(ast.expression))
+        case "text": return new runtime.StringValue(astToObject(ast.expression))
+        // We use name where pegjs uses label and label where pegjs uses name.
+        case "labeled": return astToObject(ast.expression).setName(ast.label)
+        case "named": return astToObject(ast.expression).setLabel(ast.name)
+        case "action": return new runtime.Action(astToObject(ensureSequence(ast.expression)), eval(createFunctionFromBody(ast.scope, ast.code)))
+        case "semantic_and": return new runtime.CustomPredicate('').setHandler(eval(createFunctionFromBody(ast.scope, ast.code)))
+        //case "semantic_not": 
+    } }
+    catch (e) {
+        console.log(red, e.message, endColor)
+        console.log(red, ast, endColor)
+        throw new Error()
+    }
 
+    console.log(red, "Unrecognized rule type: " + ast.type, endColor)
+    console.log(red, ast, endColor)
+    throw new Error()
+}
 
 // ------------------------------------- //
 
-export function generate(input: any, writeToFile = true, path = 'lib/compiler/Parser.js') {
-    let ast = (typeof input == 'string') ? pegjs.parse(input) : input;
+function sourceToAst(input: string) {
+    let ast = pegjs.parse(input)
     checkRefences(ast)
     regexify(ast)
     addScopeInformation(ast)
-    let js = header.join('\n') + astToJS(ast);
-    if (writeToFile) fs.writeFileSync(path, js)
-    return js;
+    return ast
 }
 
-let text = fs.readFileSync('src/compiler/Parser.pegjs', { encoding: 'utf8' });
+export function generateSource(source: string) {
+    return astToJS(sourceToAst(source));
+}
+
+export function generateObject(source: string) {
+    return astToObject(sourceToAst(source))
+}
+
+let source = fs.readFileSync('src/compiler/Parser.pegjs', { encoding: 'utf8' });
 console.log('Generating parser...')
-generate(text as string)
+let js = generateSource(source as string)
+fs.writeFileSync('lib/compiler/Parser.js', js)

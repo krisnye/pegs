@@ -31,7 +31,7 @@
   const OPS_TO_SUFFIXED_TYPES = {
     "?": "optional",
     "*": "zero_or_more",
-    "+": "one_or_more"
+    "+": "one_or_more",
   };
 
   const OPS_TO_SEMANTIC_PREDICATE_TYPES = {
@@ -186,7 +186,18 @@ SuffixedExpression
         location: location()
       };
     }
-  / PrimaryExpression
+  / RepeatExpression / PrimaryExpression
+
+RepeatExpression
+  = expression:PrimaryExpression __ '<' __ min: (Integer / IdentifierName) max: ( __ ',' __ max: (Integer / IdentifierName) { return max; })? __ '>' {
+    return {
+      type: "repeat",
+      min: min,
+      max: max == undefined ? min : max,
+      expression: expression,
+      location: location()
+    };
+  }
 
 SuffixedOperator
   = "?"
@@ -453,6 +464,9 @@ UnicodeEscapeSequence
 
 DecimalDigit
   = [0-9]
+
+Integer
+  = digits:$DecimalDigit+ { return parseInt(digits); }
 
 HexDigit
   = [0-9a-f]i
