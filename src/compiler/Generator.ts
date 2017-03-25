@@ -183,7 +183,7 @@ function regexifyRule(rule: any, ruleMap: any) {
 //  creates a function that will extract named rules out into local variables for use by the function body
 function createFunctionFromBody(scope: any[], body: string): string {
     let localVariables = scope.map( (elem) => "let " + elem.name + " = __values[" + elem.index + "]" ).join(";\n")
-    return "\nfunction(__context, __values) {\nlet location = () => __context.offset;\nlet text = () => __context.source[__context.offset - 1];\n" + localVariables + ";\n" + body + "}"
+    return "(\nfunction(__context, __values) {\nlet location = () => __context.offset;\nlet text = () => __context.source[__context.offset - 1];\n" + localVariables + ";\n" + body + "})"
 }
 
 function obj(name: string, ...args: any[]) { return 'new ' + name + '(' + args.join(', ') + ')'; }
@@ -228,7 +228,7 @@ function getHeader() {
 export function astToJS(ast: any): any {
     try {
     switch (ast.type) {
-        case "grammar": return getHeader() + (ast.initializer ? ast.initializer.code + '\n' : "") + "exports.parser = " + obj("Parser", array(ast.rules.map(astToJS), ',\n\n'))
+        case "grammar": return getHeader() + (ast.initializer ? ast.initializer.code + '\n' : "") + obj("Parser", array(ast.rules.map(astToJS), ',\n\n'))
         case "choice": return obj("Choice", ...ast.alternatives.map(astToJS))
         case "sequence": return obj("Sequence", ...ast.elements.map(astToJS))
         case "group": return obj("Group", astToJS(ast.expression))
@@ -254,55 +254,22 @@ export function astToJS(ast: any): any {
         //case "semantic_not": 
     } }
     catch (e) {
-        console.log(red, e.message, endColor)
         console.log(red, ast, endColor)
+        console.log()
+        console.log(red, e.message, endColor)
+        console.log()
         return "<ERROR:" + ast.type + ">"
     }
 
-    console.log(red, "Unrecognized rule type: " + ast.type, endColor)
     console.log(red, ast, endColor)
+    console.log()
+    console.log(red, "Unrecognized rule type: " + ast.type, endColor)
+    console.log()
     return "<ERROR:" + ast.type + ">"
 }
 
 export function astToObject(ast: any): any {
-    try {
-    switch (ast.type) {
-        case "grammar": {
-            if(ast.initializer) eval(ast.initializer)
-            return new runtime.Parser(ast.rules.map(astToObject))}
-        case "choice": return runtime.CharRange.apply(ast.alternatives.map(astToObject))
-        case "sequence": return runtime.Sequence.apply(ast.elements.map(astToObject))
-        case "group": return new runtime.Group(astToObject(ast.expression))
-        case "rule_ref": return new runtime.Reference(ast.name)
-        case "rule": return astToObject(ast.expression).setName(ast.name)
-        case "any": return new runtime.Any()
-        case "literal": return new runtime.Terminal(ast.value)
-        case "class": return new runtime.Regex(eval(classToRegex(ast)))
-        case "regex": return new runtime.Regex(eval('/' + ast.source + '/y' + ast.flags))
-        // We should probably add an AndPredicate rule.
-        case "simple_and": return new runtime.NotPredicate(new runtime.NotPredicate(astToObject(ast.expression)))
-        case "simple_not": return new runtime.NotPredicate(astToObject(ast.expression))
-        case "zero_or_more": return new runtime.Repeat(astToObject(ast.expression))
-        case "one_or_more": return new runtime.Repeat(astToObject(ast.expression), 1)
-        case "repeat": return new runtime.Repeat(astToObject(ast.expression), ast.min, ast.max)
-        case "optional": return new runtime.Optional(astToObject(ast.expression))
-        case "text": return new runtime.StringValue(astToObject(ast.expression))
-        // We use name where pegjs uses label and label where pegjs uses name.
-        case "labeled": return astToObject(ast.expression).setName(ast.label)
-        case "named": return astToObject(ast.expression).setLabel(ast.name)
-        case "action": return new runtime.Action(astToObject(ensureSequence(ast.expression)), eval(createFunctionFromBody(ast.scope, ast.code)))
-        case "semantic_and": return new runtime.CustomPredicate('').setHandler(eval(createFunctionFromBody(ast.scope, ast.code)))
-        //case "semantic_not": 
-    } }
-    catch (e) {
-        console.log(red, e.message, endColor)
-        console.log(red, ast, endColor)
-        throw new Error()
-    }
-
-    console.log(red, "Unrecognized rule type: " + ast.type, endColor)
-    console.log(red, ast, endColor)
-    throw new Error()
+    return eval("(function(){" + getHeader() + (ast.initializer ? ast.initializer.code + '\n' : "") + " return " + obj("Parser", array(ast.rules.map(astToJS), ',\n\n')) +"})()")
 }
 
 // ------------------------------------- //
@@ -315,15 +282,10 @@ function sourceToAst(input: string) {
     return ast
 }
 
-export function generateSource(source: string) {
+export function generateParserSource(source: string) {
     return astToJS(sourceToAst(source));
 }
 
-export function generateObject(source: string) {
+export function generateParser(source: string): runtime.Parser {
     return astToObject(sourceToAst(source))
 }
-
-let source = fs.readFileSync('src/compiler/Parser.pegjs', { encoding: 'utf8' });
-console.log('Generating parser...')
-let js = generateSource(source as string)
-fs.writeFileSync('lib/compiler/Parser.js', js)

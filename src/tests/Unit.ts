@@ -18,6 +18,10 @@ import {
     CustomPredicate
 } from "../runtime"
 
+import {
+    generateParser
+} from "../compiler"
+
 const red   = '\u001b[31m'
 const blue  = '\u001b[36m'
 const green = '\u001b[32m'
@@ -214,5 +218,9 @@ testError(parser, "crap", "Expected Array")
 
 //  TODO: Fix this, it's reporting too far up the rule stack, where offset isn't the same.
 testError(parser, "[ 1,  \n[2,3],\n[4,[5]\n]", 'Expected "," or "]"')
+
+parser = generateParser("start = [0-9]")
+testRule(new Reference("start"), "7", true, null, parser)
+testRule(new Reference("start"), "a", false, null, parser)
 
 finish()

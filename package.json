@@ -7,7 +7,7 @@
     },
     "repository": "https://github.com/krisnye/pegs.git",
     "scripts": {
-        "build": "tsc -p . & node lib/compiler/Generator.js & node lib/tests/Unit.js & node lib/tests/ParserTest.js",
+        "build": "tsc -p . & node lib/tests/Unit.js",
         "watch": "tsc -p . --watch & nodemon --watch lib --watch test lib/tests/Unit.js",
         "watchWin": "start tsc -p . --watch & nodemon --watch lib --watch test lib/tests/Unit.js",
         "pegjs": "pegjs -o lib/compiler/PegJsSelfParser.js src/compiler/PEGjs.pegjs",

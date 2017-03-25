@@ -1,11 +1,10 @@
 declare var require: (name:string) => any
-
 var fs = require('fs')
-
-var pegs = require('../../lib/compiler/Parser.js').parser
 var pegjs = require('../../lib/compiler/PegJsSelfParser.js')
 
-var source = fs.readFileSync('src/tests/ParserInput', { encoding: 'utf8' });
+import {
+    generateParser
+} from "../compiler"
 
 function traverse(ast: any, callback: any) {
     try {
@@ -17,6 +16,10 @@ function traverse(ast: any, callback: any) {
     } catch(e) {}
 }
 
+var parser = fs.readFileSync('src/tests/Parser.pegjs', { encoding: 'utf8' });
+var source = fs.readFileSync('src/tests/ParserInput', { encoding: 'utf8' });
+
+let pegs: any = generateParser(parser)
 var count = 10
 
 var pegsTime = new Date().getTime()
