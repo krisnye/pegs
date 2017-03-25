@@ -9,7 +9,7 @@ export default class Context
     readonly source: string
     readonly debug: false
     offset: number = 0
-    state: object = {}
+    state: {[name: string]: any} = {}
     private locationCalculator?: LocationCalculator
     rules?: Rule[]              //  present while parsing sequences
     values?: any[]              //  present while parsing sequences, contains values parsed so far in sequence
@@ -30,6 +30,19 @@ export default class Context
     }
     getLine(indexStartingAtOne: number) {
         return this.getLines()[indexStartingAtOne - 1]
+    }
+
+    getState(name: string, defaultValue = 0) {
+        let value = this.state[name]
+        if (value == null)
+            value = defaultValue
+        return value
+    }
+    setState(name: string, value: any) {
+        //  we always treat our state object as immutable, so we clone the whole thing on any write
+        var newState = (Object as any).assign({}, this.state)
+        newState[name] = value
+        this.state = newState
     }
 
     pushRule(rule: Rule) {}

@@ -36,8 +36,6 @@ for (let ast of [pegsOut, pegjsOut]) traverse(ast, (ast: any) => {
     ast.end = undefined
 })
 
-
-
 pegsOut = JSON.stringify(pegsOut)
 pegjsOut = JSON.stringify(pegjsOut)
 
