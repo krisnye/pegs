@@ -10,30 +10,33 @@ const endColor = '\u001b[0m'
 
 // --------- AST preprocessing and analysis -------------- //
 
-function bfTraverse(ast: any, callback: any, parent: any = null, index: any = 0) {
+// Traverses the ast and calls a callback for each node.
+function traverse(ast: any, callback: any, parent: any = null, index: any = 0) {
     callback(ast, parent, index)
     for (let key of ['rules', 'alternatives', 'elements']) {
         if (ast[key]) {
             let i = 0;
-            for (let elem of ast[key]) bfTraverse(elem, callback, ast, i++)
+            for (let elem of ast[key]) traverse(elem, callback, ast, i++)
         }
     }
-    if (ast.expression) bfTraverse(ast.expression, callback, ast, 0)
+    if (ast.expression) traverse(ast.expression, callback, ast, 0)
 }
 
-function dfTraverse(ast: any, callback: any, parent: any = null, index: any = 0) {
+// Traverses the ast and calls a callback for each node. If the callback returns a value other than undefined, it replaces the node it's called on.
+// Callbacks are ordered so they are only called once all a node's children have been processed.
+function transform(ast: any, callback: any, parent: any = null, index: any = 0) {
     for (let key of ['rules', 'alternatives', 'elements']) {
         if (ast[key]) {
             let i = 0;
             for (let elem of ast[key]) {
-                let child = dfTraverse(elem, callback, ast, i)
+                let child = transform(elem, callback, ast, i)
                 if (child !== undefined) ast[key][i] = child
                 i++
             }
         }
     }
     if (ast.expression) {
-        let child = dfTraverse(ast.expression, callback, ast, 0)
+        let child = transform(ast.expression, callback, ast, 0)
         if (child !== undefined) ast.expression = child
     }
     let result = callback(ast, parent, index)
@@ -55,7 +58,7 @@ function forChildren(ast: any, callback: any) {
 //This may cause problems.
 
 function addScopeInformation (ast: any) {
-    bfTraverse(ast, function(ast: any, parent: any, index: any) {
+    traverse(ast, function(ast: any, parent: any, index: any) {
         if (ast.type == "action") ast.scope = scopeUpto(ast.expression)
         if (ast.type == "semantic_and") ast.scope = scopeUpto(parent, index)
     })
@@ -85,7 +88,7 @@ function getRuleMap(grammar: any) {
 
 function checkRefences(grammar: any) {
     let rules = getRuleMap(grammar)
-    bfTraverse(grammar, function(ast: any) { 
+    traverse(grammar, function(ast: any) { 
         if (ast.type == "rule_ref" && rules[ast.name] === undefined) {
             console.log(
                 red, 
@@ -121,7 +124,7 @@ function regexify(grammar: any) {
 function regexifyRule(rule: any, ruleMap: any) {
     if (rule.REGEXIFIED) return
     rule.REGEXIFIED = true
-    dfTraverse(rule, function(ast: any) {
+    transform(rule, function(ast: any) {
         if (!childrenAreCompatibleRegex(ast)) return
         let result: any = {type: 'regex', flags: ''}
         switch(ast.type) {
@@ -228,7 +231,7 @@ function getHeader() {
 export function astToJS(ast: any): any {
     try {
     switch (ast.type) {
-        case "grammar": return getHeader() + (ast.initializer ? ast.initializer.code + '\n' : "") + obj("Parser", array(ast.rules.map(astToJS), ',\n\n'))
+        case "grammar": return getHeader() + (ast.initializer ? ast.initializer.code + '\n' : "") + "exports.parser = " + obj("Parser", array(ast.rules.map(astToJS), ',\n\n'))
         case "choice": return obj("Choice", ...ast.alternatives.map(astToJS))
         case "sequence": return obj("Sequence", ...ast.elements.map(astToJS))
         case "group": return obj("Group", astToJS(ast.expression))
