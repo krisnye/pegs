@@ -2,9 +2,7 @@
     "name": "pegs",
     "version": "0.1.0",
     "main": "lib/index.js",
-    "bin": {
-        "pegs": "lib/bin/_command.js"
-    },
+    "bin": "lib/command.js",
     "repository": "https://github.com/krisnye/pegs.git",
     "scripts": {
         "build": "tsc -p . & node lib/tests/Unit.js",
