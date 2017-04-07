@@ -222,8 +222,9 @@ export class Repeat extends Rule
         let min = typeof this.min == 'string' ? context.state[this.min] : this.min
         let max = typeof this.min == 'string' ? context.state[this.max] : this.max
 
-        console.log(min);
-        console.log(max)
+        // console.log(min)
+        // console.log(max)
+        // console.log(context.state)
 
         while (matches != max) {
             let value = this.rule.parse(context)
@@ -379,23 +380,23 @@ export class Group extends Rule {
 //  Used to Increment and Decrement state values.
 export class Increment extends Rule {
 
-    name: string
+    varName: string
     step: number
 
-    constructor(name: string, step: number = 1) {
+    constructor(varName: string, step: number = 1) {
         super()
-        this.name = name
+        this.varName = varName
         this.step = step
     }
 
     parseInternal(context: Context) {
-        context.setState(this.name, context.getState(this.name) + this.step)
+        context.setState(this.varName, context.getState(this.varName) + this.step)
         return undefined
     }
 
     toString() {
         let suffix = this.step == 1 ? "++" : this.step == -1 ? "--" : "+= " + this.step
-        return this.name + suffix
+        return this.varName + suffix
     }
 }
 

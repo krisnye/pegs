@@ -1,20 +1,20 @@
-// start
-//   = source !.
+start
+  = source !.
 
-// source
-//   = sourceElement*
+source
+  = sourceElement+
 
-// sourceElement
-//   = expression
-//   / block
+sourceElement
+  = expression
+  / block
 
-// expression
-//   = dent ('foo' / 'bar') __ newline?
+expression
+  = dent ('foo' / 'bar') '()' newline?
 
-// block
-//   = dent 'block' __ newline outdent source indent
+block
+  = dent 'block:' newline dentedSource
 
-start = outdent outdent outdent dent !.
+dentedSource = outdent (source / dentedSource) indent
 
 outdent
   = spaces++
@@ -24,7 +24,10 @@ indent
 
 dent
   = ' '<spaces>
+__ 
+  = ' '*
 
-// __ = ' '*
-
-// newline = '\n'
+newline 
+  = '\r\n'
+  / '\r'
+  / '\n' 

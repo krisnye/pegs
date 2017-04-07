@@ -1,1 +1,5 @@
- 
+block:
+ foo()
+ block:
+        bar()
+        foo()

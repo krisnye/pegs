@@ -235,7 +235,6 @@ testRule(new Reference("start"), "    ", false, null, parser)
 var indentParser = fs.readFileSync('src/tests/Indent.pegjs', { encoding: 'utf8' });
 var indentSource = fs.readFileSync('src/tests/IndentSource', { encoding: 'utf8' });
 parser = generateParser(indentParser)
-//console.log(generateParserSource(indentParser))
 testRule(new Reference("start"), indentSource, true, null, parser)
 
 finish()
