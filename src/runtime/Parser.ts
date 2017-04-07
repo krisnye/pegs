@@ -16,7 +16,7 @@ export default class Parser
 
     //  either returns the resulting parse value or throws a ParseError
     parse(source:string, start: Rule = this.start) : any {
-        let context = new Context(this, source)
+        let context = new Context(this, source, null)
         let value = start.parse(context)
         if (Rule.passed(value))
             return value

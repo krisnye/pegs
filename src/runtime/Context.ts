@@ -9,7 +9,8 @@ export default class Context
     readonly source: string
     readonly debug: false
     offset: number = 0
-    state: {[name: string]: any} = {}
+    root: Context
+    private rootState: {[name: string]: any} = {}
     private locationCalculator?: LocationCalculator
     rules?: Rule[]              //  present while parsing sequences
     values?: any[]              //  present while parsing sequences, contains values parsed so far in sequence
@@ -17,9 +18,17 @@ export default class Context
     failureOffsetStart: number = 0      //  furthest failure offset start used for creating errors
     failureOffsetFinish: number = 0     //  furthest failure offset finish used for creating errors
 
-    constructor(parser: Parser, source: string) {
+    constructor(parser: Parser, source: string, root: Context | null) {
         this.parser = parser
         this.source = source
+        this.root = root || this
+    }
+
+    get state(): {[name: string]: any} {
+        return this.root.rootState
+    }
+    set state(value: {[name: string]: any}) {
+        this.root.rootState = value
     }
 
     private lines: string[]

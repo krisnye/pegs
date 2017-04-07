@@ -40,7 +40,7 @@ export default class ErrorContext extends Context
     errorStacks: StackFrame[][] = []
 
     constructor(context: Context) {
-        super(context.parser, context.source)
+        super(context.parser, context.source, context.root)
         this.debugErrorOffsetStart = context.failureOffsetStart
         this.debugErrorOffsetFinish = context.failureOffsetFinish
     }

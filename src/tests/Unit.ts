@@ -60,15 +60,15 @@ function testError(parser: Parser, source: string, expected: string) {
             testFails++
             console.log("Parsing " + source + " expected error " + expected +  ", actual error: " + e.message)
         }
-        // else {
-            console.log(e.message)
-        // }
+        else {
+            // console.log(e.message)
+        }
     }
 }
 
 function testRule(rule:Rule, source:string, pass: boolean | number = true, expectedValue?:any, parser = new Parser([])) {
     testCount++
-    var context = new Context(parser, source)
+    var context = new Context(parser, source, null)
     var value = rule.parse(context)
     var passed = Rule.passed(value)
 
