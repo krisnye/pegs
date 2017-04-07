@@ -50,6 +50,10 @@
   function buildList(head, tail, index) {
     return [head].concat(extractList(tail, index));
   }
+
+  function quote(string) {
+    return '"' + string + '"'
+  }
 }
 
 // ---- Syntactic Grammar -----
@@ -179,7 +183,7 @@ PrefixedOperator
   / "!"
 
 SuffixedExpression
-  = expression:PrimaryExpression __ operator:SuffixedOperator {
+  = IncrementState / expression:PrimaryExpression __ operator:SuffixedOperator {
       return {
         type: OPS_TO_SUFFIXED_TYPES[operator],
         expression: expression,
@@ -188,12 +192,26 @@ SuffixedExpression
     }
   / RepeatExpression / PrimaryExpression
 
+IncrementOperator
+  = "++" 
+  / "--"
+
+IncrementState = name: IdentifierName __ operator:IncrementOperator {
+  return {
+        type: "increment_state",
+        name: quote(name),
+        step: operator == '++' ? 1 : -1,
+        location: location()
+      }
+}
+
 RepeatExpression
   = expression:PrimaryExpression __ '<' __ min: (Integer / IdentifierName) max: ( __ ',' __ max: (Integer / IdentifierName) { return max; })? __ '>' {
+    max = max == undefined ? min : max
     return {
       type: "repeat",
-      min: min,
-      max: max == undefined ? min : max,
+      min: typeof min == 'string' ? quote(min) : min,
+      max: typeof max == 'string' ? quote(max) : max,
       expression: expression,
       location: location()
     };

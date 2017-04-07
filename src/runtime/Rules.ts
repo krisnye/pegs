@@ -205,10 +205,10 @@ export class Choice extends Rule
 export class Repeat extends Rule
 {
     rule: Rule
-    min: number
-    max: number
+    min: number | string
+    max: number | string
 
-    constructor(rule: Rule, min: number = 0, max: number = -1) {
+    constructor(rule: Rule, min: number | string = 0, max: number | string = -1) {
         super()
         this.rule = rule
         this.max = max
@@ -219,14 +219,20 @@ export class Repeat extends Rule
         let matches = 0
         let values: any[] = []
 
-        while (matches != this.max) {
+        let min = typeof this.min == 'string' ? context.state[this.min] : this.min
+        let max = typeof this.min == 'string' ? context.state[this.max] : this.max
+
+        console.log(min);
+        console.log(max)
+
+        while (matches != max) {
             let value = this.rule.parse(context)
             if (Rule.passed(value)) {
                 matches++
                 values.push(value)
             }
             else {
-                if (matches < this.min)
+                if (matches < min)
                     return value
                 break
             }

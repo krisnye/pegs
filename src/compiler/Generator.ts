@@ -255,6 +255,7 @@ export function astToJS(ast: any): any {
         case "action": return obj("Action", astToJS(ensureSequence(ast.expression)), createFunctionFromBody(ast.scope, ast.code))
         case "semantic_and": return obj("CustomPredicate", "''") + ".setHandler(" + createFunctionFromBody(ast.scope, ast.code) + ")"
         //case "semantic_not": 
+        case "increment_state": return obj("Increment", ast.name, ast.step)
     } }
     catch (e) {
         console.log(red, ast, endColor)
@@ -275,15 +276,16 @@ export function astToObject(ast: any): any {
     return eval("(function(){" + getHeader() + (ast.initializer ? ast.initializer.code + '\n' : "") + " return " + obj("Parser", array(ast.rules.map(astToJS), ',\n\n')) +"})()")
 }
 
-// ------------------------------------- //
-
 function sourceToAst(input: string) {
     let ast = pegjs.parse(input)
     checkRefences(ast)
-    regexify(ast)
+    // regexify saves 25% on time but it makes for ugly bug reporting
+    //regexify(ast)
     addScopeInformation(ast)
     return ast
 }
+
+// ------------------------------------- //
 
 export function generateParserSource(source: string) {
     return astToJS(sourceToAst(source));

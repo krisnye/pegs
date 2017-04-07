@@ -1,3 +1,6 @@
+declare var require: (name:string) => any
+var fs = require('fs')
+
 import {
     Context,
     Parser,
@@ -19,7 +22,8 @@ import {
 } from "../runtime"
 
 import {
-    generateParser
+    generateParser,
+    generateParserSource
 } from "../compiler"
 
 const red   = '\u001b[31m'
@@ -222,5 +226,16 @@ testError(parser, "[ 1,  \n[2,3],\n[4,[5]\n]", 'Expected "," or "]"')
 parser = generateParser("start = [0-9]")
 testRule(new Reference("start"), "7", true, null, parser)
 testRule(new Reference("start"), "a", false, null, parser)
+
+// Stateful rules
+parser = generateParser("start = a++ a++ a++ ' '<a> !.")
+testRule(new Reference("start"), "   ", true, null, parser)
+testRule(new Reference("start"), "    ", false, null, parser)
+
+var indentParser = fs.readFileSync('src/tests/Indent.pegjs', { encoding: 'utf8' });
+var indentSource = fs.readFileSync('src/tests/IndentSource', { encoding: 'utf8' });
+parser = generateParser(indentParser)
+//console.log(generateParserSource(indentParser))
+testRule(new Reference("start"), indentSource, true, null, parser)
 
 finish()
