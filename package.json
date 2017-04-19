@@ -5,6 +5,8 @@
     "bin": "lib/command.js",
     "repository": "https://github.com/krisnye/pegs.git",
     "scripts": {
+        "dev": "yarn build & npm link",
+
         "build": "tsc -p . & node lib/tests/Unit.js",
         "watch": "tsc -p . --watch & nodemon --watch lib --watch test lib/tests/Unit.js",
         "watchWin": "start tsc -p . --watch & nodemon --watch lib --watch test lib/tests/Unit.js",

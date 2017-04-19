@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 declare var require: (name:string) => any
 declare var process: any
 
@@ -9,5 +10,11 @@ import {
 
 var args = process.argv.slice(2)
 
-var parser = fs.readFileSync(args[0], { encoding: 'utf8' });
-fs.writeFileSync(args[1], generateParserSource(parser), { encoding: 'utf8' })
+if (args.length < 2) {
+    console.log("\nUsage:\n\n    pegs input.pegs output.js\n")
+}
+else {
+    var [input,output] = args
+    var parser = fs.readFileSync(input, { encoding: 'utf8' });
+    fs.writeFileSync(output, generateParserSource(parser), { encoding: 'utf8' })
+}
