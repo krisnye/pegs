@@ -8,7 +8,7 @@
         "dev": "yarn build & npm link",
         "build": "yarn pegjs & tsc -p . & node lib/tests/Unit.js",
         "watch": "yarn pegjs & tsc -p . --watch & nodemon --watch lib --watch test lib/tests/Unit.js",
-        "watchWin": "start tsc -p . --watch & nodemon --watch lib --watch test lib/tests/Unit.js",
+        "watchWin": "yarn pegjs & start tsc -p . --watch & nodemon --watch lib --watch test lib/tests/Unit.js",
         "pegjs": "pegjs -o lib/compiler/PegJsSelfParser.js src/compiler/PEGjs.pegjs",
         "perf" : "tsc -p . & node lib/tests/ParserPerformance.js",
         "profile" : "tsc -p . & node --prof lib/tests/ParserProfile.js"
