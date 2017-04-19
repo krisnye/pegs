@@ -222,7 +222,9 @@ function classToRegex(ast: any) {
 
 function getHeader() {
     let header: string[] = []
-    header.push("let runtime = require('../runtime')\n")
+    header.push("let runtime\n")
+    header.push("try { runtime = require('pegs') } catch (e) {}\n")
+    header.push("if (runtime == null) { runtime = require('pegs') }\n")
     for (let key in runtime) header.push('var ' + key + ' = runtime.' + key)
     header.push("\n")
     return header.join('\n')
