@@ -24,7 +24,7 @@ indent
 
 dent
   = ' '<spaces>
-__ 
+__
   = ' '*
 
 newline 

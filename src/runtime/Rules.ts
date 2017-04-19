@@ -135,7 +135,6 @@ export class Reference extends Rule
         let rule = context.parser.rules[this.reference]
         return rule.parse(context)
     }
-
 }
 
 export class Any extends Rule
@@ -221,10 +220,6 @@ export class Repeat extends Rule
 
         let min = typeof this.min == 'string' ? context.state[this.min] : this.min
         let max = typeof this.min == 'string' ? context.state[this.max] : this.max
-
-        // console.log(min)
-        // console.log(max)
-        // console.log(context.state)
 
         while (matches != max) {
             let value = this.rule.parse(context)
