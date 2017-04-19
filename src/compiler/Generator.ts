@@ -223,7 +223,7 @@ function classToRegex(ast: any) {
 function getHeader() {
     let header: string[] = []
     header.push("let runtime = require('../runtime')\n")
-    for (let key in runtime) header.push('let ' + key + ' = runtime.' + key)
+    for (let key in runtime) header.push('var ' + key + ' = runtime.' + key)
     header.push("\n")
     return header.join('\n')
 }
@@ -231,7 +231,7 @@ function getHeader() {
 export function astToJS(ast: any): any {
     try {
     switch (ast.type) {
-        case "grammar": return getHeader() + (ast.initializer ? ast.initializer.code + '\n' : "") + "exports.parser = " + obj("Parser", array(ast.rules.map(astToJS), ',\n\n'))
+        case "grammar": return "(function(){" + getHeader() + (ast.initializer ? ast.initializer.code + '\n' : "") + " return " + obj("Parser", array(ast.rules.map(astToJS), ',\n\n')) +"})()"
         case "choice": return obj("Choice", ...ast.alternatives.map(astToJS))
         case "sequence": return obj("Sequence", ...ast.elements.map(astToJS))
         case "group": return obj("Group", astToJS(ast.expression))
@@ -272,10 +272,6 @@ export function astToJS(ast: any): any {
     return "<ERROR:" + ast.type + ">"
 }
 
-export function astToObject(ast: any): any {
-    return eval("(function(){" + getHeader() + (ast.initializer ? ast.initializer.code + '\n' : "") + " return " + obj("Parser", array(ast.rules.map(astToJS), ',\n\n')) +"})()")
-}
-
 function sourceToAst(input: string) {
     let ast = pegjs.parse(input)
     checkRefences(ast)
@@ -288,9 +284,9 @@ function sourceToAst(input: string) {
 // ------------------------------------- //
 
 export function generateParserSource(source: string) {
-    return astToJS(sourceToAst(source));
+    return "exports.parser = " + astToJS(sourceToAst(source));
 }
 
 export function generateParser(source: string): runtime.Parser {
-    return astToObject(sourceToAst(source))
+    return eval(astToJS(sourceToAst(source)))
 }
