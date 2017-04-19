@@ -1,6 +1,5 @@
 import Rule from "./Rule"
 import Context from "./Context"
-import Parser from "./Parser"
 import Location from "./Location"
 import * as Colors from "./Colors"
 
@@ -40,7 +39,7 @@ export default class ErrorContext extends Context
     errorStacks: StackFrame[][] = []
 
     constructor(context: Context) {
-        super(context.parser, context.source, context.root)
+        super(context.grammar, context.source, context.root)
         this.debugErrorOffsetStart = context.failureOffsetStart
         this.debugErrorOffsetFinish = context.failureOffsetFinish
     }

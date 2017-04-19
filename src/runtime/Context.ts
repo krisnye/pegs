@@ -1,13 +1,13 @@
-import Parser from "./Parser"
+import Grammar from "./Grammar"
 import Rule from "./Rule"
 import LocationCalculator from "./LocationCalculator"
 import Location from "./Location"
 
 export default class Context
 {
-    readonly parser: Parser
-    readonly source: string
+    readonly grammar: Grammar
     readonly debug: false
+    source: string
     offset: number = 0
     root: Context
     private rootState: {[name: string]: any} = {}
@@ -18,10 +18,10 @@ export default class Context
     failureOffsetStart: number = 0      //  furthest failure offset start used for creating errors
     failureOffsetFinish: number = 0     //  furthest failure offset finish used for creating errors
 
-    constructor(parser: Parser, source: string, root: Context | null) {
-        this.parser = parser
+    constructor(grammar: Grammar, source: string, root?: Context) {
+        this.grammar = grammar
         this.source = source
-        this.root = root || this
+        this.root = root ? root : this
     }
 
     get state(): {[name: string]: any} {
