@@ -234,22 +234,13 @@ function grammarToJS(ast: any): any {
 
         imports.join('\n'),
 
-        "\nvar grammar, context",
-        "var location = function(){ return context.location() }\n",
+        "\nvar parser, context",
+        "var location = function(){ return parser.context.location() }\n",
 
         (ast.initializer ? ast.initializer.code + '\n' : ""),
         
-        "grammar = " + obj("Grammar", array(ast.rules.map(astToJS), ',\n\n')),
-        //"return grammar})()"
-        "\nreturn function(source){",
-        "    context = new Context(grammar, source)",
-        "    let value = grammar.start.parse(context)",
-        "    if (Rule.passed(value)) return value",
-        "    ",
-        "    context = new ErrorContext(context)",
-        "    grammar.start.parse(context)",
-        "    throw context.getError()",
-        "}})()"
+        "parser = " + obj("Parser", obj("Grammar", array(ast.rules.map(astToJS), ',\n\n'))),
+        "return parser})()"
     ]
     return body.join('\n')
 }
@@ -309,10 +300,10 @@ function sourceToAst(input: string) {
 
 // ---- API ---- //
 
-export function generateGrammarSource(source: string) {
+export function generateParserSource(source: string) {
     return "exports.grammar = " + astToJS(sourceToAst(source));
 }
 
-export function generateGrammar(source: string): runtime.Grammar {
+export function generateParser(source: string): runtime.Parser {
     return eval(astToJS(sourceToAst(source)))
 }

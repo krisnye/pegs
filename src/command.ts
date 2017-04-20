@@ -5,7 +5,7 @@ declare var process: any
 var fs = require('fs')
 
 import {
-    generateGrammarSource
+    generateParserSource
 } from "./compiler"
 
 var args = process.argv.slice(2)
@@ -16,5 +16,5 @@ if (args.length < 2) {
 else {
     var [input,output] = args
     var parser = fs.readFileSync(input, { encoding: 'utf8' });
-    fs.writeFileSync(output, generateGrammarSource(parser), { encoding: 'utf8' })
+    fs.writeFileSync(output, generateParserSource(parser), { encoding: 'utf8' })
 }
