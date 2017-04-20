@@ -14,7 +14,8 @@ export default class Parser
     }
 
     //  either returns the resulting parse value or throws a ParseError
-    parse() : any {
+    parse(source:string) : any {
+        if (source !== undefined) this.context.source = source
         let value = this.grammar.start.parse(this.context)
         if (Rule.passed(value))
             return value

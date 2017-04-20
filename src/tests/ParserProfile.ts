@@ -2,22 +2,24 @@
 // then run "node --prof-process isolate-0x<nnnnnnnnnnnn>-v8.log > profile.txt"
 // (fill in the n's with the specifics)
 
-declare var require: (name:string) => any
-var fs = require('fs')
+// This needs to be updated to use new Grammar object.
 
-import {
-    generateParser
-} from "../compiler"
+// declare var require: (name:string) => any
+// var fs = require('fs')
 
-var parser = fs.readFileSync('src/tests/Parser.pegjs', { encoding: 'utf8' });
-var source = fs.readFileSync('src/tests/ParserInput', { encoding: 'utf8' });
+// import {
+//     generateParser
+// } from "../compiler"
 
-let pegs: any = generateParser(parser)
+// var parser = fs.readFileSync('src/tests/Parser.pegjs', { encoding: 'utf8' });
+// var source = fs.readFileSync('src/tests/ParserInput', { encoding: 'utf8' });
 
-let count = 100
+// let pegs: any = generateParser(parser)
 
-var time = new Date().getTime()
-for(let i = 0; i < count; i++) pegs.parse(source)
-time = new Date().getTime() - time
+// let count = 100
 
-console.log('Done in ' + time + 'ms.')
+// var time = new Date().getTime()
+// for(let i = 0; i < count; i++) pegs.parse(source)
+// time = new Date().getTime() - time
+
+// console.log('Done in ' + time + 'ms.')

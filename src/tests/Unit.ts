@@ -23,8 +23,8 @@ import {
 } from "../runtime"
 
 import {
-    generateParser,
-    generateParserSource
+    generateGrammar,
+    generateGrammarSource
 } from "../compiler"
 
 const red   = '\u001b[31m'
@@ -225,19 +225,19 @@ testError(grammar, "crap", "Expected Array")
 //  TODO: Fix this, it's reporting too far up the rule stack, where offset isn't the same.
 testError(grammar, "[ 1,  \n[2,3],\n[4,[5]\n]", 'Expected "," or "]"')
 
-console.log("KODY: I broke your generateParser stuff. This should now return a parse function")
-// grammar = generateParser("start = [0-9]")
+//console.log("KODY: I broke your generateParser stuff. This should now return a parse function")
+// grammar = generateGrammar("start = [0-9]")
 // testRule(new Reference("start"), "7", true, null, grammar)
 // testRule(new Reference("start"), "a", false, null, grammar)
 
 // // Stateful rules
-// grammar = generateParser("start = a++ a++ a++ ' '<a> !.")
+// grammar = generateGrammar("start = a++ a++ a++ ' '<a> !.")
 // testRule(new Reference("start"), "   ", true, null, grammar)
 // testRule(new Reference("start"), "    ", false, null, grammar)
 
 // var indentParser = fs.readFileSync('src/tests/Indent.pegjs', { encoding: 'utf8' });
 // var indentSource = fs.readFileSync('src/tests/IndentSource', { encoding: 'utf8' });
-// grammar = generateParser(indentParser)
+// grammar = generateGrammar(indentParser)
 // testRule(new Reference("start"), indentSource, true, null, grammar)
 
 finish()

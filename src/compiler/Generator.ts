@@ -8,7 +8,7 @@ import * as runtime from "../runtime"
 const red   = '\u001b[31m'
 const endColor = '\u001b[0m'
 
-// --------- AST preprocessing and analysis -------------- //
+// ---- AST preprocessing and analysis ---- //
 
 // Traverses the ast and calls a callback for each node.
 function traverse(ast: any, callback: any, parent: any = null, index: any = 0) {
@@ -181,7 +181,7 @@ function regexifyRule(rule: any, ruleMap: any) {
     })
 }
 
-// --------- Parser generation -------------- //
+// ---- Parser generation ---- //
 
 //  creates a function that will extract named rules out into local variables for use by the function body
 function createFunctionFromBody(scope: any[], body: string): string {
@@ -220,22 +220,44 @@ function classToRegex(ast: any) {
     return (ast.inverted ? '/[^' : '/[') + parts + (ast.ignoreCase ? ']/yi': ']/y')
  }
 
-function getHeader() {
-    let header: string[] = 
+function grammarToJS(ast: any): any {
+
+    let imports: string[] = [];
+    for (let key in runtime) imports.push('var ' + key + ' = runtime.' + key)
+
+    let body: string[] = 
     [
-        "let runtime",
+        "(function(){",
+        "var runtime",
         "try { runtime = require('pegs') } catch (e) {}",
-        "if (runtime == null) { runtime = require('../runtime') }"
+        "if (runtime == null) { runtime = require('../runtime') }\n",
+
+        imports.join('\n'),
+
+        "\nvar grammar, context",
+        "var location = function(){ return context.location() }\n",
+
+        (ast.initializer ? ast.initializer.code + '\n' : ""),
+        
+        "grammar = " + obj("Grammar", array(ast.rules.map(astToJS), ',\n\n')),
+        //"return grammar})()"
+        "\nreturn function(source){",
+        "    context = new Context(grammar, source)",
+        "    let value = grammar.start.parse(context)",
+        "    if (Rule.passed(value)) return value",
+        "    ",
+        "    context = new ErrorContext(context)",
+        "    grammar.start.parse(context)",
+        "    throw context.getError()",
+        "}})()"
     ]
-    for (let key in runtime) header.push('var ' + key + ' = runtime.' + key)
-    header.push("\n")
-    return header.join('\n')
+    return body.join('\n')
 }
 
 export function astToJS(ast: any): any {
     try {
     switch (ast.type) {
-        case "grammar": return "(function(){" + getHeader() + (ast.initializer ? ast.initializer.code + '\n' : "") + " return " + obj("Parser", array(ast.rules.map(astToJS), ',\n\n')) +"})()"
+        case "grammar": return grammarToJS(ast)
         case "choice": return obj("Choice", ...ast.alternatives.map(astToJS))
         case "sequence": return obj("Sequence", ...ast.elements.map(astToJS))
         case "group": return obj("Group", astToJS(ast.expression))
@@ -285,12 +307,12 @@ function sourceToAst(input: string) {
     return ast
 }
 
-// ------------------------------------- //
+// ---- API ---- //
 
-export function generateParserSource(source: string) {
-    return "exports.parser = " + astToJS(sourceToAst(source));
+export function generateGrammarSource(source: string) {
+    return "exports.grammar = " + astToJS(sourceToAst(source));
 }
 
-export function generateParser(source: string): runtime.Parser {
+export function generateGrammar(source: string): runtime.Grammar {
     return eval(astToJS(sourceToAst(source)))
 }

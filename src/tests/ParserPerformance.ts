@@ -2,59 +2,61 @@ declare var require: (name:string) => any
 var fs = require('fs')
 var pegjs = require('../../lib/compiler/PegJsSelfParser.js')
 
-import {
-    generateParser
-} from "../compiler"
+// This needs to be updated to use new Grammar object.
 
-function traverse(ast: any, callback: any) {
-    try {
-        callback(ast)
-        for (let key in ast) {
-            //console.log(key)
-            traverse(ast[key], callback)
-        }
-    } catch(e) {}
-}
+// import {
+//     generateParser
+// } from "../compiler"
 
-var parser = fs.readFileSync('src/tests/Parser.pegjs', { encoding: 'utf8' });
-var source = fs.readFileSync('src/tests/ParserInput', { encoding: 'utf8' });
+// function traverse(ast: any, callback: any) {
+//     try {
+//         callback(ast)
+//         for (let key in ast) {
+//             //console.log(key)
+//             traverse(ast[key], callback)
+//         }
+//     } catch(e) {}
+// }
 
-let pegs: any = generateParser(parser)
-var count = 10
+// var parser = fs.readFileSync('src/tests/Parser.pegjs', { encoding: 'utf8' });
+// var source = fs.readFileSync('src/tests/ParserInput', { encoding: 'utf8' });
 
-var pegsTime = new Date().getTime()
-for (let i = 0; i < count; i++)
-    pegs.parse(source)
-var pegsOut = pegs.parse(source)
-pegsTime = new Date().getTime() - pegsTime
+// let pegs: any = generateParser(parser)
+// var count = 10
 
-var pegjsTime = new Date().getTime()
-for (let i = 0; i < count; i++)
-    pegjs.parse(source)
-var pegjsOut = pegjs.parse(source)
-pegjsTime = new Date().getTime() - pegjsTime
+// var pegsTime = new Date().getTime()
+// for (let i = 0; i < count; i++)
+//     pegs.parse(source)
+// var pegsOut = pegs.parse(source)
+// pegsTime = new Date().getTime() - pegsTime
 
-for (let ast of [pegsOut, pegjsOut]) traverse(ast, (ast: any) => {
-    ast.location = undefined
-    ast.end = undefined
-})
+// var pegjsTime = new Date().getTime()
+// for (let i = 0; i < count; i++)
+//     pegjs.parse(source)
+// var pegjsOut = pegjs.parse(source)
+// pegjsTime = new Date().getTime() - pegjsTime
 
-pegsOut = JSON.stringify(pegsOut)
-pegjsOut = JSON.stringify(pegjsOut)
+// for (let ast of [pegsOut, pegjsOut]) traverse(ast, (ast: any) => {
+//     ast.location = undefined
+//     ast.end = undefined
+// })
 
-if (pegsOut != pegjsOut) {
-    console.log('Pegs output:\n')
-    console.log(pegsOut)
-    console.log('\n')
-    console.log('PEGjs output:\n')
-    console.log(pegjsOut)
-    console.log("\nOutputs are unequal!\n")
-    console.log('Pegs output length: ' + pegsOut.length)
-    console.log('PEGjs output length: ' + pegjsOut.length)
-}
+// pegsOut = JSON.stringify(pegsOut)
+// pegjsOut = JSON.stringify(pegjsOut)
 
-console.log('\n')
-console.log('Pegs parse time: ' + pegsTime + 'ms')
-console.log('PEGjs parse time: ' + pegjsTime + 'ms')
-console.log('Relative Time: ' + pegsTime / pegjsTime)
-console.log('\n')
+// if (pegsOut != pegjsOut) {
+//     console.log('Pegs output:\n')
+//     console.log(pegsOut)
+//     console.log('\n')
+//     console.log('PEGjs output:\n')
+//     console.log(pegjsOut)
+//     console.log("\nOutputs are unequal!\n")
+//     console.log('Pegs output length: ' + pegsOut.length)
+//     console.log('PEGjs output length: ' + pegjsOut.length)
+// }
+
+// console.log('\n')
+// console.log('Pegs parse time: ' + pegsTime + 'ms')
+// console.log('PEGjs parse time: ' + pegjsTime + 'ms')
+// console.log('Relative Time: ' + pegsTime / pegjsTime)
+// console.log('\n')
