@@ -186,7 +186,7 @@ function regexifyRule(rule: any, ruleMap: any) {
 //  creates a function that will extract named rules out into local variables for use by the function body
 function createFunctionFromBody(scope: any[], body: string): string {
     let localVariables = scope.map( (elem) => "let " + elem.name + " = __values[" + elem.index + "]" ).join(";\n")
-    return "(\nfunction(__context, __values) {\nlet location = () => __context.offset;\nlet text = () => __context.source[__context.offset - 1];\n" + localVariables + ";\n" + body + "})"
+    return "(\nfunction(__context, __values) {\nlet text = () => __context.source[__context.offset - 1];\n" + localVariables + ";\n" + body + "})"
 }
 
 function obj(name: string, ...args: any[]) { return 'new ' + name + '(' + args.join(', ') + ')'; }
@@ -227,15 +227,17 @@ function grammarToJS(ast: any): any {
 
     let body: string[] = 
     [
-        "(function(){",
-        "var runtime",
-        "try { runtime = require('pegs') } catch (e) {}",
-        "if (runtime == null) { runtime = require('../runtime') }\n",
+        `(function() {
+        var runtime
+        try { runtime = require('pegs') } catch (e) {}
+        if (runtime == null) { runtime = require('../runtime') }`,
 
         imports.join('\n'),
 
-        "\nvar parser, context",
-        "var location = function(){ return parser.context.location() }\n",
+        `var parser
+        var location = function() {
+            return parser.context.getLocationCalculator().getLocation(parser.context.offset, parser.context.offset)
+        }`,
 
         (ast.initializer ? ast.initializer.code + '\n' : ""),
         
@@ -301,7 +303,7 @@ function sourceToAst(input: string) {
 // ---- API ---- //
 
 export function generateParserSource(source: string) {
-    return "exports.grammar = " + astToJS(sourceToAst(source));
+    return "exports.parser = " + astToJS(sourceToAst(source));
 }
 
 export function generateParser(source: string): runtime.Parser {
