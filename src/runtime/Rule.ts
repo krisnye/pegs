@@ -14,6 +14,9 @@ abstract class Rule extends BaseObject {
         context.pushRule(this)
         var saveOffset = context.offset
         var saveState = context.state
+
+        context.location = () => context.getLocationCalculator().getLocation(saveOffset, context.offset)
+
         var result = this.parseInternal(context)
         if (!Rule.passed(result)) {
             // our rule failed to parse, so we must restore previous state.

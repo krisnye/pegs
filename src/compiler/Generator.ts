@@ -186,7 +186,7 @@ function regexifyRule(rule: any, ruleMap: any) {
 //  creates a function that will extract named rules out into local variables for use by the function body
 function createFunctionFromBody(scope: any[], body: string): string {
     let localVariables = scope.map( (elem) => "let " + elem.name + " = __values[" + elem.index + "]" ).join(";\n")
-    return "(\nfunction(__context, __values) {\nlet text = () => __context.source[__context.offset - 1];\n" + localVariables + ";\n" + body + "})"
+    return "(\nfunction(__context, __values) {\n" + localVariables + ";\n" + body + "})"
 }
 
 function obj(name: string, ...args: any[]) { return 'new ' + name + '(' + args.join(', ') + ')'; }
@@ -227,22 +227,26 @@ function grammarToJS(ast: any): any {
 
     let body: string[] = 
     [
-        `(function() {
-        var runtime
-        try { runtime = require('pegs') } catch (e) {}
-        if (runtime == null) { runtime = require('../runtime') }`,
+`(function() {
+var runtime
+try { runtime = require('pegs') } catch (e) {}
+if (runtime == null) { runtime = require('../runtime') }`,
 
-        imports.join('\n'),
+imports.join('\n'),
 
-        `var parser
-        var location = function() {
-            return parser.context.getLocationCalculator().getLocation(parser.context.offset, parser.context.offset)
-        }`,
+`var parser
+var location = function() {
+    return parser.context.location()
+}
+var text = function() {
+let loc = location()
+    return parser.context.source.substring(loc.start.offset, loc.end.offset)
+}`,
 
-        (ast.initializer ? ast.initializer.code + '\n' : ""),
-        
-        "parser = " + obj("Parser", obj("Grammar", array(ast.rules.map(astToJS), ',\n\n'))),
-        "return parser})()"
+(ast.initializer ? ast.initializer.code + '\n' : ""),
+
+"parser = " + obj("Parser", obj("Grammar", array(ast.rules.map(astToJS), ',\n\n'))),
+"return parser})()"
     ]
     return body.join('\n')
 }
