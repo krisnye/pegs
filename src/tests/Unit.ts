@@ -287,4 +287,19 @@ testRule(new Reference("start"),
 
  undefined, parser)
 
+ testRule(new Reference("start"),
+
+`..baz`,
+ true, 
+
+[
+    {
+        start: { offset:2, line:1,column:3},
+        end: { offset:5,line:1,column:6 }
+    },
+    'baz'
+],
+
+ undefined, parser)
+
 finish()
