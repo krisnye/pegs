@@ -14,8 +14,9 @@ abstract class Rule extends BaseObject {
         context.pushRule(this)
         var saveOffset = context.offset
         var saveState = context.state
+        var saveLocationFunc = context.location
 
-        context.location = () => context.getLocationCalculator().getLocation(saveOffset, context.offset)
+        context.location = () => { return context.getLocationCalculator().getLocation(saveOffset, context.offset) }
 
         var result = this.parseInternal(context)
         if (!Rule.passed(result)) {
@@ -24,6 +25,9 @@ abstract class Rule extends BaseObject {
             context.state = saveState
         }
         context.popRule()
+
+        context.location = saveLocationFunc
+        
         return result
     }
 

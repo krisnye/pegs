@@ -239,7 +239,7 @@ var location = function() {
     return parser.context.location()
 }
 var text = function() {
-let loc = location()
+    let loc = location()
     return parser.context.source.substring(loc.start.offset, loc.end.offset)
 }`,
 
