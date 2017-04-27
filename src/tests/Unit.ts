@@ -57,8 +57,8 @@ function finish() {
 function testError(grammar: Grammar, source: string, expected: string) {
     testCount++
     try {
-        let parser = new Parser(grammar, source)
-        parser.parse()
+        let parser = new Parser(grammar)
+        parser.parse(source)
         testFails++
     }
     catch (e) {
@@ -72,10 +72,21 @@ function testError(grammar: Grammar, source: string, expected: string) {
     }
 }
 
-function testRule(rule:Rule, source:string, pass: boolean | number = true, expectedValue?:any, grammar = new Grammar([])) {
+function testRule(rule:Rule, source:string, pass: boolean | number = true, expectedValue?:any, grammar = new Grammar([]), parser: Parser | undefined = undefined) {
     testCount++
-    var context = new Context(grammar, source)
-    var value = rule.parse(context)
+
+    var context
+    var value
+
+    if ( parser !== undefined ) {
+        try { value = parser.parse(source, rule) } 
+        catch (e) { value = Rule.failure }
+        context = parser.context
+    } else {
+        context = new Context(grammar, source)
+        value = rule.parse(context)
+    }
+
     var passed = Rule.passed(value)
 
     function fail(message: string) {
@@ -226,17 +237,54 @@ testError(grammar, "crap", "Expected Array")
 testError(grammar, "[ 1,  \n[2,3],\n[4,[5]\n]", 'Expected "," or "]"')
 
 let parser = generateParser("start = [0-9]")
-testRule(new Reference("start"), "7", true, null, parser.grammar)
-testRule(new Reference("start"), "a", false, null, parser.grammar)
+//testRule(new Reference("start"), "7", true, null, parser.grammar)
+testRule(new Reference("start"), "7", true, null, undefined, parser)
+testRule(new Reference("start"), "a", false, null, undefined, parser)
 
 // Stateful rules
-parser = generateParser("start = a++ a++ a++ ' '<a> !.")
-testRule(new Reference("start"), "   ", true, null, parser.grammar)
-testRule(new Reference("start"), "    ", false, null, parser.grammar)
+parser = generateParser("start = a++ a++ a++ 'a'<a> !.")
+testRule(new Reference("start"), "aaa", true, null, undefined, parser)
+testRule(new Reference("start"), "aaaa", false, null, undefined, parser)
 
 var indentParser = fs.readFileSync('src/tests/Indent.pegjs', { encoding: 'utf8' });
 var indentSource = fs.readFileSync('src/tests/IndentSource', { encoding: 'utf8' });
 parser = generateParser(indentParser)
-testRule(new Reference("start"), indentSource, true, null, parser.grammar)
+testRule(new Reference("start"), indentSource, true, null, undefined, parser)
+
+//Location and text.
+
+parser = generateParser("start = [.\\n]* @([a-z]* { return [location(), text()] }) ")
+
+testRule(new Reference("start"),
+
+`...
+...foo`,
+ true, 
+
+[
+    {
+        start: { offset:7, line:2,column:4},
+        end: { offset:10,line:2,column:7 }
+    },
+    'foo'
+],
+
+ undefined, parser)
+
+testRule(new Reference("start"),
+
+`......
+...bar`,
+ true, 
+
+[
+    {
+        start: { offset:10, line:2,column:4},
+        end: { offset:13,line:2,column:7 }
+    },
+    'bar'
+],
+
+ undefined, parser)
 
 finish()
