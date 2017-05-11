@@ -5,11 +5,9 @@
     "bin": "lib/command.js",
     "repository": "https://github.com/krisnye/pegs.git",
     "scripts": {
-        "dev": "yarn build & npm link",
-        "build": "yarn pegjs & tsc -p . & node lib/tests/Unit.js",
-        "watch": "yarn pegjs & tsc -p . --watch & nodemon --watch lib --watch test lib/tests/Unit.js",
-        "watchWin": "yarn pegjs & start tsc -p . --watch & nodemon --watch lib --watch test lib/tests/Unit.js",
-        "pegjs": "pegjs -o lib/compiler/PegJsSelfParser.js src/compiler/PEGjs.pegjs",
+        "dev": "yarn build && npm link",
+        "build": "pegjs -o lib/compiler/PegJsSelfParser.js src/compiler/PEGjs.pegjs && tsc -p . && node lib/tests/Unit.js",
+        "watch": "nodemon -e ts,pegjs -w src -x pegjs -o lib/compiler/PegJsSelfParser.js src/compiler/PEGjs.pegjs & tsc -p . -w & (sleep 2 && nodemon -w lib -w test lib/tests/Unit.js)",
         "perf" : "tsc -p . & node lib/tests/ParserPerformance.js",
         "profile" : "tsc -p . & node --prof lib/tests/ParserProfile.js"
     },
