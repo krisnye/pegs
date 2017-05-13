@@ -9,14 +9,14 @@ function pad(text: string, length: number) {
     return text
 }
 
-function getRuleLabel(rules: StackFrame[], offset: number) {
-    for (let i = rules.length - 1; i >= 0; i--) {
-        let frame = rules[i]
+function getRuleLabel(frames: StackFrame[], offset: number) {
+    for (let i = frames.length - 1; i >= 0; i--) {
+        let frame = frames[i]
         if (frame.rule.label != null && frame.offset == offset)
             return frame.rule.label
     }
-    //  no label so we just use the rules string value
-    return rules[rules.length - 1].rule.toString()
+    //  no label so we just use the last frames rules string value
+    return frames[frames.length - 1].rule.toString()
 }
 
 class StackFrame {

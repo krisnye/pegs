@@ -15,6 +15,10 @@ if (args.length < 2) {
 }
 else {
     var [input,output] = args
-    var parser = fs.readFileSync(input, { encoding: 'utf8' });
-    fs.writeFileSync(output, generateParserSource(parser), { encoding: 'utf8' })
+    if (fs.statSync(input).isFile()) {
+        var parser = fs.readFileSync(input, { encoding: 'utf8' });
+        fs.writeFileSync(output, generateParserSource(parser), { encoding: 'utf8' })
+    } else {
+        console.error(input + " isn't a file.")
+    }
 }
