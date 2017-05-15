@@ -83,12 +83,12 @@ export default class ErrorContext extends Context
             return start + lineText + end
         let startIndex = lineNumber == errorLocation.start.line ? errorLocation.start.column : 1
         let endIndex = lineNumber == errorLocation.end.line ? errorLocation.end.column : lineText.length
-        // if (startIndex >= lineText.length) {
-        //     //  error is at end of file.
-        //     let append = Colors.Dim + "</EOF>"
-        //     lineText += append
-        //     endIndex = startIndex + append.length
-        // }
+        if (startIndex >= lineText.length) {
+            //  error is at end of file.
+            let append = Colors.Dim + " "
+            lineText += append
+            endIndex = startIndex + append.length
+        }
         if (startIndex == endIndex)
             endIndex += 1
         let result = lineText.substring(0, startIndex - 1) + start + lineText.substring(startIndex - 1, endIndex - 1) + end + lineText.substring(endIndex - 1)
