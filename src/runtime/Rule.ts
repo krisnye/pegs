@@ -16,7 +16,7 @@ abstract class Rule extends BaseObject {
         var saveState = context.state
         var saveLocationFunc = context.location
 
-        context.location = () => { return context.getLocationCalculator().getLocation(saveOffset, context.offset) }
+        context.location = () => { return context.getLocationCalculator().getLocation(saveOffset, context.offset, context.filename) }
 
         var result = this.parseInternal(context)
         if (!Rule.passed(result)) {

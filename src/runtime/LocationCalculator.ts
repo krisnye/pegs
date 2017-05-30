@@ -26,10 +26,11 @@ export default class LocationCalculator
         }
     }
 
-    getLocation(start: number, end: number) {
+    getLocation(start: number, end: number, filename: string) {
         return new Location(
             new Position(start, this.lines[start], this.columns[start]),
-            new Position(end, this.lines[end], this.columns[end])
+            new Position(end, this.lines[end], this.columns[end]),
+            filename
         )
     }
 

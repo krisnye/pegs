@@ -39,7 +39,7 @@ export default class ErrorContext extends Context
     errorStacks: StackFrame[][] = []
 
     constructor(context: Context) {
-        super(context.grammar, context.source, context.root)
+        super(context.grammar, context.source, context.filename)
         this.debugErrorOffsetStart = context.failureOffsetStart
         this.debugErrorOffsetFinish = context.failureOffsetFinish
     }
@@ -109,7 +109,7 @@ export default class ErrorContext extends Context
     }
 
     getError() {
-        let location = this.getLocationCalculator().getLocation(this.debugErrorOffsetStart, this.debugErrorOffsetFinish)
+        let location = this.getLocationCalculator().getLocation(this.debugErrorOffsetStart, this.debugErrorOffsetFinish, this.filename)
         let errorLine = location.start.line
         let [padLength, lines] = this.getLinesWithNumbers(errorLine - 2, errorLine + 2, location)
 

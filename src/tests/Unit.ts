@@ -79,7 +79,7 @@ function testRule(rule:Rule, source:string, pass: boolean | number = true, expec
     var value
 
     if ( parser !== undefined ) {
-        try { value = parser.parse(source, rule) } 
+        try { value = parser.parse(source) }
         catch (e) { value = Rule.failure }
         context = parser.context
     } else {

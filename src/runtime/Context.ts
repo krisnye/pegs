@@ -7,10 +7,10 @@ export default class Context
 {
     readonly grammar: Grammar
     readonly debug: false
+    readonly filename: string
     source: string
     offset: number = 0
-    root: Context
-    private rootState: {[name: string]: any} = {}
+    state: {[name: string]: any} = {}
     private locationCalculator?: LocationCalculator
     rules?: Rule[]              //  present while parsing sequences
     values?: any[]              //  present while parsing sequences, contains values parsed so far in sequence
@@ -18,17 +18,11 @@ export default class Context
     failureOffsetStart: number = 0      //  furthest failure offset start used for creating errors
     failureOffsetFinish: number = 0     //  furthest failure offset finish used for creating errors
 
-    constructor(grammar: Grammar, source: string, root?: Context) {
+    constructor(grammar: Grammar, source: string, filename?: string) {
         this.grammar = grammar
         this.source = source
-        this.root = root ? root : this
-    }
-
-    get state(): {[name: string]: any} {
-        return this.root.rootState
-    }
-    set state(value: {[name: string]: any}) {
-        this.root.rootState = value
+        if (filename != null)
+            this.filename = filename
     }
 
     private lines: string[]

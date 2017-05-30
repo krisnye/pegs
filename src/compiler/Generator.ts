@@ -225,30 +225,34 @@ function grammarToJS(ast: any): any {
     let imports: string[] = [];
     for (let key in runtime) imports.push('var ' + key + ' = runtime.' + key)
 
-    let body: string[] = 
-    [
+    return [
 `(function() {
 var runtime
 try { runtime = require('pegs') } catch (e) {}
 if (runtime == null) { runtime = require('../runtime') }`,
 
 imports.join('\n'),
-
-`var parser
-var location = function() {
-    return parser.context.location()
-}
-var text = function() {
-    let loc = location()
-    return parser.context.source.substring(loc.start.offset, loc.end.offset)
-}`,
-
+`
+    return function(options) {
+        if (options == null)
+            options = {}
+        var parser
+        var location = function() {
+            return parser.context.location()
+        }
+        var text = function() {
+            let loc = location()
+            return parser.context.source.substring(loc.start.offset, loc.end.offset)
+        }
+`,
 (ast.initializer ? ast.initializer.code + '\n' : ""),
-
-"parser = " + obj("Parser", obj("Grammar", array(ast.rules.map(astToJS), ',\n\n'))),
-"return parser})()"
-    ]
-    return body.join('\n')
+`       parser = ` + obj("Parser", obj("Grammar", array(ast.rules.map(astToJS), ',\n\n'))),
+`
+        return parser
+    }
+})()
+`
+    ].join('\n')
 }
 
 export function astToJS(ast: any): any {
@@ -312,5 +316,6 @@ export function generateParserSource(source: string) {
 }
 
 export function generateParser(source: string): runtime.Parser {
-    return eval(astToJS(sourceToAst(source)))
+    let ParserType = eval(astToJS(sourceToAst(source)))
+    return ParserType()
 }
