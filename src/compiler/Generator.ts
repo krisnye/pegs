@@ -307,7 +307,8 @@ function sourceToAst(input: string) {
 // ---- API ---- //
 
 export function generateParserSource(source: string) {
-    return "module.exports = " + astToJS(sourceToAst(source));
+    let js = astToJS(sourceToAst(source))
+    return "module.exports = exports = " + js + ";\nexports.default = exports";
 }
 
 export function generateParser(source: string): runtime.Parser {
