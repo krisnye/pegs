@@ -2,6 +2,7 @@ import Rule from "./Rule"
 import Grammar from "./Grammar"
 import Context from "./Context"
 import ErrorContext from "./ErrorContext"
+import Location from "./Location"
 
 export default class Parser
 {
@@ -28,6 +29,12 @@ export default class Parser
         this.context = errorContext
         start.parse(errorContext)
         throw errorContext.getError()
+    }
+
+    getError(description: string, location: Location, source: string, filename?:string) {
+        let context = new Context(this.grammar, source, filename)
+        let errorContext = new ErrorContext(context)
+        return errorContext.getError(description, location)
     }
 
 }

@@ -3,9 +3,9 @@ import Context from "./Context"
 import Location from "./Location"
 import * as Colors from "./Colors"
 
-function pad(text: string, length: number) {
+function pad(text: string, length: number, insert: string = " ") {
     while (text.length < length)
-        text = " " + text
+        text = insert + text
     return text
 }
 
@@ -81,8 +81,8 @@ export default class ErrorContext extends Context
             return lineText
         if (lineNumber > errorLocation.start.line && lineNumber < errorLocation.end.line)
             return start + lineText + end
-        let startIndex = lineNumber == errorLocation.start.line ? errorLocation.start.column : 1
-        let endIndex = lineNumber == errorLocation.end.line ? errorLocation.end.column : lineText.length
+        let startIndex = lineNumber == errorLocation.start.line ? errorLocation.start.column : 0
+        let endIndex = lineNumber == errorLocation.end.line ? errorLocation.end.column : lineText.length + 1
         if (startIndex >= lineText.length) {
             //  error is at end of file.
             let append = Colors.Dim + " "
@@ -108,18 +108,27 @@ export default class ErrorContext extends Context
         return [lineDigits + linePrefix.length, lines.join('\n')]
     }
 
-    getError() {
-        let location = this.getLocationCalculator().getLocation(this.debugErrorOffsetStart, this.debugErrorOffsetFinish, this.filename)
+    getError(errorDescription?: string, location?: Location) {
+        if (location == null)
+            location = this.getLocationCalculator().getLocation(this.debugErrorOffsetStart, this.debugErrorOffsetFinish, this.filename)
+        let {filename} = location
         let errorLine = location.start.line
         let [padLength, lines] = this.getLinesWithNumbers(errorLine - 2, errorLine + 2, location)
+        // if (filename != null)
+        //     lines = Colors.Dim + pad("", padLength) + filename + Colors.Reset + "\n" + lines
 
-        let expected = this.getExpected(false)
-        if (expected.length == 0)
-            expected = this.getExpected(true)
-        let expectedString = "Expected " + expected.join(" or ")
-        let message = lines + "\n\n" + pad(" ", padLength) + expectedString + "\n"
+        if (errorDescription == null) {
+            let expected = this.getExpected(false)
+            if (expected.length == 0)
+                expected = this.getExpected(true)
+            errorDescription = "Expected " + expected.join(" or ")
+        }
+        let message = "\n" +
+            errorDescription + "\n\n" +
+            Colors.Dim + pad("", padLength - 1, "/") + " " + filename + "\n" + Colors.Reset +
+            lines + "\n\n" + pad(" ", padLength) + "\n"
         let error: any = new Error(message)
-        error.expected = expectedString
+        error.description = errorDescription
         return error
     }
 

@@ -54,7 +54,7 @@ function finish() {
     }
 }
 
-function testError(grammar: Grammar, source: string, expected: string) {
+function testError(grammar: Grammar, source: string, errorDescription: string) {
     testCount++
     try {
         let parser = new Parser(grammar)
@@ -62,9 +62,9 @@ function testError(grammar: Grammar, source: string, expected: string) {
         testFails++
     }
     catch (e) {
-        if (e.expected != expected) {
+        if (e.description != errorDescription) {
             testFails++
-            console.log("Parsing " + source + " expected error " + expected +  ", actual error: " + e.message)
+            console.log("Parsing " + source + " expected error " + errorDescription +  ", actual error: " + e.message)
         }
         else {
             // console.log(e.message)

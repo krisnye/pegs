@@ -65,9 +65,4 @@ export default class Context
         return this.locationCalculator
     }
 
-    getErrorMessage() {
-        //  todo: populate info with debug flag and use it here to make a pimp ass error message
-        return "Error fucking offset: " + this.failureOffsetStart
-    }
-
 }
