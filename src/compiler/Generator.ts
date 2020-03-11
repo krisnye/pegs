@@ -1,4 +1,4 @@
-declare var require: (name:string) => any
+// declare var require: (name:string) => any
 
 let pegjs = require('./PegJsSelfParser.js')
 let fs = require('fs')
@@ -312,7 +312,8 @@ function sourceToAst(input: string) {
 
 export function generateParserSource(source: string) {
     let js = astToJS(sourceToAst(source))
-    return "module.exports = exports = " + js + ";\nexports.default = exports";
+    return `module.exports = exports = ${js};\nexports.default = exports`;
+    // return `export default ${js.trim()};\n`;
 }
 
 export function generateParser(source: string): runtime.Parser {

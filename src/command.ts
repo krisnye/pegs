@@ -1,12 +1,6 @@
 #!/usr/bin/env node
-declare var require: (name:string) => any
-declare var process: any
-
-var fs = require('fs')
-
-import {
-    generateParserSource
-} from "./compiler"
+import * as fs from "fs"
+import { generateParserSource } from "./compiler"
 
 var args = process.argv.slice(2)
 

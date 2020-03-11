@@ -1,4 +1,4 @@
-declare var require: (name:string) => any
+// declare var require: (name:string) => any
 var fs = require('fs')
 
 import {
