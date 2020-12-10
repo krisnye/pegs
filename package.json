@@ -1,6 +1,6 @@
 {
     "name": "pegs",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "main": "lib/index.js",
     "bin": "lib/command.js",
     "repository": "https://github.com/krisnye/pegs.git",
@@ -8,8 +8,9 @@
         "dev": "yarn build && yarn link",
         "build": "tsc -p . && pegjs -o lib/compiler/PegJsSelfParser.js src/compiler/PEGjs.pegjs && node lib/tests/Unit.js",
         "watch": "nodemon -e ts,pegjs -w src -x pegjs -o lib/compiler/PegJsSelfParser.js src/compiler/PEGjs.pegjs & tsc -p . -w & (sleep 2 && nodemon -w lib -w test lib/tests/Unit.js)",
-        "perf" : "tsc -p . & node lib/tests/ParserPerformance.js",
-        "profile" : "tsc -p . & node --prof lib/tests/ParserProfile.js"
+        "perf": "tsc -p . & node lib/tests/ParserPerformance.js",
+        "profile": "tsc -p . & node --prof lib/tests/ParserProfile.js",
+        "deploy": "yarn build && yarn publish --patch"
     },
     "directories": {
         "lib": "lib",
