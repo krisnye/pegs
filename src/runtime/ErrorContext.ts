@@ -129,6 +129,7 @@ export default class ErrorContext extends Context
             lines + "\n\n" + pad(" ", padLength) + "\n"
         let error: any = new Error(message)
         error.description = errorDescription
+        error.location = location
         return error
     }
 
