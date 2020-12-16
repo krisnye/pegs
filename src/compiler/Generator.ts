@@ -229,7 +229,7 @@ function grammarToJS(ast: any): any {
 `(function() {
 var runtime
 try { runtime = require('pegs') } catch (e) {}
-if (runtime == null) { runtime = require('../runtime') }`,
+if (runtime == null) { /* use r to avoid parcel trying to resolve path */ var r = require; runtime = r('../runtime') }`,
 
 imports.join('\n'),
 `
