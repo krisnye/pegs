@@ -31,10 +31,10 @@ export default class Parser
         throw errorContext.getError()
     }
 
-    getError(description: string, location: Location, source: string, filename?:string) {
+    getError(description: string, location: Location | Location[], source: string, filename?:string) {
         let context = new Context(this.grammar, source, filename)
         let errorContext = new ErrorContext(context)
-        return errorContext.getError(description, location)
+        return errorContext.getError(description, ...(Array.isArray(location) ? location : [location]))
     }
 
 }

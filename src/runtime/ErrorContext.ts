@@ -29,6 +29,14 @@ class StackFrame {
     }
 }
 
+function isCloseLine(a?: Location, b?: Location, maxDiff = 5) {
+    return a && b
+        && a.filename == b.filename
+        && a.start.line === a.end.line
+        && b.start.line === b.end.line
+        && Math.abs(a.start.line - b.start.line) <= maxDiff
+}
+
 export default class ErrorContext extends Context
 {
 
@@ -72,10 +80,9 @@ export default class ErrorContext extends Context
         return expected
     }
 
-    wrapErrorLine(lineNumber: number, errorLocation: Location, start: string, end: string) {
-        let lineText = this.getLine(lineNumber)
+    wrapErrorLine(lineNumber: number, errorLocation: Location, start: string, end: string, lineText: string | undefined = this.getLine(lineNumber)) {
         if (lineText == null)
-            return null
+            return undefined
 
         if (lineNumber < errorLocation.start.line || lineNumber > errorLocation.end.line)
             return lineText
@@ -95,12 +102,18 @@ export default class ErrorContext extends Context
         return result
     }
 
-    getLinesWithNumbers(startLine: number, endLine: number, errorLocation: Location): [number, string] {
+    getLinesWithNumbers(startLine: number, endLine: number, ...errorLocations: Location[]): [number, string] {
+        if (errorLocations.length > 1) {
+            errorLocations.sort((a, b) => b.start.column - a.start.column)
+        }
         let lineDigits = Math.max(Math.max(0, startLine).toString().length, endLine.toString().length)
         let linePrefix = "| "
         let lines = []
         for (let i = startLine; i <= endLine; i++) {
-            let line = this.wrapErrorLine(i, errorLocation, Colors.BgMagenta, Colors.Reset)
+            let line: string | undefined = undefined
+            for (let errorLocation of errorLocations) {
+                line = this.wrapErrorLine(i, errorLocation, Colors.BgMagenta, Colors.Reset, line)
+            }
             if (line != null) {
                 lines.push(Colors.Dim + pad(i.toString(), lineDigits) + linePrefix + Colors.Reset + line)
             }
@@ -108,28 +121,38 @@ export default class ErrorContext extends Context
         return [lineDigits + linePrefix.length, lines.join('\n')]
     }
 
-    getError(errorDescription?: string, location?: Location) {
-        if (location == null)
-            location = this.getLocationCalculator().getLocation(this.debugErrorOffsetStart, this.debugErrorOffsetFinish, this.filename)
-        let {filename} = location
-        let errorLine = location.start.line
-        let [padLength, lines] = this.getLinesWithNumbers(errorLine - 2, errorLine + 2, location)
-        // if (filename != null)
-        //     lines = Colors.Dim + pad("", padLength) + filename + Colors.Reset + "\n" + lines
-
+    getError(errorDescription?: string, ...locations: Location[]) {
         if (errorDescription == null) {
             let expected = this.getExpected(false)
             if (expected.length == 0)
                 expected = this.getExpected(true)
             errorDescription = "Expected " + expected.join(" or ")
         }
-        let message = "\n" +
-            errorDescription + "\n\n" +
-            Colors.Dim + pad("", padLength - 1, "/") + " " + filename + "\n" + Colors.Reset +
-            lines + "\n\n" + pad(" ", padLength) + "\n"
+        if (locations == null)
+            locations = [this.getLocationCalculator().getLocation(this.debugErrorOffsetStart, this.debugErrorOffsetFinish, this.filename)]
+        let message = errorDescription + "\n"
+        for (let i = 0; i < locations.length; i++) {
+            let location = locations[i]
+            let {filename} = location
+            let combineLocations = [location]
+            while (isCloseLine(location, locations[i + 1])) {
+                combineLocations.push(locations[++i])
+            }
+            let startLine = Math.min(...combineLocations.map(l => l.start.line))
+            let endLine = Math.max(...combineLocations.map(l => l.end.line))
+            let extraLines = locations.length > 1 ? 1 : 2
+            // maybe add more locations if they're on the same line
+            let [padLength, errorLines] = this.getLinesWithNumbers(startLine - extraLines, endLine + extraLines, ...combineLocations)
+            message +=
+                "\n" +
+                Colors.Dim + pad("", padLength - 1, "/") + " " + filename + "\n" + Colors.Reset +
+                errorLines + "\n"
+        }
+
         let error: any = new Error(message)
         error.description = errorDescription
-        error.location = location
+        error.location = locations[0]
+        error.locations = locations
         return error
     }
 
